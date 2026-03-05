@@ -1,0 +1,2 @@
+docker stop agilecontainer
+docker start agilecontainer

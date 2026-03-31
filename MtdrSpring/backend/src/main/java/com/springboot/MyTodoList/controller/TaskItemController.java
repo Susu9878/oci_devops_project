@@ -14,12 +14,12 @@ public class TaskItemController {
     @Autowired
     private TaskItemService taskItemService;
     //@CrossOrigin
-    @GetMapping(value = "/todolist")
+    @GetMapping(value = "/tasklist")
     public List<TaskItem> getAllTaskItems(){
         return taskItemService.findAll();
     }
     //@CrossOrigin
-    @GetMapping(value = "/todolist/{id}")
+    @GetMapping(value = "/tasklist/{id}")
     public ResponseEntity<TaskItem> getTaskItemById(@PathVariable int id){
         try{
             ResponseEntity<TaskItem> responseEntity = taskItemService.getItemById(id);
@@ -29,7 +29,7 @@ public class TaskItemController {
         }
     }
     //@CrossOrigin
-    @PostMapping(value = "/todolist")
+    @PostMapping(value = "/tasklist")
     public ResponseEntity<TaskItem> addTaskItem(@RequestBody TaskItem taskItem) throws Exception{
         TaskItem td = taskItemService.addTaskItem(taskItem);
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -41,7 +41,7 @@ public class TaskItemController {
                 .headers(responseHeaders).build();
     }
     //@CrossOrigin
-    @PutMapping(value = "todolist/{id}")
+    @PutMapping(value = "/tasklist/{id}")
     public ResponseEntity<TaskItem> updateTaskItem(@RequestBody TaskItem taskItem, @PathVariable int id){
         try{
             TaskItem taskItem1 = taskItemService.updateTaskItem(id, taskItem);
@@ -52,7 +52,7 @@ public class TaskItemController {
         }
     }
     //@CrossOrigin
-    @DeleteMapping(value = "todolist/{id}")
+    @DeleteMapping(value = "/tasklist/{id}")
     public ResponseEntity<Boolean> deleteTaskItem(@PathVariable("id") int id){
         Boolean flag = false;
         try{

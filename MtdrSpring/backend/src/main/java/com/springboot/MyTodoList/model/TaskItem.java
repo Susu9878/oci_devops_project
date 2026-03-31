@@ -9,8 +9,8 @@ import java.time.OffsetDateTime;
     in the autonomous database
  */
 @Entity
-@Table(name = "TODOITEM")
-public class ToDoItem {
+@Table(name = "TASKITEM")
+public class TaskItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int ID;
@@ -20,10 +20,10 @@ public class ToDoItem {
     OffsetDateTime creation_ts;
     @Column(name = "done")
     boolean done;
-    public ToDoItem(){
+    public TaskItem(){
 
     }
-    public ToDoItem(int ID, String description, OffsetDateTime creation_ts, boolean done) {
+    public TaskItem(int ID, String description, OffsetDateTime creation_ts, boolean done) {
         this.ID = ID;
         this.description = description;
         this.creation_ts = creation_ts;

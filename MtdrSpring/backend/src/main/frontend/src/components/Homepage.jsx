@@ -149,18 +149,18 @@ function Homepage() {
         </div>
 
         <div className="tasks-list">
-          {filteredTasks.map((task) => (
-            <div key={task.id} className="task-item">
+          {filteredTasks.map((items) => (
+            <div key={items.id} className="task-item">
               <div className="task-header">
                 <div
                   className="task-header-content"
-                  onClick={() => toggleTaskExpansion(task.id)}
+                  onClick={() => toggleTaskExpansion(items.id)}
                 >
                   <div>
-                    <span className="task-name">{task.name}</span>
+                    <span className="task-name">{items.name}</span>
 
                     <div className="task-tags">
-                      {task.tags.map((tag) => (
+                      {items.tags.map((tag) => (
                         <span key={tag}>{tag}</span>
                       ))}
                     </div>
@@ -168,17 +168,17 @@ function Homepage() {
 
                   <div>
                     <span>
-                      {task.dateAdded} - {task.dateDue}
+                      {items.dateAdded} - {items.dateDue}
                     </span>
                     <ChevronDown />
                   </div>
                 </div>
               </div>
 
-              {expandedTaskId === task.id && (
+              {expandedTaskId === items.id && (
                 <div className="task-expanded">
-                  <p>{task.description}</p>
-                  <span>{task.importance.toUpperCase()}</span>
+                  <p>{items.description}</p>
+                  <span>{items.importance.toUpperCase()}</span>
                 </div>
               )}
             </div>

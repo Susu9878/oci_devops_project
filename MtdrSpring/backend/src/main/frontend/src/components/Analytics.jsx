@@ -29,6 +29,7 @@ const sprintData = {
   totalHoursWorked: 253,
 };
 
+
 */
 
 const taskCompletionData = [
@@ -123,6 +124,7 @@ function Analytics() {
   return (
     <div className="analytics">
       <div className="page-header">
+        <h1>Analytics</h1>
         <h1 className="sprint-title">
           {" "}
           <input
@@ -162,9 +164,18 @@ function Analytics() {
           <StatsCard
             colorClass="yellow"
             icon={<ListTodo />}
+            value={teamKpis.totalTasksAssigned}
+            label="Total tasks assigned"
+          />)}
+          
+          {teamKpis && (
+          <StatsCard
+            colorClass="yellow"
+            icon={<ListTodo />}
             value={teamKpis.avgTasksPerUser}
             label="Tasks assigned avg /dev"
           />)}
+
 
           {teamKpis && (
           <StatsCard
@@ -181,6 +192,7 @@ function Analytics() {
             value={teamKpis.totalHoursWorked}
             label="Total hours worked"
           />)}
+
         </div>
       </div>
 

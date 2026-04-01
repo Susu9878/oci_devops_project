@@ -17,9 +17,9 @@ public class TaskItem {
     @Column(name = "task_id")
     int taskId;
     
-    @Column(name = "task_name", nullable = false)
+    @Column(name = "task_name", nullable = true)
     private String taskName;
-    @Column(name = "description")
+    @Column(name = "DESCRIPTION")
     private String description;
     @Column(name = "story_points")
     private Integer storyPoints;

@@ -2,6 +2,7 @@ package com.springboot.MyTodoList.model;
 
 
 import jakarta.persistence.*;
+
 import java.time.OffsetDateTime;
 
 /*
@@ -13,29 +14,61 @@ import java.time.OffsetDateTime;
 public class TaskItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int ID;
-    @Column(name = "DESCRIPTION")
-    String description;
-    @Column(name = "CREATION_TS")
-    OffsetDateTime creation_ts;
+    @Column(name = "task_id")
+    int taskId;
+    
+    @Column(name = "task_name", nullable = false)
+    private String taskName;
+    @Column(name = "description")
+    private String description;
+    @Column(name = "story_points")
+    private Integer storyPoints;
+    @Column(name = "expected_hours")
+    private Double expectedHours;
+    @Column(name = "priority")
+    private Integer priority;
+    @Column(name = "status")
+    private String status;
+    @Column(name = "created_at")
+    private OffsetDateTime createdAt;
+    @Column(name = "start_date")
+    private OffsetDateTime startDate;
+    @Column(name = "completion_date")
+    private OffsetDateTime completionDate;
+    @Column(name = "user_id")
+    private Integer userId; 
+    @Column(name = "sprint_id")
+    private Integer sprintId; 
     @Column(name = "done")
-    boolean done;
+    private boolean done;
     public TaskItem(){
 
     }
-    public TaskItem(int ID, String description, OffsetDateTime creation_ts, boolean done) {
-        this.ID = ID;
+    public TaskItem(Integer taskId, String taskName, String description,
+                Integer storyPoints, Double expectedHours, Integer priority,
+                String status, OffsetDateTime createdAt, OffsetDateTime startDate,
+                OffsetDateTime completionDate, Integer userId, Integer sprintId) {
+
+        this.taskId = taskId;
+        this.taskName = taskName;
         this.description = description;
-        this.creation_ts = creation_ts;
-        this.done = done;
+        this.storyPoints = storyPoints;
+        this.expectedHours = expectedHours;
+        this.priority = priority;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.startDate = startDate;
+        this.completionDate = completionDate;
+        this.userId = userId;
+        this.sprintId = sprintId;
     }
 
     public int getID() {
-        return ID;
+        return taskId;
     }
 
     public void setID(int ID) {
-        this.ID = ID;
+        this.taskId = ID;
     }
 
     public String getDescription() {
@@ -47,13 +80,14 @@ public class TaskItem {
     }
 
     public OffsetDateTime getCreation_ts() {
-        return creation_ts;
+        return createdAt;
     }
 
-    public void setCreation_ts(OffsetDateTime creation_ts) {
-        this.creation_ts = creation_ts;
+    public void setCreation_ts(OffsetDateTime created_at) {
+        this.createdAt = created_at;
     }
 
+    //left is done for current functionallity of frontend and services. TODO: delete later
     public boolean isDone() {
         return done;
     }
@@ -64,11 +98,11 @@ public class TaskItem {
 
     @Override
     public String toString() {
-        return "ToDoItem{" +
-                "ID=" + ID +
-                ", description='" + description + '\'' +
-                ", creation_ts=" + creation_ts +
-                ", done=" + done +
+        return "Task{" +
+                "taskId=" + taskId +
+                ", taskName='" + taskName + '\'' +
+                ", status='" + status + '\'' +
+                ", priority=" + priority +
                 '}';
     }
 }

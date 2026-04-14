@@ -21,45 +21,93 @@ import jakarta.persistence.*;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int ID;
+    int userId;
 
-    @Column(name = "PHONENUMBER")
-    String phonenumber;
+    @Column(name = "USERNAME")
+    String username;
 
-    @Column(name = "PASSWORD")
-    String userpassword;
+    @Column(name = "EMAIL")
+    String email;
+
+    @Column(name = "PHONE_NUMBER")
+    Integer phoneNumber;
+
+    @Column(name = "IS_MANAGER")
+    Boolean isManager;
+
+    @Column(name = "PASSWORD") // En la base de datos no tenemos password todavía
+    String password;
+
+    @Column(name = "TEAM_ID")
+    Integer teamId;
 
     public User(){}
 
-    public User(int ID, String number, String password){
-        this.ID=ID;
-        this.phonenumber = number;
-        this.userpassword = password;
+    public User(int userId, String username, String email, Integer phoneNumber, Boolean isManager, String password, Integer teamId){
+        this.userId = userId;
+        this.username = username;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.isManager = isManager;
+        this.password = password;
+        this.teamId = teamId;
     }
 
-    public int getID(){
-        return ID;
+    public int getUserId(){
+        return userId;
     }
 
-    public void setID(int ID){
-        this.ID=ID;
+    public void setUserId(int userId){
+        this.userId = userId;
     }
 
-    public String getPhoneNumber(){
-        return phonenumber;
+    public String getUsername(){
+        return username;
     }
 
-    public void setPhoneNumber(String number){
-        this.phonenumber=number;
+    public void setUsername(String username){
+        this.username = username;
+    }
+
+    public String getEmail(){
+        return email;
+    }
+
+    public void setEmail(String email){
+        this.email = email;
+    }
+
+    public Integer getPhoneNumber(){
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(Integer phoneNumber){
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Boolean getIsManager(){
+        return isManager;
+    }
+
+    public void setIsManager(Boolean isManager){
+        this.isManager = isManager;
     }
 
     
-    public String getUserPassword(){
-        return userpassword;
+    public String getPassword(){
+        return password;
     }
 
-    public void setUserPassword(String password){
-        this.userpassword=password;
+    public void setPassword(String password){
+        this.password=password;
+    }
+
+    public Integer getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(Integer teamId) {
+        this.teamId = teamId;
     }
 
 }

@@ -2,7 +2,7 @@ package com.springboot.MyTodoList.controller;
 
 import com.springboot.MyTodoList.config.BotProps;
 import com.springboot.MyTodoList.service.DeepSeekService;
-import com.springboot.MyTodoList.service.TaskItemService;
+import com.springboot.MyTodoList.service.TodoItemService;
 import com.springboot.MyTodoList.util.BotActions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +18,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 @Component
-public class TaskItemBotController  implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
+public class TodoItemBotController  implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
 
-	private static final Logger logger = LoggerFactory.getLogger(TaskItemBotController.class);
-	private TaskItemService taskItemService;
+	private static final Logger logger = LoggerFactory.getLogger(TodoItemBotController.class);
+	private TodoItemService todoItemService;
 	private DeepSeekService deepSeekService;
 	private final TelegramClient telegramClient;
 	
@@ -41,10 +41,10 @@ public class TaskItemBotController  implements SpringLongPollingBot, LongPolling
     }
 
 
-	public TaskItemBotController( BotProps bp, TaskItemService tsvc, DeepSeekService ds) {
+	public TodoItemBotController( BotProps bp, TodoItemService tsvc, DeepSeekService ds) {
 		this.botProps = bp;
 		telegramClient = new OkHttpTelegramClient(getBotToken());
-		taskItemService = tsvc;
+		todoItemService = tsvc;
 		deepSeekService = ds;
 	}
 
@@ -63,12 +63,12 @@ public class TaskItemBotController  implements SpringLongPollingBot, LongPolling
 		String messageTextFromTelegram = update.getMessage().getText();
 		long chatId = update.getMessage().getChatId();
 
-		BotActions actions =  new BotActions(telegramClient,taskItemService,deepSeekService);
+		BotActions actions =  new BotActions(telegramClient,todoItemService,deepSeekService);
 		actions.setRequestText(messageTextFromTelegram);
 		actions.setChatId(chatId);
-		if(actions.getTaskService()==null){
+		if(actions.getTodoService()==null){
 			logger.info("todosvc error");
-			actions.setTaskService(taskItemService);
+			actions.setTodoService(todoItemService);
 		}
 
 

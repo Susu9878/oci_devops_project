@@ -1,8 +1,8 @@
 package com.springboot.MyTodoList.util;
 
-import com.springboot.MyTodoList.model.TaskItem;
+import com.springboot.MyTodoList.model.TodoItem;
 import com.springboot.MyTodoList.service.DeepSeekService;
-import com.springboot.MyTodoList.service.TaskItemService;
+import com.springboot.MyTodoList.service.TodoItemService;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +22,12 @@ public class BotActions{
     TelegramClient telegramClient;
     boolean exit;
 
-    TaskItemService taskItemService;
+    TodoItemService todoItemService;
     DeepSeekService deepSeekService;
 
-    public BotActions(TelegramClient tc,TaskItemService ts, DeepSeekService ds){
+    public BotActions(TelegramClient tc,TodoItemService ts, DeepSeekService ds){
         telegramClient = tc;
-        taskItemService = ts;
+        todoItemService = ts;
         deepSeekService = ds;
         exit  = false;
     }
@@ -44,12 +44,12 @@ public class BotActions{
         telegramClient=tc;
     }
 
-    public void setTaskService(TaskItemService tsvc){
-        taskItemService = tsvc;
+    public void setTodoService(TodoItemService tsvc){
+        todoItemService = tsvc;
     }
 
-    public TaskItemService getTaskService(){
-        return taskItemService;
+    public TodoItemService getTodoService(){
+        return todoItemService;
     }
 
     public void setDeepSeekService(DeepSeekService dssvc){
@@ -85,9 +85,9 @@ public class BotActions{
 
         try {
 
-            TaskItem item = taskItemService.getTaskItemById(id);
+            TodoItem item = todoItemService.getTodoItemById(id);
             item.setDone(true);
-            taskItemService.updateTaskItem(id, item);
+            todoItemService.updateTodoItem(id, item);
             BotHelper.sendMessageToTelegram(chatId, BotMessages.ITEM_DONE.getMessage(), telegramClient);
 
         } catch (Exception e) {
@@ -106,9 +106,9 @@ public class BotActions{
 
         try {
 
-            TaskItem item = taskItemService.getTaskItemById(id);
+            TodoItem item = todoItemService.getTodoItemById(id);
             item.setDone(false);
-            taskItemService.updateTaskItem(id, item);
+            todoItemService.updateTodoItem(id, item);
             BotHelper.sendMessageToTelegram(chatId, BotMessages.ITEM_UNDONE.getMessage(), telegramClient);
 
         } catch (Exception e) {
@@ -126,7 +126,7 @@ public class BotActions{
         Integer id = Integer.valueOf(delete);
 
         try {
-            taskItemService.deleteTaskItem(id);
+            todoItemService.deleteTodoItem(id);
             BotHelper.sendMessageToTelegram(chatId, BotMessages.ITEM_DELETED.getMessage(), telegramClient);
 
         } catch (Exception e) {
@@ -149,8 +149,8 @@ public class BotActions{
 				|| requestText.equals(BotLabels.LIST_ALL_ITEMS.getLabel())
 				|| requestText.equals(BotLabels.MY_TODO_LIST.getLabel())) || exit)
             return;
-        logger.info("todoSvc: "+taskItemService);
-        List<TaskItem> allItems = taskItemService.findAll();
+        logger.info("todoSvc: "+todoItemService);
+        List<TodoItem> allItems = todoItemService.findAll();
         ReplyKeyboardMarkup keyboardMarkup = ReplyKeyboardMarkup.builder()
             .resizeKeyboard(true)
             .oneTimeKeyboard(false)
@@ -168,24 +168,24 @@ public class BotActions{
         firstRow.add(BotLabels.ADD_NEW_ITEM.getLabel());
         keyboard.add(firstRow);
 
-        KeyboardRow myTaskListTitleRow = new KeyboardRow();
-        myTaskListTitleRow.add(BotLabels.MY_TODO_LIST.getLabel());
-        keyboard.add(myTaskListTitleRow);
+        KeyboardRow mytodoListTitleRow = new KeyboardRow();
+        mytodoListTitleRow.add(BotLabels.MY_TODO_LIST.getLabel());
+        keyboard.add(mytodoListTitleRow);
 
-        List<TaskItem> activeItems = allItems.stream().filter(item -> item.isDone() == false)
+        List<TodoItem> activeItems = allItems.stream().filter(item -> item.isDone() == false)
                 .collect(Collectors.toList());
 
-        for (TaskItem item : activeItems) {
+        for (TodoItem item : activeItems) {
             KeyboardRow currentRow = new KeyboardRow();
             currentRow.add(item.getDescription());
             currentRow.add(item.getID() + BotLabels.DASH.getLabel() + BotLabels.DONE.getLabel());
             keyboard.add(currentRow);
         }
 
-        List<TaskItem> doneItems = allItems.stream().filter(item -> item.isDone() == true)
+        List<TodoItem> doneItems = allItems.stream().filter(item -> item.isDone() == true)
                 .collect(Collectors.toList());
 
-        for (TaskItem item : doneItems) {
+        for (TodoItem item : doneItems) {
             KeyboardRow currentRow = new KeyboardRow();
             currentRow.add(item.getDescription());
             currentRow.add(item.getID() + BotLabels.DASH.getLabel() + BotLabels.UNDO.getLabel());
@@ -218,11 +218,11 @@ public class BotActions{
     public void fnElse(){
         if(exit)
             return;
-        TaskItem newItem = new TaskItem();
+        TodoItem newItem = new TodoItem();
         newItem.setDescription(requestText);
         newItem.setCreation_ts(OffsetDateTime.now());
         newItem.setDone(false);
-        taskItemService.addTaskItem(newItem);
+        todoItemService.addTodoItem(newItem);
 
         BotHelper.sendMessageToTelegram(chatId, BotMessages.NEW_ITEM_ADDED.getMessage(), telegramClient, null);
     }

@@ -20,6 +20,7 @@ function SideBar() {
               <a href="#">Add task</a>
               <a href="#">Remove task</a>
               <a href="#">Review task</a>
+              <a href="#">Edit Sprint</a>
             </div>
           </li>
 

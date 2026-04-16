@@ -217,7 +217,7 @@ if ! state_get DB_SETUP; then
     echo "$MTDRWORKSHOP_LOCATION/utils/db-setup.sh is already running"
   else
     echo "Executing db-setup.sh in the background"
-    # nohup $MTDRWORKSHOP_LOCATION/utils/db-setup.sh &>>$MTDRWORKSHOP_LOG/db-setup.log &
+    nohup $MTDRWORKSHOP_LOCATION/utils/db-setup.sh &>>$MTDRWORKSHOP_LOG/db-setup.log &
   fi
 fi
 

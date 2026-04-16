@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import jakarta.transaction.Transactional;
-
+ 
 @Repository
 @Transactional
 @EnableTransactionManagement

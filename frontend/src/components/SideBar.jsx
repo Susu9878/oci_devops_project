@@ -11,7 +11,7 @@ function SideBar() {
       <nav className="sidebar">
         <ul className="side-container">
           <li className="home">
-            <Link to="/homepage" className="linkStyle">HOME</Link>
+            <Link to="/" className="linkStyle">HOME</Link>
           </li>
 
           <li className="dropdown">
@@ -30,7 +30,7 @@ function SideBar() {
       </nav>
 
       <Routes>
-        <Route path="/homepage" element={<Homepage />} />
+        <Route path="/" element={<Homepage />} />
         <Route path="/management" element={<Management />} />
         <Route path="/analytics" element={<Analytics />} />
       </Routes>

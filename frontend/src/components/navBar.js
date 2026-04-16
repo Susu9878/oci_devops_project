@@ -1,8 +1,9 @@
 import userIcon from "../user.png";
+import './styledComponents/navBar.css'
 
-function NavBar(){
+function NavBar() {
   return (
-    <div>
+    <nav>
       <div className="header">
         <div className="header-container">
           <image source={userIcon} className="icon" />
@@ -10,20 +11,9 @@ function NavBar(){
             USER
             <strong>position</strong>
           </h3>
-          <div className="kpi-container">
-            <div className="sprint-check">
-              <h3 className="sprint-text">Actual Sprint</h3>
-            </div>
-            <div className="task-check">
-              <h3 className="task-text">Completed/Pending</h3>
-            </div>
-          </div>
         </div>
       </div>
-      <div className="styledBar" />
-      <div className="sidebar" />
-    </div>
-  );  
+    </nav>
+  );
 }
-
 export default NavBar;

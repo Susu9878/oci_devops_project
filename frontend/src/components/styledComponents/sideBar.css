@@ -1,0 +1,23 @@
+
+.sidebar{
+  background-color: #E4D9CB;
+  display: flex;
+  justify-content: center;
+  top:0;
+  width: 247px;
+  height: 50dvh;
+}
+
+.side-container{
+  display: flexbox;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  padding: 0 16px;
+  max-width: auto;
+}
+
+.side-container li{
+  padding: 10px;
+  list-style: none;
+}

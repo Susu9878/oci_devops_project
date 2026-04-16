@@ -2,7 +2,7 @@ package com.springboot.MyTodoList.model;
 
 
 import jakarta.persistence.*;
-
+ 
 import java.time.OffsetDateTime;
 
 /*
@@ -10,8 +10,8 @@ import java.time.OffsetDateTime;
     in the autonomous database
  */
 @Entity
-@Table(name = "TODOITEM")
-public class TodoItem {
+@Table(name = "TASKITEM")
+public class TaskItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "task_id")
@@ -41,10 +41,10 @@ public class TodoItem {
     private Integer sprintId; 
     @Column(name = "done")
     private boolean done;
-    public TodoItem(){
+    public TaskItem(){
 
     }
-    public TodoItem(Integer taskId, String taskName, String description,
+    public TaskItem(Integer taskId, String taskName, String description,
                 Integer storyPoints, Double expectedHours, Integer priority,
                 String status, OffsetDateTime createdAt, OffsetDateTime startDate,
                 OffsetDateTime completionDate, Integer userId, Integer sprintId) {

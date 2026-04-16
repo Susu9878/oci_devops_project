@@ -1,13 +1,32 @@
-.analytics-bg{
+.analytics-bg {
     background: #E4D9CB;
     color: #201E1C;
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: max(12px,min(2vw, 18px)); /*calc(1vw + 1vmin);*/
+    font-size: max(12px, min(2vw, 18px));
+    /*calc(1vw + 1vmin);*/
     margin: 135px 1em 1em 280px;
     padding: 1rem;
     position: relative;
     height: 100vh;
     border-radius: 0.5rem;
+}
+
+.kpi-container{
+    list-style: none;
+    display: flex;
+}
+
+.kpi{
+    display: block;
+    justify-content: center;
+    background-color: #FFC353;
+    padding: 3rem;
+    margin: 1rem;
+    border-radius: 0.5rem;
+}
+
+.kpi:hover{
+    background-color: #F07431;
 }

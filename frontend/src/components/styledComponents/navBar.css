@@ -18,6 +18,7 @@
   width: 100%;
   position: fixed;
   top: 0;
+  left: 0;
   background: #201E1C;
   z-index: 999;
 }
@@ -25,10 +26,8 @@
 .header-container{
   display: flex;
   align-items: center;
-  justify-content: center;
   width: 100%;
-  padding: min(16px 8%);
-  max-width: auto;
+  padding: 50px;
 }
 
 .icon{
@@ -46,36 +45,4 @@
 .user-role strong {
   display: block;
   font-size: 16px;
-}
-
-.kpi-container{
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.sprint-check{
-  background-color: #FFC353;
-  height: 76px;
-  width: 353px;
-  border-radius: 6px;
-  margin: 20px;
-}
-
-.task-check{
-  background-color: #F07431;
-  height: 76px;
-  width: 353px;
-  border-radius: 6px;
-  margin: 20px;
-}
-
-.sprint-text{
-  display: flex;
-  justify-content: center;
-}
-
-.task-text{
-  display: flex;
-  justify-content: center;
 }

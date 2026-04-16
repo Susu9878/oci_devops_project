@@ -16,8 +16,8 @@ import API_LIST from "./API";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Button, TableBody, CircularProgress } from "@mui/material";
 import Moment from "react-moment";
-import navBar from "./components/navBar";
-import sideBar from "./components/sideBar";
+import NavBar from "./components/NavBar";
+import SideBar from "./components/SideBar";
 
 /* In this application we're using Function Components with the State Hooks
  * to manage the states. See the doc: https://reactjs.org/docs/hooks-state.html
@@ -200,9 +200,9 @@ function App() {
 
   return (
     <div>
-      <navBar />
-      </div>
-
+      <NavBar />
+      <SideBar />
+    </div>
   );
 }
 

@@ -58,3 +58,8 @@
 .dropdown-content a:hover {
   color: #FFFBF4;
 }
+
+.linkStyle{
+  color:#201E1C;
+  text-decoration: none;
+}

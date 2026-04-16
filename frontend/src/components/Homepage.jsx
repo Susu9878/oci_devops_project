@@ -1,18 +1,8 @@
-          /*
-## MyToDoReact version 1.0.
-##
-## Copyright (c) 2022 Oracle, Inc.
-## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
-*/
-/*
- * This is the application main React component. We're using "function"
- * components in this application. No "class" components should be used for
- * consistency.
- * @author  jean.de.lavarene@oracle.com
- */
+import './styledComponents/homepage.css'
+
 import React, { useState, useEffect } from 'react';
-import NewItem from './NewItem';
-import API_LIST from './API';
+import NewItem from '../NewItem';
+import API_LIST from '../API';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Button, TableBody, CircularProgress } from '@mui/material';
 import Moment from 'react-moment';
@@ -23,7 +13,7 @@ import Moment from 'react-moment';
  * and two tables: one that lists the todo items that are to be done and another
  * one with the items that are already done.
  */
-function App() {
+function Homepage() {
     // isLoading is true while waiting for the backend to return the list
     // of items. We use this state to display a spinning circle:
     const [isLoading, setLoading] = useState(false);
@@ -237,4 +227,5 @@ function App() {
       </div>
     );
 }
-export default App;
+
+export default Homepage;

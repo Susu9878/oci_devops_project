@@ -32,8 +32,11 @@
 }
 
 .graph{
-    height:50vh;
-    width: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height:40vh;
+    width: 60vh;
     margin: 5vh;
     border-radius: 0.4rem;
 }

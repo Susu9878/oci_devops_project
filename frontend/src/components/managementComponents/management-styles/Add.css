@@ -9,11 +9,28 @@
     margin: 135px 1em 1em 280px;
     padding: 1rem;
     position: relative;
-    height: 100vh;
+    height: 50vh;
     border-radius: 0.5rem;
 }
 
 .linkStyle{
   color:#201E1C;
   text-decoration: none;
+}
+
+.add-container{
+  justify-content: center;
+  align-items: center;
+}
+
+.formLabel{
+  font-size: 2vh;
+}
+
+.line{
+  margin: 1rem;
+}
+
+.options{
+  margin: 1rem;
 }

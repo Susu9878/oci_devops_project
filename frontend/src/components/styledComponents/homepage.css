@@ -1,6 +1,6 @@
 .App {
-    background: #201E1C;
-    color: #FEF9F2;
+    background: #E4D9CB;
+    color: #201E1C;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -8,7 +8,6 @@
     margin: 135px 1em 1em 280px;
     padding: 1rem;
     position: relative;
-    box-shadow: 0 10px 18px 0 rgba(0, 0, 0, 0.2), 0 4.5rem 8rem 0 rgba(0, 0, 0, 0.1);
     border-radius: 0.5rem;
   }
   div#maincontent, div#newinputform form {

@@ -18,9 +18,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 @Component
-public class TaskoItemBotController  implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
+public class TaskItemBotController  implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
 
-	private static final Logger logger = LoggerFactory.getLogger(TaskoItemBotController.class);
+	private static final Logger logger = LoggerFactory.getLogger(TaskItemBotController.class);
 	private TaskItemService taskItemService;
 	private DeepSeekService deepSeekService;
 	private final TelegramClient telegramClient;
@@ -41,7 +41,7 @@ public class TaskoItemBotController  implements SpringLongPollingBot, LongPollin
     }
 
 
-	public TaskoItemBotController( BotProps bp, TaskItemService tsvc, DeepSeekService ds) {
+	public TaskItemBotController( BotProps bp, TaskItemService tsvc, DeepSeekService ds) {
 		this.botProps = bp;
 		telegramClient = new OkHttpTelegramClient(getBotToken());
 		taskItemService = tsvc;

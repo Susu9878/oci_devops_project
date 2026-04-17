@@ -22,11 +22,24 @@
     display: block;
     justify-content: center;
     background-color: #FFC353;
-    padding: 3rem;
-    margin: 1rem;
+    padding: 2rem;
+    margin: 0.5rem;
     border-radius: 0.5rem;
 }
 
 .kpi:hover{
     background-color: #F07431;
+}
+
+.graph{
+    height:50vh;
+    width: 70vh;
+    margin: 5vh;
+    border-radius: 0.4rem;
+}
+
+.p{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

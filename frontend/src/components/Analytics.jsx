@@ -1,18 +1,23 @@
 import './styledComponents/analytics.css'
-
+import tasksDone from './assets/tasks.png'
+import timeDone from './assets/time.png'
 
 function Analytics() {
     return(
         <div className='analytics-bg'>
             <h1>Analytics</h1>
-            <h3># sprint</h3>
+            <h3>#1 sprint</h3>
             <div>
                 <ul className='kpi-container'>
-                    <li className='kpi'><p>Promedio Tasks / dev</p></li>
-                    <li className='kpi'><p>Promedio de horas / dev</p></li>
-                    <li className='kpi'><p>Task Completed</p></li>
-                    <li className='kpi'><p>Horas Trabajadas totales</p></li>
+                    <li className='kpi'><p> 5 TASKS ASSIGNED IN AVERAGE / DEV </p></li>
+                    <li className='kpi'><p> 6 HOURS WORKED IN AVERAGE / DEV </p></li>
+                    <li className='kpi'><p>10 COMPLETED TASKS</p></li>
+                    <li className='kpi'><p>24.25 HOURS WORKED</p></li>
                 </ul>
+            </div>
+            <div className='graph-container'>
+                <img src={tasksDone} className='graph' alt="taskGraph" />
+                <img src={timeDone} className='graph' alt="timeGraph" />
             </div>
         </div>
     );

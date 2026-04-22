@@ -1,0 +1,19 @@
+.review-bg {
+    background: #E4D9CB;
+    color: #201E1C;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: max(12px, min(2vw, 18px));
+    /*calc(1vw + 1vmin);*/
+    margin: 135px 1em 1em 280px;
+    padding: 1rem;
+    position: relative;
+    height: 60vh;
+    border-radius: 0.5rem;
+}
+
+.linkStyle{
+  color:#201E1C;
+  text-decoration: none;
+}

@@ -1,4 +1,4 @@
-.styledBar{
+.styledBar {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6,11 +6,11 @@
   width: 100%;
   position: fixed;
   top: 105px;
-  background: #3479C7;
+  background: #3479c7;
   z-index: 999;
 }
 
-.header{
+.header {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,26 +19,26 @@
   position: fixed;
   top: 0;
   left: 0;
-  background: #201E1C;
+  background: #201e1c;
   z-index: 999;
 }
 
-.header-container{
+.header-container {
   display: flex;
   align-items: center;
   width: 100%;
   padding: 50px;
 }
 
-.icon{
+.icon {
   width: 70px;
   height: 70px;
-  padding:10px;
+  padding: 10px;
 }
 
-.user-role{
+.user-role {
   font-size: 36px;
-  color: #FEF9F2;
+  color: #fef9f2;
   margin-right: auto;
 }
 

@@ -22,11 +22,11 @@ function Add() {
       <h1>ADD TASKS</h1>
       <form className="add-container" method="post" onSubmit={handleSubmit}>
         <label className="formLabel">
-          Task name: <input name="taskName" className="options"/>
+          Task name: <input name="taskName" className="options" />
         </label>
         <hr className="line" />
         <label className="formLabel">
-          Task description: <input name="taskDesc" className="options"/>
+          Task description: <input name="taskDesc" className="options" />
         </label>
         <hr className="line" />
         <p>

@@ -13,7 +13,7 @@ function NavBar() {
           </h3>
         </div>
       </div>
-      <div className="styledBar"/>
+      <div className="styledBar" />
     </nav>
   );
 }

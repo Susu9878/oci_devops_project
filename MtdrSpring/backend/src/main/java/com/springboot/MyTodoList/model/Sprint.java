@@ -11,6 +11,8 @@ public class Sprint {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "SPRINT_ID")
     int sprintId;
+    @Column(name = "SPRINT_NAME")
+    String sprintName;
     @Column(name = "STATUS")//TODO add constraints, not nullable
     String status;
     @Column(name = "START_DATE")//nullable

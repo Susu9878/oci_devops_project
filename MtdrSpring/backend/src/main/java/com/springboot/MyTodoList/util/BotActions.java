@@ -178,7 +178,7 @@ public class BotActions{
         for (ToDoItem item : activeItems) {
             KeyboardRow currentRow = new KeyboardRow();
             currentRow.add(item.getDescription());
-            currentRow.add(item.getID() + BotLabels.DASH.getLabel() + BotLabels.DONE.getLabel());
+            currentRow.add(item.getTaskId() + BotLabels.DASH.getLabel() + BotLabels.DONE.getLabel());
             keyboard.add(currentRow);
         }
 
@@ -188,8 +188,8 @@ public class BotActions{
         for (ToDoItem item : doneItems) {
             KeyboardRow currentRow = new KeyboardRow();
             currentRow.add(item.getDescription());
-            currentRow.add(item.getID() + BotLabels.DASH.getLabel() + BotLabels.UNDO.getLabel());
-            currentRow.add(item.getID() + BotLabels.DASH.getLabel() + BotLabels.DELETE.getLabel());
+            currentRow.add(item.getTaskId() + BotLabels.DASH.getLabel() + BotLabels.UNDO.getLabel());
+            currentRow.add(item.getTaskId() + BotLabels.DASH.getLabel() + BotLabels.DELETE.getLabel());
             keyboard.add(currentRow);
         }
 

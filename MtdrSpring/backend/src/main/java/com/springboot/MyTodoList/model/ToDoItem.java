@@ -2,7 +2,11 @@ package com.springboot.MyTodoList.model;
 
 
 import jakarta.persistence.*;
+
 import java.time.OffsetDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /*
     representation of the TODOITEM table that exists already
@@ -13,29 +17,69 @@ import java.time.OffsetDateTime;
 public class ToDoItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int ID;
-    @Column(name = "DESCRIPTION")
-    String description;
-    @Column(name = "CREATION_TS")
-    OffsetDateTime creation_ts;
+    @Column(name = "ID")
+    @JsonProperty("taskId")
+    private int taskId;
+    @Column(name = "TASK_NAME")//NOT NULL
+    private String taskName;
+    @Column(name = "DESCRIPTION")//NOT NULL
+    private String description;
+    @Column(name = "STORY_POINTS")
+    private Integer storyPoints;
+    @Column(name = "EXPECTED_HOURS")
+    private Double expectedHours;
+    @Column(name = "PRIORITY")
+    private Integer priority;
+    @Column(name = "STATUS")//NOT NULL, TODO ADD CONSTRAINT
+    private String status;
+    @Column(name = "CREATED_AT")//NOT NULL
+    private OffsetDateTime createdAt;
+    @Column(name = "START_DATE")
+    private OffsetDateTime startDate;
+    @Column(name = "COMPLETION_DATE")
+    private OffsetDateTime completionDate;
+    //FK
+    @ManyToOne
+    @JoinColumn(name = "USER_ID")
+    @JsonIgnore
+    private User user;
+    @ManyToOne
+    @JoinColumn(name = "SPRINT_ID")
+    @JsonIgnore
+    private Sprint sprint;
+
+    //TODO delete later
     @Column(name = "done")
-    boolean done;
+    private boolean done;
+
     public ToDoItem(){
 
     }
-    public ToDoItem(int ID, String description, OffsetDateTime creation_ts, boolean done) {
-        this.ID = ID;
+    public ToDoItem(Integer taskId, String taskName, String description,
+                Integer storyPoints, Double expectedHours, Integer priority,
+                String status, OffsetDateTime createdAt, OffsetDateTime startDate,
+                OffsetDateTime completionDate, User userId, Sprint sprintId) {
+
+        this.taskId = taskId;
+        this.taskName = taskName;
         this.description = description;
-        this.creation_ts = creation_ts;
-        this.done = done;
+        this.storyPoints = storyPoints;
+        this.expectedHours = expectedHours;
+        this.priority = priority;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.startDate = startDate;
+        this.completionDate = completionDate;
+        this.user = userId;
+        this.sprint = sprintId;
     }
 
-    public int getID() {
-        return ID;
+    public int getTaskId() {
+        return taskId;
     }
 
-    public void setID(int ID) {
-        this.ID = ID;
+    public void setTaskId(int ID) {
+        this.taskId = ID;
     }
 
     public String getDescription() {
@@ -47,28 +91,30 @@ public class ToDoItem {
     }
 
     public OffsetDateTime getCreation_ts() {
-        return creation_ts;
+        return createdAt;
     }
 
-    public void setCreation_ts(OffsetDateTime creation_ts) {
-        this.creation_ts = creation_ts;
+    public void setCreation_ts(OffsetDateTime created_at) {
+        this.createdAt = created_at;
     }
 
+    //TODO delete later
+    @Transient
+    @JsonProperty("done")
     public boolean isDone() {
         return done;
     }
-
     public void setDone(boolean done) {
         this.done = done;
     }
 
     @Override
     public String toString() {
-        return "ToDoItem{" +
-                "ID=" + ID +
-                ", description='" + description + '\'' +
-                ", creation_ts=" + creation_ts +
-                ", done=" + done +
+        return "Task{" +
+                "taskId=" + taskId +
+                ", taskName='" + taskName + '\'' +
+                ", status='" + status + '\'' +
+                ", priority=" + priority +
                 '}';
     }
 }

@@ -36,8 +36,8 @@ public class UserService {
     }
 
     public User test(){
-        User newUser = new User(88,"someNumber","pwd");
-
+        //User newUser = new User(88,"someNumber","pwd");
+        User newUser = new User();
         return userRepository.save(newUser);
     }
 
@@ -53,7 +53,7 @@ public class UserService {
         Optional<User> dbUser = userRepository.findById(id);
         if(dbUser.isPresent()){
             User user = dbUser.get();
-            user.setID(id);
+            user.setUserId(id);
             user.setPhoneNumber(user2update.getPhoneNumber());
             user.setUserPassword(user2update.getUserPassword());
             return userRepository.save(user);

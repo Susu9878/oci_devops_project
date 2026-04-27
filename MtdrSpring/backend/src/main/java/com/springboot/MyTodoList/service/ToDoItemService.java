@@ -55,7 +55,7 @@ public class ToDoItemService {
         Optional<ToDoItem> toDoItemData = toDoItemRepository.findById(id);
         if(toDoItemData.isPresent()){
             ToDoItem toDoItem = toDoItemData.get();
-            toDoItem.setID(id);
+            toDoItem.setTaskId(id);
             toDoItem.setCreation_ts(td.getCreation_ts());
             toDoItem.setDescription(td.getDescription());
             toDoItem.setDone(td.isDone());

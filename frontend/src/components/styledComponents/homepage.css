@@ -1,0 +1,116 @@
+.App {
+  background: #e4d9cb;
+  color: #201e1c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: max(12px, min(2vw, 18px)); /*calc(1vw + 1vmin);*/
+  margin: 135px 1em 1em 280px;
+  padding: 1rem;
+  position: relative;
+  border-radius: 0.5rem;
+}
+div#maincontent,
+div#newinputform form {
+  width: 95%;
+}
+div#maincontent {
+  margin: 0;
+  padding: 0;
+}
+h1 {
+  margin: 0.5rem 0 1rem 0;
+  padding: 0;
+}
+h2 {
+  margin: 0.1rem 0 0.1rem 0;
+  padding: 0;
+}
+#newiteminput {
+  width: 100%;
+}
+div#newinputform {
+  width: 100%;
+}
+div#newinputform form {
+  display: flex;
+  flex-direction: row;
+  margin: 0 auto;
+}
+#donelist {
+  margin: 0;
+  padding: 0;
+}
+table#itemlistNotDone {
+  margin-bottom: 2rem;
+}
+table#itemlistDone {
+  margin-bottom: 3rem;
+}
+table.itemlist {
+  margin-top: 0.7rem;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+table.itemlist td {
+  border-bottom: solid 1px #5b5652;
+  padding: 0.5rem;
+}
+table.itemlist td.description {
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+table.itemlist td.date {
+  font-size: max(10px, min(1.5vw, 14px));
+  color: grey;
+  white-space: nowrap;
+  padding-right: 0;
+  padding-left: 0;
+}
+table.itemlist tr:hover {
+  background-color: #161513;
+}
+input {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1;
+  margin: 0;
+}
+button,
+input {
+  overflow: visible;
+}
+input[type="text"] {
+  border-radius: 0.3rem;
+  padding-left: 10px;
+}
+button.AddButton,
+button.DeleteButton,
+button.AddButton,
+button.DoneButton {
+  font-size: max(8px, min(2vw, 12px));
+  padding: 0.35em 0.5em;
+  color: #161513;
+}
+/* from the redwood theme */
+button.AddButton {
+  color: #fef9f2;
+  background-color: #5f7d4f;
+}
+button.AddButton:hover {
+  background-color: #6f915d;
+}
+button.DeleteButton {
+  color: #fef9f2;
+  background-color: #d63b25;
+}
+button.DeleteButton:hover {
+  background-color: #ec4f3a;
+}
+button.DoneButton {
+  background-color: #fbf9f8;
+}
+button.DoneButton:hover {
+  background-color: #d4cfca;
+}

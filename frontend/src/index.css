@@ -1,0 +1,43 @@
+/*
+** Todo application version 1.0.
+**
+** Copyright (c) 2020, Oracle and/or its affiliates.
+** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
+*/
+
+/* COLORS BASE
+BG - #FFFBF4
+CONTAINERS - #E4D9CB
+NAVBAR - #201E1C
+STYLEBAR - #3479C7
+
+SPRINT KPI - #FFC353
+TASK KPI - #F07431
+
+SIDEBAR - #E4D9CB
+SIDEBAR CLICKED - #C5B39C
+*/
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 300;
+  src:
+    local("Open Sans"),
+    local("OpenSans"),
+    url(https://fonts.gstatic.com/s/opensans/v13/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff)
+      format("woff");
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Open Sans";
+}
+
+body {
+  background-color: #fffbf4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

@@ -1,0 +1,48 @@
+{
+  "name": "todolistapp-react",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^5.18.0",
+    "@mui/material": "^5.18.0",
+    "@mui/system": "^5.18.0",
+    "@mui/x-charts": "^6.19.8",
+    "lucide-react": "^1.11.0",
+    "moment": "^2.29.3",
+    "prettier": "^3.8.3",
+    "react": "^18.3.1",
+    "react-datepicker": "^9.1.0",
+    "react-dom": "^18.3.1",
+    "react-moment": "^1.1.2",
+    "react-router-dom": "^7.14.1",
+    "react-scripts": "5.0.0",
+    "recharts": "^3.8.1",
+    "typescript": "^4.6.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "format": "npm run prettier -- --write",
+    "lint": "eslint --ignorepattern .gitignore",
+    "test": "vitest"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    "last 5 versions"
+  ],
+  "homepage": ".",
+  "proxy": "http://localhost:8080",
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.2",
+    "babel-jest": "^30.3.0",
+    "eslint": "^8.57.1",
+    "jest": "^27.5.1",
+    "prettier": "3.8.3",
+    "vitest": "^4.1.5"
+  }
+}

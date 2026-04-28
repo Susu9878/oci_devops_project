@@ -1,26 +1,33 @@
 package com.springboot.MyTodoList.model;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "TEAM")
 public class Team {
+    //TODO change everything to not nullable
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "TEAM_ID")
     int teamId;
-
     @Column(name = "TEAM_NAME")
     String teamName;
+    //fk
+    @ManyToOne
+    @JoinColumn(name = "PROJECT_ID")
+    private Project project;
 
-    @Column(name = "PROJECT_ID")
-    private Integer projectId;
+    @OneToMany(mappedBy = "team")
+    private List<User> users;
 
     public Team(){}
 
-    public Team(int teamId, String teamName, Integer projectId){
+    public Team(int teamId, String teamName, Project projectId){
         this.teamId = teamId;
         this.teamName = teamName;
-        this.projectId = projectId;
+        this.project = projectId;
     }
 
     public int getTeamId(){
@@ -39,12 +46,12 @@ public class Team {
         this.teamName = teamName;
     }
 
-    public Integer getProjectId() {
-        return projectId;
+    public Project getProjectId() {
+        return project;
     }
 
-    public void setProjectId(Integer projectId) {
-        this.projectId = projectId;
+    public void setProjectId(Project projectId) {
+        this.project = projectId;
     }
     
 }

@@ -7,37 +7,35 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "LOGS")
 public class Logs {
+    //TODO everything should be not nullable
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "LOG_ID")
     int logId;
-
     @Column(name = "TABLE_TYPE")
     String tableType;
-
+    // cant be a FK because then it could only record changes from the specific table
+    //leaving it like this lets use use the id from any table
     @Column(name = "ROW_ID")
     private Integer rowId;
-
     @Column(name = "RECORDED_ACTION")
     String recordedAction;
-
     @Column(name = "FIELD_NAME")
     String fieldName;
-
     @Column(name = "OLD_VALUE")
     String oldValue;
-
     @Column(name = "NEW_VALUE")
     String newValue;
-
     @Column(name = "CHANGED_AT")
     private OffsetDateTime changedAt;
-
-    @Column(name = "CHANGED_BY_USER_ID")
-    private Integer changedByUserId;
+    //FK
+    @ManyToOne
+    @JoinColumn(name = "CHANGED_BY_USER_ID") //not null
+    private User changedByUser;
 
     public Logs(){}
 
-    public Logs(int logId, String tableType, Integer rowId, String recordedAction, String fieldName, String oldValue, String newValue, OffsetDateTime changedAt, Integer changedByUserId){
+    public Logs(int logId, String tableType, Integer rowId, String recordedAction, String fieldName, String oldValue, String newValue, OffsetDateTime changedAt, User changedByUserId){
         this.logId = logId;
         this.tableType = tableType;
         this.rowId = rowId;
@@ -46,7 +44,7 @@ public class Logs {
         this.oldValue = oldValue;
         this.newValue = newValue;
         this.changedAt = changedAt;
-        this.changedByUserId = changedByUserId;
+        this.changedByUser = changedByUserId;
     }
 
     public int getLogId(){
@@ -113,12 +111,12 @@ public class Logs {
         this.changedAt = changedAt;
     }
 
-    public Integer getChangedByUserId() {
-        return changedByUserId;
+    public User getChangedByUserId() {
+        return changedByUser;
     }
 
-    public void setChangedByUserId(Integer changedByUserId) {
-        this.changedByUserId = changedByUserId;
+    public void setChangedByUserId(User changedByUserId) {
+        this.changedByUser = changedByUserId;
     }
     
 }

@@ -3,7 +3,7 @@ import "./styledComponents/sideBar.css";
 import Homepage from "./Homepage";
 import Analytics from "./Analytics";
 import AI_Feature from "./AI_feature";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import { menu } from 'lucide-react';
 
 
@@ -24,15 +24,13 @@ function SideBar() {
               ANALYTICS
             </Link>
           </li>
+          <li>
             <Link to="/feature" className="linkStyle">
               AI FEATURE
             </Link>
-          <li>
-
           </li>
         </ul>
       </nav>
-
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/analytics" element={<Analytics />} />

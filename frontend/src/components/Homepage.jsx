@@ -1,280 +1,184 @@
+import { useState } from "react";
+import { ListFilter, ChevronRight, ChevronDown, Plus } from "lucide-react";
+import CreateTask from "./CreateTask";
+import Filter from "./Filter";
 import "./styledComponents/homepage.css";
 
-import React, { useState, useEffect } from "react";
-import NewItem from "../NewItem";
-import API_LIST from "../API";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Button, TableBody, CircularProgress } from "@mui/material";
-import Moment from "react-moment";
-
-/* In this application we're using Function Components with the State Hooks
- * to manage the states. See the doc: https://reactjs.org/docs/hooks-state.html
- * This App component represents the entire app. It renders a NewItem component
- * and two tables: one that lists the todo items that are to be done and another
- * one with the items that are already done.
- */
+const initialTasks = [
+  {
+    id: 1,
+    name: "Design Homepage Mockup",
+    description: "Create wireframes and high-fidelity mockups for the new homepage redesign. Include mobile and desktop versions.",
+    dateAdded: "2026-04-20",
+    dateDue: "2026-04-30",
+    tags: ["design", "ui"],
+    importance: "high",
+    starred: false,
+  },
+  {
+    id: 2,
+    name: "Implement User Authentication",
+    description: "Set up OAuth 2.0 authentication flow with Google and GitHub providers.",
+    dateAdded: "2026-04-22",
+    dateDue: "2026-05-05",
+    tags: ["backend", "security"],
+    importance: "high",
+    starred: true,
+  },
+  {
+    id: 3,
+    name: "Write API Documentation",
+    description: "Document all REST API endpoints.",
+    dateAdded: "2026-04-18",
+    dateDue: "2026-04-28",
+    tags: ["documentation"],
+    importance: "medium",
+    starred: false,
+  }
+];
 
 function Homepage() {
-  // isLoading is true while waiting for the backend to return the list
-  // of items. We use this state to display a spinning circle:
-  const [isLoading, setLoading] = useState(false);
-  // Similar to isLoading, isInserting is true while waiting for the backend
-  // to insert a new item:
-  const [isInserting, setInserting] = useState(false);
-  // The list of todo items is stored in this state. It includes the "done"
-  // "not-done" items:
-  const [items, setItems] = useState([]);
-  // In case of an error during the API call:
-  const [error, setError] = useState();
+  const [tasks, setTasks] = useState(initialTasks);
+  const [expandedTaskId, setExpandedTaskId] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
-  function deleteItem(deleteId) {
-    // console.log("deleteItem("+deleteId+")")
-    fetch(API_LIST + "/" + deleteId, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        // console.log("response=");
-        // console.log(response);
-        if (response.ok) {
-          // console.log("deleteItem FETCH call is ok");
-          return response;
-        } else {
-          throw new Error("Something went wrong ...");
-        }
-      })
-      .then(
-        (result) => {
-          const remainingItems = items.filter((item) => item.id !== deleteId);
-          setItems(remainingItems);
-        },
-        (error) => {
-          setError(error);
-        },
-      );
-  }
-  function toggleDone(event, id, description, done) {
-    event.preventDefault();
-    modifyItem(id, description, done).then(
-      (result) => {
-        reloadOneIteam(id);
-      },
-      (error) => {
-        setError(error);
-      },
+  const [filters, setFilters] = useState({
+    dateSort: "none",
+    tags: [],
+    importance: "all",
+  });
+
+  const handleCreateTask = (task) => {
+    const newTask = {
+      ...task,
+      id: Math.max(...tasks.map((t) => t.id), 0) + 1,
+    };
+    setTasks([newTask, ...tasks]);
+    setShowCreateModal(false);
+  };
+
+  const toggleTaskExpansion = (taskId) => {
+    setExpandedTaskId(expandedTaskId === taskId ? null : taskId);
+  };
+
+  const toggleStarred = (taskId) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === taskId ? { ...task, starred: !task.starred } : task
+      )
     );
-  }
-  function reloadOneIteam(id) {
-    fetch(API_LIST + "/" + id)
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error("Something went wrong ...");
-        }
-      })
-      .then(
-        (result) => {
-          const items2 = items.map((x) =>
-            x.id === id
-              ? {
-                  ...x,
-                  description: result.description,
-                  done: result.done,
-                }
-              : x,
-          );
-          setItems(items2);
-        },
-        (error) => {
-          setError(error);
-        },
-      );
-  }
-  function modifyItem(id, description, done) {
-    // console.log("deleteItem("+deleteId+")")
-    var data = { description: description, done: done };
-    return fetch(API_LIST + "/" + id, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }).then((response) => {
-      // console.log("response=");
-      // console.log(response);
-      if (response.ok) {
-        // console.log("deleteItem FETCH call is ok");
-        return response;
-      } else {
-        throw new Error("Something went wrong ...");
-      }
-    });
-  }
-  /*
-    To simulate slow network, call sleep before making API calls.
-    const sleep = (milliseconds) => {
-      return new Promise(resolve => setTimeout(resolve, milliseconds))
-    }
-    */
-  useEffect(
-    () => {
-      setLoading(true);
-      // sleep(5000).then(() => {
-      fetch(API_LIST)
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error("Something went wrong ...");
-          }
-        })
-        .then(
-          (result) => {
-            setLoading(false);
-            setItems(result);
-          },
-          (error) => {
-            setLoading(false);
-            setError(error);
-          },
-        );
+  };
 
-      //})
-    },
-    // https://en.reactjs.org/docs/faq-ajax.html
-    [], // empty deps array [] means
-    // this useEffect will run once
-    // similar to componentDidMount()
-  );
-  function addItem(text) {
-    console.log("addItem(" + text + ")");
-    setInserting(true);
-    var data = {};
-    console.log(data);
-    data.description = text;
-    fetch(API_LIST, {
-      method: "POST",
-      // We convert the React state to JSON and send it as the POST body
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        // This API doens't return a JSON document
-        console.log(response);
-        console.log();
-        console.log(response.headers.location);
-        // return response.json();
-        if (response.ok) {
-          return response;
-        } else {
-          throw new Error("Something went wrong ...");
-        }
-      })
-      .then(
-        (result) => {
-          var id = result.headers.get("location");
-          var newItem = { id: id, description: text };
-          setItems([newItem, ...items]);
-          setInserting(false);
-        },
-        (error) => {
-          setInserting(false);
-          setError(error);
-        },
+  const getFilteredTasks = () => {
+    let filtered = [...tasks];
+
+    if (filters.tags.length > 0) {
+      filtered = filtered.filter((task) =>
+        task.tags.some((tag) => filters.tags.includes(tag))
       );
-  }
+    }
+
+    if (filters.importance !== "all") {
+      filtered = filtered.filter(
+        (task) => task.importance === filters.importance
+      );
+    }
+
+    if (filters.dateSort === "added") {
+      filtered.sort(
+        (a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)
+      );
+    } else if (filters.dateSort === "due") {
+      filtered.sort(
+        (a, b) => new Date(a.dateDue) - new Date(b.dateDue)
+      );
+    }
+
+    return filtered;
+  };
+
+  const filteredTasks = getFilteredTasks();
+
   return (
-    <div className="App">
-      <h1>MY TO DO LIST</h1>
-      <NewItem addItem={addItem} isInserting={isInserting} />
-      {error && <p>Error: {error.message}</p>}
-      {isLoading && <CircularProgress />}
-      {!isLoading && (
-        <div id="maincontent">
-          <table id="itemlistNotDone" className="itemlist">
-            <TableBody>
-              {items.map(
-                (item) =>
-                  !item.done && (
-                    <tr key={item.id}>
-                      <td className="description">{item.description}</td>
-                      {/*<td>{JSON.stringify(item, null, 2) }</td>*/}
-                      <td className="date">
-                        <Moment format="MMM Do hh:mm:ss">
-                          {item.createdAt}
-                        </Moment>
-                      </td>
-                      <td>
-                        <Button
-                          variant="contained"
-                          className="DoneButton"
-                          onClick={(event) =>
-                            toggleDone(
-                              event,
-                              item.id,
-                              item.description,
-                              !item.done,
-                            )
-                          }
-                          size="small"
-                        >
-                          Done
-                        </Button>
-                      </td>
-                    </tr>
-                  ),
-              )}
-            </TableBody>
-          </table>
-          <h2 id="donelist">Done items</h2>
-          <table id="itemlistDone" className="itemlist">
-            <TableBody>
-              {items.map(
-                (item) =>
-                  item.done && (
-                    <tr key={item.id}>
-                      <td className="description">{item.description}</td>
-                      <td className="date">
-                        <Moment format="MMM Do hh:mm:ss">
-                          {item.createdAt}
-                        </Moment>
-                      </td>
-                      <td>
-                        <Button
-                          variant="contained"
-                          className="DoneButton"
-                          onClick={(event) =>
-                            toggleDone(
-                              event,
-                              item.id,
-                              item.description,
-                              !item.done,
-                            )
-                          }
-                          size="small"
-                        >
-                          Undo
-                        </Button>
-                      </td>
-                      <td>
-                        <Button
-                          startIcon={<DeleteIcon />}
-                          variant="contained"
-                          className="DeleteButton"
-                          onClick={() => deleteItem(item.id)}
-                          size="small"
-                        >
-                          Delete
-                        </Button>
-                      </td>
-                    </tr>
-                  ),
-              )}
-            </TableBody>
-          </table>
+    <div className="home-container">
+      <div className="home-content">
+
+        <div className="header-buttons">
+          <div className="filter-button-wrapper">
+            <button
+              onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+              className="filter-button"
+            >
+              <div className="filter-button-content">
+                <ListFilter />
+                <span className="filter-button-text">FILTER</span>
+              </div>
+              <ChevronRight />
+            </button>
+
+            {showFilterDropdown && (
+              <Filter
+                filters={filters}
+                setFilters={setFilters}
+                onClose={() => setShowFilterDropdown(false)}
+                allTasks={tasks}
+              />
+            )}
+          </div>
+
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="create-button"
+          >
+            <span className="create-button-text">CREATE TASK</span>
+            <Plus />
+          </button>
         </div>
+
+        <div className="tasks-list">
+          {filteredTasks.map((task) => (
+            <div key={task.id} className="task-item">
+              <div className="task-header">
+                <div
+                  className="task-header-content"
+                  onClick={() => toggleTaskExpansion(task.id)}
+                >
+                  <div>
+                    <span className="task-name">{task.name}</span>
+
+                    <div className="task-tags">
+                      {task.tags.map((tag) => (
+                        <span key={tag}>{tag}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <span>
+                      {task.dateAdded} - {task.dateDue}
+                    </span>
+                    <ChevronDown />
+                  </div>
+                </div>
+              </div>
+
+              {expandedTaskId === task.id && (
+                <div className="task-expanded">
+                  <p>{task.description}</p>
+                  <span>{task.importance.toUpperCase()}</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {showCreateModal && (
+        <CreateTask
+          onClose={() => setShowCreateModal(false)}
+          onCreate={handleCreateTask}
+        />
       )}
     </div>
   );

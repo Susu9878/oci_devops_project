@@ -33,7 +33,7 @@ public class TaskItemController {
     public ResponseEntity<TaskItem> addTaskItem(@RequestBody TaskItem taskItem) throws Exception{
         TaskItem td = taskItemService.addTaskItem(taskItem);
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("location",""+td.getID());
+        responseHeaders.set("location",""+td.getTaskId());
         responseHeaders.set("Access-Control-Expose-Headers","location");
         //URI location = URI.create(""+td.getID())
 

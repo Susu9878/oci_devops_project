@@ -36,8 +36,8 @@ public class UserService {
     }
 
     public User test(){
-        User newUser = new User(88,"someNumber","pwd", null, null, null, null);
-
+        //User newUser = new User(88,"someNumber","pwd");
+        User newUser = new User();
         return userRepository.save(newUser);
     }
 

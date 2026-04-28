@@ -1,0 +1,13 @@
+.feature{
+    background: #e4d9cb;
+    color: #201e1c;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: max(12px, min(2vw, 18px)); /*calc(1vw + 1vmin);*/
+    margin: 135px 1em 1em 280px;
+    padding: 1rem;
+    position: relative;
+    border-radius: 0.5rem;
+
+}

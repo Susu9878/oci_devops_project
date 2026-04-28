@@ -9,28 +9,29 @@ import jakarta.persistence.*;
 public class Sprint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "SPRINT_ID")
     int sprintId;
-
-    @Column(name = "START_DATE")
-    private OffsetDateTime startDate;
-    
-    @Column(name = "END_DATE")
-    private OffsetDateTime endDate;
-
-    @Column(name = "STATUS")
+    @Column(name = "SPRINT_NAME")
+    String sprintName;
+    @Column(name = "STATUS")//TODO add constraints, not nullable
     String status;
-
-    @Column(name = "PROJECT_ID")
-    private Integer projectId;
+    @Column(name = "START_DATE")//nullable
+    private OffsetDateTime startDate;
+    @Column(name = "END_DATE")//nullable
+    private OffsetDateTime endDate;
+    //FK
+    @ManyToOne
+    @JoinColumn(name = "PROJECT_ID")
+    private Project project;
 
     public Sprint(){}
 
-    public Sprint(int sprintId, OffsetDateTime startDate, OffsetDateTime endDate, String status, Integer projectId){
+    public Sprint(int sprintId, OffsetDateTime startDate, OffsetDateTime endDate, String status, Project projectId){
         this.sprintId = sprintId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.status = status;
-        this.projectId = projectId;
+        this.project = projectId;
     }
 
     public int getSprintId(){
@@ -65,12 +66,12 @@ public class Sprint {
         this.status = status;
     }
 
-    public Integer getProjectId() {
-        return projectId;
+    public Project getProjectId() {
+        return project;
     }
 
-    public void setProjectId(Integer projectId) {
-        this.projectId = projectId;
+    public void setProjectId(Project projectId) {
+        this.project = projectId;
     }
     
 }

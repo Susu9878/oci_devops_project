@@ -7,34 +7,34 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "WORK_LOG")
 public class WorkLog {
+    //TODO everything should be not nullable
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "WORK_LOG_ID")
     int workLogId;
-
     @Column(name = "WORKED_HOURS")
     Double workedHours;
-
     @Column(name = "CREATED_AT")
     private OffsetDateTime createdAt;
-    
     @Column(name = "WORKED_DAY")
     private OffsetDateTime workedDay;
-
-    @Column(name = "TASK_ID")
-    private Integer taskId;
-
-    @Column(name = "USER_ID")
-    private Integer userId;
+    //FK
+    @ManyToOne
+    @JoinColumn(name = "TASK_ID")
+    private ToDoItem task;
+    @ManyToOne
+    @JoinColumn(name = "USER_ID")
+    private User user;
 
     public WorkLog(){}
 
-    public WorkLog(int workLogId, Double workedHours, OffsetDateTime createdAt, OffsetDateTime workedDay, Integer taskId, Integer userId){
+    public WorkLog(int workLogId, Double workedHours, OffsetDateTime createdAt, OffsetDateTime workedDay, ToDoItem taskId, User userId){
         this.workLogId = workLogId;
         this.workedHours = workedHours;
         this.createdAt = createdAt;
         this.workedDay = workedDay;
-        this.taskId = taskId;
-        this.userId = userId;
+        this.task = taskId;
+        this.user = userId;
     }
 
     public int getWorkLogId(){
@@ -69,20 +69,20 @@ public class WorkLog {
         this.workedDay = workedDay;
     }
 
-    public Integer getTaskId() {
-        return taskId;
+    public ToDoItem getTaskId() {
+        return task;
     }
 
-    public void setTaskId(Integer taskId) {
-        this.taskId = taskId;
+    public void setTaskId(ToDoItem taskId) {
+        this.task = taskId;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public User getUserId() {
+        return user;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUserId(User userId) {
+        this.user = userId;
     }
     
 }

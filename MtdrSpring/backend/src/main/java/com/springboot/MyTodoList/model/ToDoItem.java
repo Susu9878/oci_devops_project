@@ -12,9 +12,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
     representation of the TODOITEM table that exists already
     in the autonomous database
  */
+
 @Entity
 @Table(name = "TODOITEM")
 public class ToDoItem {
+    public enum TaskStatus {
+        NOT_STARTED,
+        IN_PROGRESS,
+        DONE
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -30,8 +37,9 @@ public class ToDoItem {
     private Double expectedHours;
     @Column(name = "PRIORITY")
     private Integer priority;
-    @Column(name = "STATUS")//NOT NULL, TODO ADD CONSTRAINT
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "STATUS", nullable = false)
+    private TaskStatus status = TaskStatus.NOT_STARTED;
     @Column(name = "CREATED_AT")//NOT NULL
     private OffsetDateTime createdAt;
     @Column(name = "START_DATE")
@@ -57,7 +65,7 @@ public class ToDoItem {
     }
     public ToDoItem(Integer taskId, String taskName, String description,
                 Integer storyPoints, Double expectedHours, Integer priority,
-                String status, OffsetDateTime createdAt, OffsetDateTime startDate,
+                TaskStatus status, OffsetDateTime createdAt, OffsetDateTime startDate,
                 OffsetDateTime completionDate, User userId, Sprint sprintId) {
 
         this.taskId = taskId;

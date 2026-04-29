@@ -6,6 +6,13 @@ import CreateTask from "./CreateTask";
 import Filter from "./Filter";
 import "./styledComponents/homepage.css";
 
+/*
+Change initialTasks for items to pull for the infor in API
+tasks -> items
+
+*/
+
+/*
 const initialTasks = [
   {
     id: 1,
@@ -15,7 +22,6 @@ const initialTasks = [
     dateDue: "2026-04-30",
     tags: ["design", "ui"],
     importance: "high",
-    starred: false,
   },
   {
     id: 2,
@@ -25,7 +31,6 @@ const initialTasks = [
     dateDue: "2026-05-05",
     tags: ["backend", "security"],
     importance: "high",
-    starred: true,
   },
   {
     id: 3,
@@ -35,15 +40,28 @@ const initialTasks = [
     dateDue: "2026-04-28",
     tags: ["documentation"],
     importance: "medium",
-    starred: false,
   }
 ];
+*/
 
 function Homepage() {
-  const [tasks, setTasks] = useState(initialTasks);
+  // const [tasks, setTasks] = useState(initialTasks);
   const [expandedTaskId, setExpandedTaskId] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+
+  // isLoading is true while waiting for the backend to return the list
+  // of items. We use this state to display a spinning circle:
+  const [isLoading, setLoading] = useState(false);
+  // Similar to isLoading, isInserting is true while waiting for the backend
+  // to insert a new item:
+  const [isInserting, setInserting] = useState(false);
+  // The list of todo items is stored in this state. It includes the "done"
+  // "not-done" items:
+  const [items, setItems] = useState([]);
+  // In case of an error during the API call:
+  const [error, setError] = useState();
+
 
   const [filters, setFilters] = useState({
     dateSort: "none",
@@ -51,39 +69,31 @@ function Homepage() {
     importance: "all",
   });
 
-  const handleCreateTask = (task) => {
-    const newTask = {
-      ...task,
-      id: Math.max(...tasks.map((t) => t.id), 0) + 1,
+  const handleCreateTask = (items) => {
+    const newItem= {
+      ...items,
+      id: Math.max(...items.map((t) => t.id), 0) + 1,
     };
-    setTasks([newTask, ...tasks]);
+    setItems([newItem, ...items]);
     setShowCreateModal(false);
   };
 
-  const toggleTaskExpansion = (taskId) => {
-    setExpandedTaskId(expandedTaskId === taskId ? null : taskId);
-  };
-
-  const toggleStarred = (taskId) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, starred: !task.starred } : task
-      )
-    );
+  const toggleTaskExpansion = (itemsId) => {
+    setExpandedTaskId(expandedTaskId === itemsId ? null : itemsId);
   };
 
   const getFilteredTasks = () => {
-    let filtered = [...tasks];
+    let filtered = [...items];
 
     if (filters.tags.length > 0) {
-      filtered = filtered.filter((task) =>
-        task.tags.some((tag) => filters.tags.includes(tag))
+      filtered = filtered.filter((items) =>
+        items.tags.some((tag) => filters.tags.includes(tag))
       );
     }
 
     if (filters.importance !== "all") {
       filtered = filtered.filter(
-        (task) => task.importance === filters.importance
+        (items) => items.importance === filters.importance
       );
     }
 
@@ -116,7 +126,6 @@ function Homepage() {
                 <ListFilter />
                 <span className="filter-button-text">FILTER</span>
               </div>
-              <ChevronRight />
             </button>
 
             {showFilterDropdown && (
@@ -124,7 +133,7 @@ function Homepage() {
                 filters={filters}
                 setFilters={setFilters}
                 onClose={() => setShowFilterDropdown(false)}
-                allTasks={tasks}
+                allTasks={items}
               />
             )}
           </div>

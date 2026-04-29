@@ -10,7 +10,6 @@ export default function CreateTask({ onClose, onCreate }) {
     dateDue: "",
     tags: "",
     importance: "medium",
-    starred: false,
   });
 
   const handleSubmit = (e) => {
@@ -28,7 +27,6 @@ export default function CreateTask({ onClose, onCreate }) {
         .map((t) => t.trim())
         .filter(Boolean),
       importance: formData.importance,
-      starred: formData.starred,
     });
   };
 
@@ -132,27 +130,6 @@ export default function CreateTask({ onClose, onCreate }) {
               <option value="medium">Medium</option>
               <option value="high">High</option>
             </select>
-          </div>
-
-          <div className="form-checkbox-group">
-            <input
-              type="checkbox"
-              id="starred"
-              checked={formData.starred}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  starred: e.target.checked,
-                })
-              }
-              className="form-checkbox"
-            />
-            <label
-              htmlFor="starred"
-              className="form-checkbox-label"
-            >
-              Add to starred tasks
-            </label>
           </div>
 
           <div className="form-buttons">

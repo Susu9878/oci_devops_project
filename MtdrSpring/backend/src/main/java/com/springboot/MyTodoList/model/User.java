@@ -25,7 +25,7 @@ public class User {
     @Column(name = "USERNAME")
     private String username;
     @Column(name = "PHONE_NUMBER")
-    private Integer phoneNumber;    
+    private String phoneNumber;    
     @Column(name = "EMAIL")
     private String email;
     @Column(name = "PASSWORD") // En la base de datos no tenemos password todavía
@@ -41,7 +41,7 @@ public class User {
     public User() {
     }
 
-    public User(int userId, String username, String email, Integer phoneNumber, Boolean isManager, String password,
+    public User(int userId, String username, String email, String phoneNumber, Boolean isManager, String password,
             Team teamId) {
         this.userId = userId;
         this.username = username;
@@ -76,11 +76,11 @@ public class User {
         this.email = email;
     }
 
-    public Integer getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(Integer phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 

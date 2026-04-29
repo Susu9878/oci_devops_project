@@ -19,7 +19,15 @@ public class ToDoItem {
     public enum TaskStatus {
         NOT_STARTED,
         IN_PROGRESS,
-        DONE
+        DONE,
+        NOT_DONE
+    }
+    public enum TaskPriority {
+        LOWEST,
+        LOW,
+        MEDIUM,
+        HIGH,
+        CRITICAL
     }
 
     @Id
@@ -35,8 +43,9 @@ public class ToDoItem {
     private Integer storyPoints;
     @Column(name = "EXPECTED_HOURS")
     private Double expectedHours;
+    @Enumerated(EnumType.STRING)
     @Column(name = "PRIORITY")
-    private Integer priority;
+    private TaskPriority priority = TaskPriority.MEDIUM;
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS", nullable = false)
     private TaskStatus status = TaskStatus.NOT_STARTED;
@@ -64,7 +73,7 @@ public class ToDoItem {
 
     }
     public ToDoItem(Integer taskId, String taskName, String description,
-                Integer storyPoints, Double expectedHours, Integer priority,
+                Integer storyPoints, Double expectedHours, TaskPriority priority,
                 TaskStatus status, OffsetDateTime createdAt, OffsetDateTime startDate,
                 OffsetDateTime completionDate, User userId, Sprint sprintId) {
 

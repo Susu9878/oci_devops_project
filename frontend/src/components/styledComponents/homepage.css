@@ -95,6 +95,7 @@
   overflow-y: auto;
   height: calc(100% - 80px);
   padding-right: 8px;
+  
 }
 
 .tasks-container {
@@ -106,6 +107,8 @@
 .task-item {
   display: flex;
   flex-direction: column;
+  padding: 5px;
+  
 }
 
 .task-header {

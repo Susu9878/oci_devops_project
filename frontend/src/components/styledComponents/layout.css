@@ -87,5 +87,8 @@
 }
 
 .main-content {
-  margin: 20px;
+  margin-left: 250px;
+  margin-top: 140px;
+  margin-right: 32px;
+  padding-bottom: 32px;
 }

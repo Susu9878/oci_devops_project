@@ -29,30 +29,51 @@ public class KPIService {
 
     // General team kpis
     public TeamSprintKpiDTO getTeamKpis(int sprintId, int teamId) {
-        Object[] result = workLogRepository.getTeamKpisRaw(sprintId, teamId);
+        System.out.println("➡️ getTeamKpis START");
+        List<Object[]> results = workLogRepository.getTeamKpisRaw(sprintId, teamId);
 
-        long totalTasks = ((Number) result[0]).longValue();
-        long completedTasks = ((Number) result[1]).longValue();
-        long totalUsers = ((Number) result[2]).longValue();
-        double totalHours = ((Number) result[3]).doubleValue();
+        if (results.isEmpty()) {
+            System.out.println("⚠️ No data returned");
+            return new TeamSprintKpiDTO();
+        }
+
+        Object[] row = results.get(0);
+        System.out.println("📊 Row length: " + row.length);
+        for (int i = 0; i < row.length; i++) {
+            System.out.println("col[" + i + "] = " + row[i]);
+        }
+
+        long totalTasks = row[0] != null ? ((Number) row[0]).longValue() : 0;
+        long completedTasks = row[1] != null ? ((Number) row[1]).longValue() : 0;
+        long totalUsers = row[2] != null ? ((Number) row[2]).longValue() : 0;
+        double totalHours = row[3] != null ? ((Number) row[3]).doubleValue() : 0;
 
         TeamSprintKpiDTO dto = new TeamSprintKpiDTO();
 
         dto.setTotalTasksAssigned(totalTasks);
         dto.setTotalTasksCompleted(completedTasks);
         dto.setTotalHoursWorked(totalHours);
-
         dto.setAvgTasksPerUser(totalUsers == 0 ? 0 : (double) totalTasks / totalUsers);
         dto.setAvgHoursPerUser(totalUsers == 0 ? 0 : totalHours / totalUsers);
+        System.out.println("✅ DTO created");
 
         return dto;
     }
 
-    //general user kpis
+    // general user kpis
     public List<UserKpiDTO> getUserKpis(int sprintId, int teamId) {
+        System.out.println("➡️ [KPIService] getUserKpis START");
         List<Object[]> results = toDoItemRepository.getUserKpisRaw(sprintId, teamId);
 
+        System.out.println("📊 Rows returned: " + results.size());
+
         return results.stream().map(row -> {
+
+            System.out.println("---- ROW ----");
+            for (int i = 0; i < row.length; i++) {
+                System.out.println("col[" + i + "] = " + row[i]);
+            }
+
             UserKpiDTO dto = new UserKpiDTO();
 
             dto.setUserId(((Number) row[0]).intValue());
@@ -60,9 +81,11 @@ public class KPIService {
             dto.setTasksCompleted(((Number) row[2]).longValue());
             dto.setTasksInProgress(((Number) row[3]).longValue());
             dto.setTasksNotStarted(((Number) row[4]).longValue());
-            dto.setHoursWorked(((Number) row[5]).doubleValue());
+            dto.setTasksNotDone(row[5] != null ? ((Number) row[5]).longValue() : 0);
+            dto.setHoursWorked(((Number) row[6]).doubleValue());
 
             return dto;
+
         }).toList();
     }
 }

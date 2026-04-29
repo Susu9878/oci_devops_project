@@ -26,12 +26,26 @@ public class KPIController {
     // TEAM KPIs
     @GetMapping("/team")
     public TeamSprintKpiDTO getTeamKpis(@RequestParam int sprintId, @RequestParam int teamId) {
-        return kpiService.getTeamKpis(sprintId, teamId);
+        System.out.println("➡️ [KPIController] /team called");
+        System.out.println("   sprintId=" + sprintId + ", teamId=" + teamId);
+
+        TeamSprintKpiDTO result = kpiService.getTeamKpis(sprintId, teamId);
+
+        System.out.println("⬅️ [KPIController] returning: " + result);
+
+        return result;
     }
  
     // USER KPIS
     @GetMapping("/users")
     public List<UserKpiDTO> getUserKpis(@RequestParam int sprintId, @RequestParam int teamId){
-        return kpiService.getUserKpis(sprintId, teamId);
+        System.out.println("➡️ [KPIController] /users called");
+        System.out.println("   sprintId=" + sprintId + ", teamId=" + teamId);
+
+        List<UserKpiDTO> result = kpiService.getUserKpis(sprintId, teamId);
+
+        System.out.println("⬅️ [KPIController] users count: " + result.size());
+
+        return result;
     }
 }

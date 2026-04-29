@@ -21,6 +21,7 @@ public class User {
     //everything is nullable by default TODO change later all to not nullable
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private int userId;
     @Column(name = "USERNAME")
     private String username;

@@ -7,6 +7,7 @@ public class UserKpiDTO {
     private Long tasksCompleted;
     private Long tasksInProgress;
     private Long tasksNotStarted;
+    private Long tasksNotDone;
     private Double hoursWorked;
 
     // Getters & Setters
@@ -24,6 +25,9 @@ public class UserKpiDTO {
 
     public Long getTasksNotStarted() { return tasksNotStarted; }
     public void setTasksNotStarted(Long tasksNotStarted) { this.tasksNotStarted = tasksNotStarted; }
+
+    public Long getTasksNotDone() { return tasksNotDone; }
+    public void setTasksNotDone(Long tasksNotDone) { this.tasksNotDone = tasksNotDone; }
 
     public Double getHoursWorked() { return hoursWorked; }
     public void setHoursWorked(Double hoursWorked) { this.hoursWorked = hoursWorked; }

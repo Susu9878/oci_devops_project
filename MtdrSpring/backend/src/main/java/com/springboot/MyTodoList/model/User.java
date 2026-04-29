@@ -1,5 +1,6 @@
 package com.springboot.MyTodoList.model;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import jakarta.persistence.*;
 
 /*
@@ -107,5 +108,9 @@ public class User {
 
     public void setTeamId(Team teamId) {
         this.team = teamId;
+    }
+
+    public Team getTeam() {
+        return team;
     }
 }

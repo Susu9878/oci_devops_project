@@ -17,7 +17,7 @@ import jakarta.transaction.Transactional;
 @EnableTransactionManagement
 public interface ToDoItemRepository extends JpaRepository<ToDoItem,Integer> {
     /*
-    this include 
+    this include
     save()
     findById()
     findAll()
@@ -47,5 +47,8 @@ public interface ToDoItemRepository extends JpaRepository<ToDoItem,Integer> {
         WHERE u.TEAM_ID = :teamId
         GROUP BY u.ID, u.USERNAME
     """, nativeQuery = true)
+
     List<Object[]> getUserKpisRaw(int sprintId, int teamId);
+    @Query("SELECT t FROM ToDoItem t WHERE t.user.userId = :userId AND t.sprint.sprintId = :sprintId AND t.status != 'DONE'")
+    List<ToDoItem> findActiveTasksByUserAndSprint(int userId, int sprintId);
 }

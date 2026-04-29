@@ -13,22 +13,11 @@
 import React, { useState, useEffect } from "react";
 import NewItem from "./NewItem";
 import API_LIST from "./API";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Button, TableBody, CircularProgress } from "@mui/material";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import Moment from "react-moment";
-import NavBar from "./components/NavBar";
-import SideBar from "./components/SideBar";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./components/Router";
 
 function App() {
-  return (
-    <div>
-      <NavBar />
-      <BrowserRouter>
-        <SideBar />
-      </BrowserRouter>
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

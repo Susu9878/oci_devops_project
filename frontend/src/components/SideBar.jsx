@@ -3,44 +3,42 @@ import "./styledComponents/sideBar.css";
 import Homepage from "./Homepage";
 import Analytics from "./Analytics";
 import AI_Feature from "./AI_feature";
-import { Routes, Route, Link } from "react-router-dom";
-import { menu } from 'lucide-react';
-
+import { Outlet, Link, useLocation, Route, Routes } from "react-router-dom";
+import { Menu } from 'lucide-react';
 
 function SideBar() {
-  //const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const location = useLocation();
   return (
     <>
-      <nav className="sidebar">
-        <button></button>
-        <ul className="side-container">
-          <li>
-            <Link to="/" className="linkStyle">
-              HOME
-            </Link>
-          </li>
-          <li>
-            <Link to="/analytics" className="linkStyle">
-              ANALYTICS
-            </Link>
-          </li>
-          <li>
-            <Link to="/feature" className="linkStyle">
-              AI FEATURE
-            </Link>
-          </li>
-        </ul>
-      </nav>
-      <Routes>
-        <Route path="/" element={<Homepage />} />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route path="/feature" element={<AI_Feature />} />
-      </Routes>
+        <nav>
+      <div className="header">
+        <div className="header-container">
+          <img src={userIcon} className="icon" alt="user" />
+          <h3 className="user-role">
+            USER
+            <strong>position</strong>
+          </h3>
+        </div>
+      </div>
+      <div className="styledBar" />
+    </nav>
+    <div className="sidebar">
+      <div className="side-container">
+        <Link to="/" className="linkStyle">Home</Link>
+        <Link to="/analytics" className="linkStyle">Analytics</Link>
+        <Link to="/feature" className="linkStyle">Feature</Link>
+      </div>
+
+      <div className="main-content">
+        <Outlet />
+      </div>
+    </div>
     </>
   );
 }
 
 export default SideBar;
 
-/*
- */
+
+/* 
+*/

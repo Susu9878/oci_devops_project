@@ -1,26 +1,42 @@
 import React from "react";
 import "./styledComponents/analytics.css";
-import tasksDone from "./assets/tasks.png";
-import timeDone from "./assets/time.png";
-import {ListTodo, ClipboardCheck, ClockFading, ClockCheck} from "lucide-react";
+import API_LIST from "../API";
+import {ListTodo,ClipboardCheck,ClockFading,ClockCheck,} from "lucide-react";
+import { Button, TableBody, CircularProgress } from "@mui/material";
+import { useState, useEffect } from "react";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
-import {LineChart, Line, BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer} from "recharts";
-
+/*
 const sprintData = {
   sprintNumber: "Sprint #24",
   projectManager: "Sarah Johnson",
   tasksAssignedPerDev: 8.5,
   hoursWorkedPerDev: 42.3,
   tasksCompleted: 34,
-  totalHoursWorked: 253
+  totalHoursWorked: 253,
 };
+
+*/
 
 const taskCompletionData = [
   { day: "Mon", completed: 5, inProgress: 3 },
   { day: "Tue", completed: 7, inProgress: 4 },
   { day: "Wed", completed: 6, inProgress: 5 },
   { day: "Thu", completed: 8, inProgress: 2 },
-  { day: "Fri", completed: 8, inProgress: 3 }
+  { day: "Fri", completed: 8, inProgress: 3 },
 ];
 
 const hoursWorkedData = [
@@ -29,7 +45,7 @@ const hoursWorkedData = [
   { dev: "Casey", hours: 42 },
   { dev: "Dana", hours: 40 },
   { dev: "Eli", hours: 44 },
-  { dev: "Fran", hours: 44 }
+  { dev: "Fran", hours: 44 },
 ];
 
 const velocityData = [
@@ -37,7 +53,7 @@ const velocityData = [
   { sprint: "S21", velocity: 32 },
   { sprint: "S22", velocity: 30 },
   { sprint: "S23", velocity: 35 },
-  { sprint: "S24", velocity: 34 }
+  { sprint: "S24", velocity: 34 },
 ];
 
 function StatsCard({ colorClass, icon, value, label }) {
@@ -63,43 +79,108 @@ function ChartContainer({ title, children }) {
 }
 
 function Analytics() {
+  const [sprintId, setSprintId] = useState(1);
+  const [teamId, setTeamId] = useState(1);
+
+  const [teamKpis, setTeamKpis] = useState(null);
+  const [userKpis, setUserKpis] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const fetchKpis = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      // TEAM KPIs
+      const teamResponse = await fetch(
+        `${API_LIST}/kpis/team?sprintId=${sprintId}&teamId=${teamId}`,
+      );
+
+      if (!teamResponse.ok) throw new Error("Failed to fetch team KPIs");
+
+      const teamData = await teamResponse.json();
+      setTeamKpis(teamData);
+
+      // USER KPIs
+      const userResponse = await fetch(
+        `${API_LIST}/kpis/users?sprintId=${sprintId}&teamId=${teamId}`,
+      );
+
+      if (!userResponse.ok) throw new Error("Failed to fetch user KPIs");
+
+      const userData = await userResponse.json();
+      setUserKpis(userData);
+    } catch (err) {
+      console.error(err);
+      setError("Error fetching KPIs");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="analytics">
       <div className="page-header">
-        <h1 className="sprint-title">{sprintData.sprintNumber}</h1>
+        <h1 className="sprint-title">
+          {" "}
+          <input
+            type="number"
+            value={sprintId}
+            onChange={(e) => setSprintId(e.target.value)}
+            style={{ marginLeft: "10px", marginRight: "20px" }}
+          />
+        </h1>
         <span className="project-manager">
-          {sprintData.projectManager}
+          {" "}
+          <input
+            type="number"
+            value={teamId}
+            onChange={(e) => setTeamId(e.target.value)}
+            style={{ marginLeft: "10px", marginRight: "20px" }}
+          />
         </span>
+        <button onClick={fetchKpis}>Load KPIs</button>
       </div>
+
+      {/* LOADING / ERROR */}
+      {loading && <p>Loading...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
       <div className="stats-section">
         <div className="stats-grid">
+          {teamKpis && (
           <StatsCard
             colorClass="orange"
             icon={<ClipboardCheck />}
-            value={sprintData.tasksCompleted}
+            value={teamKpis.totalTasksCompleted}
             label="Tasks completed this sprint"
-          />
+          />)}
 
+          {teamKpis && (
           <StatsCard
             colorClass="yellow"
             icon={<ListTodo />}
-            value={sprintData.tasksAssignedPerDev}
+            value={teamKpis.avgTasksPerUser}
             label="Tasks assigned avg /dev"
-          />
+          />)}
 
+          {teamKpis && (
           <StatsCard
             colorClass="blue"
-            icon={<ClockFading/>}
-            value={sprintData.hoursWorkedPerDev}
+            icon={<ClockFading />}
+            value={teamKpis.avgHoursPerUser}
             label="Hours avg /dev"
-          />
-          <StatsCard
+          />)}
+
+          {teamKpis && (
+            <StatsCard
             colorClass="light-blue"
             icon={<ClockCheck />}
-            value={sprintData.totalHoursWorked}
-            label="Total hours"
-          />
+            value={teamKpis.totalHoursWorked}
+            label="Total hours worked"
+          />)}
         </div>
       </div>
 
@@ -151,7 +232,7 @@ function Analytics() {
                   { day: "Day 2", actual: 11, ideal: 13.6 },
                   { day: "Day 3", actual: 17, ideal: 20.4 },
                   { day: "Day 4", actual: 25, ideal: 27.2 },
-                  { day: "Day 5", actual: 34, ideal: 34 }
+                  { day: "Day 5", actual: 34, ideal: 34 },
                 ]}
               >
                 <CartesianGrid strokeDasharray="3 3" />

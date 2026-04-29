@@ -1,3 +1,11 @@
+.layout-container {
+  background-color: #fff6e6;
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
 .styledBar {
   display: flex;
   align-items: center;
@@ -45,4 +53,39 @@
 .user-role strong {
   display: block;
   font-size: 16px;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  background-color: #e4d9cb;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.side-container {
+  list-style: none;
+  padding: 0;
+  margin-top: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  color: #201e1c;
+}
+
+.linkStyle {
+  color: #201e1c;
+  text-decoration: none;
+}
+
+.linkStyle:hover {
+  background-color: #c5b39c;
+}
+
+.main-content {
+  margin: 20px;
 }

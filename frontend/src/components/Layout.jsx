@@ -1,12 +1,12 @@
 import userIcon from "../user.png";
-import "./styledComponents/sideBar.css";
+import "./styledComponents/layout.css";
 import Homepage from "./Homepage";
 import Analytics from "./Analytics";
 import AI_Feature from "./AI_feature";
 import { Outlet, Link, useLocation, Route, Routes } from "react-router-dom";
 import { Menu } from 'lucide-react';
 
-function SideBar() {
+function Layout() {
   const location = useLocation();
   return (
     <>
@@ -22,22 +22,25 @@ function SideBar() {
       </div>
       <div className="styledBar" />
     </nav>
-    <div className="sidebar">
-      <div className="side-container">
-        <Link to="/" className="linkStyle">Home</Link>
-        <Link to="/analytics" className="linkStyle">Analytics</Link>
-        <Link to="/feature" className="linkStyle">Feature</Link>
+    <div className="layout-container">
+      <div className="sidebar">
+        <div className="side-container">
+          <Link to="/" className="linkStyle">Home</Link>
+          <Link to="/analytics" className="linkStyle">Analytics</Link>
+          <Link to="/feature" className="linkStyle">Feature</Link>
+        </div>
       </div>
-
+      
       <div className="main-content">
         <Outlet />
       </div>
+
     </div>
     </>
   );
 }
 
-export default SideBar;
+export default Layout;
 
 
 /* 

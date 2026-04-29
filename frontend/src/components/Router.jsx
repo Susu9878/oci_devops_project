@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import SideBar from "./SideBar";
+import Layout from "./Layout";
 import Homepage from "./Homepage";
 import Analytics from "./Analytics";
 import AI_Feature from "./AI_feature";
@@ -7,7 +7,7 @@ import AI_Feature from "./AI_feature";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <SideBar />,
+    element: <Layout />,
     children: [
       { index: true, element: <Homepage /> },
       { path: "analytics", element: <Analytics /> },

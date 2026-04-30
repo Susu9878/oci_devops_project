@@ -7,12 +7,21 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "SPRINT")
 public class Sprint {
+    public enum SprintStatus {
+        NOT_ACTIVE,
+        ACTIVE,
+        CLOSED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "SPRINT_ID")
-    int sprintId;
-    @Column(name = "STATUS")//TODO add constraints, not nullable
-    String status;
+    private int sprintId;
+    @Column(name = "SPRINT_NAME")
+    private String sprintName;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "STATUS", nullable = false)
+    private SprintStatus status = SprintStatus.NOT_ACTIVE;
     @Column(name = "START_DATE")//nullable
     private OffsetDateTime startDate;
     @Column(name = "END_DATE")//nullable
@@ -24,7 +33,7 @@ public class Sprint {
 
     public Sprint(){}
 
-    public Sprint(int sprintId, OffsetDateTime startDate, OffsetDateTime endDate, String status, Project projectId){
+    public Sprint(int sprintId, OffsetDateTime startDate, OffsetDateTime endDate, SprintStatus status, Project projectId){
         this.sprintId = sprintId;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -56,11 +65,11 @@ public class Sprint {
         this.endDate = endDate;
     }
 
-    public String getStatus() {
+    public SprintStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(SprintStatus status) {
         this.status = status;
     }
 

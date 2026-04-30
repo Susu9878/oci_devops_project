@@ -1,0 +1,111 @@
+.filter-dropdown-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.filter-dropdown {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  background-color: #e4d9cb;
+  border: 2px solid #c5b39c;
+  border-radius: 5px;
+  padding: 16px;
+  width: 300px;
+  z-index: 50;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.filter-dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.filter-dropdown-title {
+  font-family: 'Open_Sans:Regular', sans-serif;
+  font-weight: normal;
+  color: #201e1c;
+  font-size: 18px;
+  font-variation-settings: 'wdth' 100;
+}
+
+.filter-clear-button {
+  color: #3479c7;
+  font-family: 'Open_Sans:Regular', sans-serif;
+  font-size: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-variation-settings: 'wdth' 100;
+}
+
+.filter-clear-button:hover {
+  text-decoration: underline;
+}
+
+.filter-section {
+  margin-bottom: 16px;
+}
+
+.filter-section:last-child {
+  margin-bottom: 0;
+}
+
+.filter-label {
+  display: block;
+  font-family: 'Open_Sans:Regular', sans-serif;
+  font-weight: normal;
+  color: #201e1c;
+  font-size: 16px;
+  margin-bottom: 8px;
+  font-variation-settings: 'wdth' 100;
+}
+
+.filter-select {
+  width: 100%;
+  background-color: #fff6e6;
+  border: 2px solid #c5b39c;
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-family: 'Open_Sans:Regular', sans-serif;
+  font-size: 14px;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #3479c7;
+}
+
+.filter-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-tag-button {
+  padding: 4px 12px;
+  border-radius: 5px;
+  font-family: 'Open_Sans:Regular', sans-serif;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  font-variation-settings: 'wdth' 100;
+}
+
+.filter-tag-button.active {
+  background-color: #11bb8e;
+  color: white;
+}
+
+.filter-tag-button.inactive {
+  background-color: #bdffff;
+  color: #11bb8e;
+}
+
+.filter-tag-button:hover {
+  opacity: 0.8;
+}

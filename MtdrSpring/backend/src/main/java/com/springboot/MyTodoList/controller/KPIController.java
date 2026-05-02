@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.springboot.MyTodoList.DTO.HoursPerSprintDTO;
+import com.springboot.MyTodoList.DTO.TasksPerSprintDTO;
 import com.springboot.MyTodoList.DTO.TeamSprintKpiDTO;
 import com.springboot.MyTodoList.DTO.UserKpiDTO;
 import com.springboot.MyTodoList.service.KPIService;
@@ -23,29 +25,63 @@ public class KPIController {
     @Autowired
     private KPIService kpiService;
 
-    // TEAM KPIs
-    @GetMapping("/team")
-    public TeamSprintKpiDTO getTeamKpis(@RequestParam int sprintId, @RequestParam int teamId) {
-        System.out.println("➡️ [KPIController] /team called");
-        System.out.println("   sprintId=" + sprintId + ", teamId=" + teamId);
-
-        TeamSprintKpiDTO result = kpiService.getTeamKpis(sprintId, teamId);
-
-        System.out.println("⬅️ [KPIController] returning: " + result);
-
+    /* GETS team statisctics PER sprint
+        {
+            avgTasksPerUser: num,
+            avgHoursPerUser: num,
+            totalTasksCompleted: num,
+            totalTasksAssigned: num,
+            totalHoursWorked: num,
+        }
+    */
+    @GetMapping("/team/sprint")
+    public TeamSprintKpiDTO getTeamKpiSprint(@RequestParam int sprintId, @RequestParam int teamId) {
+        TeamSprintKpiDTO result = kpiService.getTeamKpiSprint(sprintId, teamId);
         return result;
     }
  
-    // USER KPIS
-    @GetMapping("/users")
-    public List<UserKpiDTO> getUserKpis(@RequestParam int sprintId, @RequestParam int teamId){
-        System.out.println("➡️ [KPIController] /users called");
-        System.out.println("   sprintId=" + sprintId + ", teamId=" + teamId);
-
-        List<UserKpiDTO> result = kpiService.getUserKpis(sprintId, teamId);
-
-        System.out.println("⬅️ [KPIController] users count: " + result.size());
-
+    /* GETS a list of each user in a team PER sprint:
+        {
+            userId: num,
+            username: String,
+            tasksCompleded: num,
+            tasksInProgress: num,
+            tasksNotStarted: num,
+            tasksNotDone: num,
+            hoursWorked: num,
+        },
+        {
+            second user
+        }
+    */ 
+    @GetMapping("/users/sprint")
+    public List<UserKpiDTO> getUserKpiSprint(@RequestParam int sprintId, @RequestParam int teamId){
+        List<UserKpiDTO> result = kpiService.getUserKpiSprint(sprintId, teamId);
         return result;
+    }
+
+    /* same return as getTeamKpiSprint but for all sprints
+    {
+        "avgTasksPerUser": num,
+        "avgHoursPerUser": num,
+        "totalTasksCompleted": num,
+        "totalTasksAssigned": num,
+        "totalHoursWorked": num
+    } */
+    @GetMapping("/team")
+    public TeamSprintKpiDTO getTeamKpis(@RequestParam int teamId) {
+        return kpiService.getTeamKpisForTeamOnly(teamId); 
+    }
+
+    //graph #1 endpoint
+    @GetMapping("/tasks-per-sprint")
+    public List<TasksPerSprintDTO> getTasksPerSprint(@RequestParam int teamId) {
+        return kpiService.getTasksPerSprint(teamId);
+    }
+
+    //graph #2 endpoint
+    @GetMapping("/hours-per-sprint")
+    public List<HoursPerSprintDTO> getHoursPerSprint(@RequestParam int teamId) {
+        return kpiService.getHoursPerSprint(teamId);
     }
 }

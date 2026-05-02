@@ -18,7 +18,7 @@ function App() {
     try {
       // TEAM KPIs
       const teamResponse = await fetch(
-        `${API_LIST}/kpis/team?sprintId=${sprintId}&teamId=${teamId}`
+        `${API_LIST}/kpis/team/sprint?sprintId=${sprintId}&teamId=${teamId}`
       );
 
       if (!teamResponse.ok) throw new Error("Failed to fetch team KPIs");
@@ -28,7 +28,7 @@ function App() {
 
       // USER KPIs
       const userResponse = await fetch(
-        `${API_LIST}/kpis/users?sprintId=${sprintId}&teamId=${teamId}`
+        `${API_LIST}/kpis/users/sprint?sprintId=${sprintId}&teamId=${teamId}`
       );
 
       if (!userResponse.ok) throw new Error("Failed to fetch user KPIs");

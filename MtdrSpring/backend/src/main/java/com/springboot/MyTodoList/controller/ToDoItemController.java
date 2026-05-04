@@ -14,13 +14,13 @@ public class ToDoItemController {
     @Autowired
     private ToDoItemService toDoItemService;
     //@CrossOrigin
-    @GetMapping(value = "/tasklist")
-    public List<TaskItem> getAllTaskItems(){
-        return taskItemService.findAll();
+    @GetMapping(value = "/todolist")
+    public List<ToDoItem> getAllToDoItems(){
+        return toDoItemService.findAll();
     }
     //@CrossOrigin
-    @GetMapping(value = "/tasklist/{id}")
-    public ResponseEntity<TaskItem> getTaskItemById(@PathVariable int id){
+    @GetMapping(value = "/todolist/{id}")
+    public ResponseEntity<ToDoItem> getToDoItemById(@PathVariable int id){
         try{
             ResponseEntity<ToDoItem> responseEntity = toDoItemService.getItemById(id);
             return new ResponseEntity<ToDoItem>(responseEntity.getBody(), HttpStatus.OK);
@@ -29,9 +29,9 @@ public class ToDoItemController {
         }
     }
     //@CrossOrigin
-    @PostMapping(value = "/tasklist")
-    public ResponseEntity<TaskItem> addTaskItem(@RequestBody TaskItem taskItem) throws Exception{
-        TaskItem td = taskItemService.addTaskItem(taskItem);
+    @PostMapping(value = "/todolist")
+    public ResponseEntity<ToDoItem> addToDoItem(@RequestBody ToDoItem todoItem) throws Exception{
+        ToDoItem td = toDoItemService.addToDoItem(todoItem);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("location",""+td.getTaskId());
         responseHeaders.set("Access-Control-Expose-Headers","location");
@@ -41,8 +41,8 @@ public class ToDoItemController {
                 .headers(responseHeaders).build();
     }
     //@CrossOrigin
-    @PutMapping(value = "/tasklist/{id}")
-    public ResponseEntity<TaskItem> updateTaskItem(@RequestBody TaskItem taskItem, @PathVariable int id){
+    @PutMapping(value = "todolist/{id}")
+    public ResponseEntity<ToDoItem> updateToDoItem(@RequestBody ToDoItem toDoItem, @PathVariable int id){
         try{
             ToDoItem toDoItem1 = toDoItemService.updateToDoItem(id, toDoItem);
             System.out.println(toDoItem1.toString());
@@ -52,8 +52,8 @@ public class ToDoItemController {
         }
     }
     //@CrossOrigin
-    @DeleteMapping(value = "/tasklist/{id}")
-    public ResponseEntity<Boolean> deleteTaskItem(@PathVariable("id") int id){
+    @DeleteMapping(value = "todolist/{id}")
+    public ResponseEntity<Boolean> deleteToDoItem(@PathVariable("id") int id){
         Boolean flag = false;
         try{
             flag = toDoItemService.deleteToDoItem(id);

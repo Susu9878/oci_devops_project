@@ -19,43 +19,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-/*
-const sprintData = {
-  sprintNumber: "Sprint #24",
-  projectManager: "Sarah Johnson",
-  tasksAssignedPerDev: 8.5,
-  hoursWorkedPerDev: 42.3,
-  tasksCompleted: 34,
-  totalHoursWorked: 253,
-};
-
-
-*/
-
-const taskCompletionData = [
-  { day: "Mon", completed: 5, inProgress: 3 },
-  { day: "Tue", completed: 7, inProgress: 4 },
-  { day: "Wed", completed: 6, inProgress: 5 },
-  { day: "Thu", completed: 8, inProgress: 2 },
-  { day: "Fri", completed: 8, inProgress: 3 },
-];
-
-const hoursWorkedData = [
-  { dev: "Alex", hours: 45 },
-  { dev: "Blake", hours: 38 },
-  { dev: "Casey", hours: 42 },
-  { dev: "Dana", hours: 40 },
-  { dev: "Eli", hours: 44 },
-  { dev: "Fran", hours: 44 },
-];
-
-const velocityData = [
-  { sprint: "S20", velocity: 28 },
-  { sprint: "S21", velocity: 32 },
-  { sprint: "S22", velocity: 30 },
-  { sprint: "S23", velocity: 35 },
-  { sprint: "S24", velocity: 34 },
-];
 
 function StatsCard({ colorClass, icon, value, label }) {
   return (
@@ -85,6 +48,8 @@ function Analytics() {
 
   const [teamKpis, setTeamKpis] = useState(null);
   const [userKpis, setUserKpis] = useState([]);
+  const [taskGraphKpis, setTaskGraphKpis] = useState([]);
+  const [hourGraphKpis, setHourGraphKpis] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -96,7 +61,7 @@ function Analytics() {
     try {
       // TEAM KPIs
       const teamResponse = await fetch(
-        `${API_LIST}/kpis/team?sprintId=${sprintId}&teamId=${teamId}`,
+        `${API_LIST}/kpis/team/sprint?sprintId=${sprintId}&teamId=${teamId}`,
       );
 
       if (!teamResponse.ok) throw new Error("Failed to fetch team KPIs");
@@ -106,13 +71,32 @@ function Analytics() {
 
       // USER KPIs
       const userResponse = await fetch(
-        `${API_LIST}/kpis/users?sprintId=${sprintId}&teamId=${teamId}`,
+        `${API_LIST}/kpis/users/sprint?sprintId=${sprintId}&teamId=${teamId}`,
       );
 
       if (!userResponse.ok) throw new Error("Failed to fetch user KPIs");
 
       const userData = await userResponse.json();
       setUserKpis(userData);
+
+      // GRAPH 1
+      const taskGraphResponse = await fetch(
+        `${API_LIST}/kpis/tasks-per-sprint?teamId=${teamId}`,
+      );
+
+      if (!taskGraphResponse.ok) throw new Error("Failed to fetch graph KPIs");
+      const taskData = await taskGraphResponse.json();
+      setTaskGraphKpis(taskData);
+
+      // GRAPH 2
+      const hourGraphResponse = await fetch(
+        `${API_LIST}/kpis/hours-per-sprint?teamId=${teamId}`,
+      );
+
+      if (!hourGraphResponse.ok) throw new Error("Failed to fetch graph KPIs");
+      const hourGraphData = await hourGraphResponse.json();
+      setHourGraphKpis(hourGraphData);
+
     } catch (err) {
       console.error(err);
       setError("Error fetching KPIs");
@@ -121,19 +105,28 @@ function Analytics() {
     }
   };
 
+  const firstData = taskGraphKpis.map(item => ({
+    sprint: item.sprintId,
+    dev: item.username,
+    tasks: item.completedTasks
+  }))
+
+  const secondData = hourGraphKpis.map(item => ({
+    sprint: item.sprintId,
+    dev: item.username,
+    hours: item.totalHours
+  }))
+
   return (
     <div className="analytics">
       <div className="page-header">
-        <h1>Analytics</h1>
-        <h1 className="sprint-title">
-          {" "}
-          <input
-            type="number"
-            value={sprintId}
-            onChange={(e) => setSprintId(e.target.value)}
-            style={{ marginLeft: "10px", marginRight: "20px" }}
-          />
-        </h1>
+        <h1 className="sprint-title">Analytics</h1>
+        <input
+          type="number"
+          value={sprintId}
+          onChange={(e) => setSprintId(e.target.value)}
+          style={{ marginLeft: "10px", marginRight: "20px" }}
+        />
         <span className="project-manager">
           {" "}
           <input
@@ -192,69 +185,62 @@ function Analytics() {
             value={teamKpis.totalHoursWorked}
             label="Total hours worked"
           />)}
-
         </div>
       </div>
+
+      {/* USER KPIs */}
+      {userKpis.length > 0 && (
+        <div>
+          <h2>User KPIs</h2>
+          <table border="1" cellPadding="10">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Completed</th>
+                <th>In Progress</th>
+                <th>Not Started</th>
+                <th>Hours Worked</th>
+              </tr>
+            </thead>
+            <tbody>
+              {userKpis.map((user) => (
+                <tr key={user.userId}>
+                  <td>{user.username}</td>
+                  <td>{user.tasksCompleted}</td>
+                  <td>{user.tasksInProgress}</td>
+                  <td>{user.tasksNotStarted}</td>
+                  <td>{user.hoursWorked}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <div className="charts-section">
         <div className="charts-grid">
           <ChartContainer title="Daily Task Completion">
             <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={taskCompletionData}>
+              <BarChart data={firstData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" />
+                <XAxis dataKey="sprint" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="completed" fill="#3479c7" />
-                <Bar dataKey="inProgress" fill="#ffc353" />
+                <Bar dataKey="tasks" fill="#3479c7" />
               </BarChart>
             </ResponsiveContainer>
           </ChartContainer>
 
           <ChartContainer title="Hours Worked by Developer">
             <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={hoursWorkedData} layout="vertical">
+              <BarChart data={secondData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
+                <XAxis type="sprint" />
                 <YAxis dataKey="dev" type="category" />
                 <Tooltip />
                 <Bar dataKey="hours" fill="#08d" />
               </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-
-          <ChartContainer title="Sprint Velocity Trend">
-            <ResponsiveContainer width="100%" height={350}>
-              <AreaChart data={velocityData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="sprint" />
-                <YAxis />
-                <Tooltip />
-                <Area dataKey="velocity" stroke="#f07431" fill="#ffc353" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-
-          <ChartContainer title="Cumulative Progress">
-            <ResponsiveContainer width="100%" height={350}>
-              <LineChart
-                data={[
-                  { day: "Day 1", actual: 4, ideal: 6.8 },
-                  { day: "Day 2", actual: 11, ideal: 13.6 },
-                  { day: "Day 3", actual: 17, ideal: 20.4 },
-                  { day: "Day 4", actual: 25, ideal: 27.2 },
-                  { day: "Day 5", actual: 34, ideal: 34 },
-                ]}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line dataKey="actual" stroke="#3479c7" />
-                <Line dataKey="ideal" stroke="#48b9ff" strokeDasharray="5 5" />
-              </LineChart>
             </ResponsiveContainer>
           </ChartContainer>
         </div>

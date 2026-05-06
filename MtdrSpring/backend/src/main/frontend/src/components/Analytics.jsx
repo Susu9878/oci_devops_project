@@ -105,17 +105,48 @@ function Analytics() {
     }
   };
 
+  //FIRST GRAPH
+  
   const firstData = taskGraphKpis.map(item => ({
     sprint: item.sprintId,
     dev: item.username,
     tasks: item.completedTasks
   }))
 
+  const groupedFirst = Object.values(
+    firstData.reduce((acc, { sprint, dev, tasks }) => {
+      if (!acc[sprint]) {
+        acc[sprint] = { sprint };
+      }
+
+      acc[sprint][dev] = (acc[sprint][dev] || 0) + tasks;
+
+      return acc;
+    }, {})
+  );
+
+  const devs = [...new Set(taskGraphKpis.map(item => item.username))];
+  console.log(devs);
+  console.log(groupedFirst);
+  
+
+  //SECOND GRAPH
   const secondData = hourGraphKpis.map(item => ({
     sprint: item.sprintId,
     dev: item.username,
     hours: item.totalHours
   }))
+  const groupedSecond = Object.values(
+    secondData.reduce((acc, { sprint, dev, hours }) => {
+      if (!acc[sprint]) {
+        acc[sprint] = { sprint };
+      }
+
+      acc[sprint][dev] = (acc[sprint][dev] || 0) + hours;
+
+      return acc;
+    }, {})
+  );
 
   return (
     <div className="analytics">
@@ -169,7 +200,6 @@ function Analytics() {
             label="Tasks assigned avg /dev"
           />)}
 
-
           {teamKpis && (
           <StatsCard
             colorClass="blue"
@@ -221,30 +251,37 @@ function Analytics() {
         <div className="charts-grid">
           <ChartContainer title="Daily Task Completion">
             <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={firstData}>
+              <BarChart data={groupedFirst}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="sprint" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="tasks" fill="#3479c7" />
+                {devs.map((dev) => (
+                  <Bar key={dev} dataKey={dev} fill="#564dfa" />
+                ))}
               </BarChart>
             </ResponsiveContainer>
           </ChartContainer>
 
           <ChartContainer title="Hours Worked by Developer">
             <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={secondData} layout="vertical">
+              <BarChart data={groupedSecond}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="sprint" />
-                <YAxis dataKey="dev" type="category" />
+                <XAxis dataKey="sprint" />
+                <YAxis />
                 <Tooltip />
-                <Bar dataKey="hours" fill="#08d" />
+                <Legend />
+                {devs.map((dev) => (
+                  <Bar key={dev} dataKey={dev} fill="#564dfa" />
+                ))}
               </BarChart>
             </ResponsiveContainer>
           </ChartContainer>
+
         </div>
       </div>
+
     </div>
   );
 }

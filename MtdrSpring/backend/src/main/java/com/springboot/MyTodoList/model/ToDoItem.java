@@ -18,7 +18,7 @@ public class ToDoItem {
     public enum TaskStatus {
         NOT_STARTED,
         IN_PROGRESS,
-        COMPLETED
+        DONE
     }
 
     @Id

@@ -89,8 +89,8 @@ public class ToDoItem {
         this.createdAt = createdAt;
         this.startDate = startDate;
         this.completionDate = completionDate;
-        this.user = userId;
-        this.sprint = sprintId;
+        this.user = user;
+        this.sprint = sprint;
     }
 
     // ── Getters & Setters ──────────────────────────────────────────────────
@@ -125,6 +125,15 @@ public class ToDoItem {
     public OffsetDateTime getCompletionDate() { return completionDate; }
     public void setCompletionDate(OffsetDateTime completionDate) { this.completionDate = completionDate; }
 
+    // Added: needed by service layer and repository derived queries
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    // Added: needed by service layer and repository derived queries
+    public Sprint getSprint() { return sprint; }
+    public void setSprint(Sprint sprint) { this.sprint = sprint; }
+
+    
     //TODO delete later
     @Transient
     @JsonProperty("done")

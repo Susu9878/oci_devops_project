@@ -1,4 +1,5 @@
 package com.springboot.MyTodoList.controller;
+
 import com.springboot.MyTodoList.model.ToDoItem;
 import com.springboot.MyTodoList.service.ToDoItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,11 @@ public class ToDoItemController {
     private ToDoItemService toDoItemService;
     //@CrossOrigin
     @GetMapping(value = "/todolist")
-    public List<ToDoItem> getAllToDoItems(){
-        return toDoItemService.findAll();
+    public ResponseEntity<List<ToDoItem>> getAllToDoItems() {
+        List<ToDoItem> items = toDoItemService.findAll();
+        return new ResponseEntity<>(items, HttpStatus.OK);
     }
+
     //@CrossOrigin
     @GetMapping(value = "/todolist/{id}")
     public ResponseEntity<ToDoItem> getToDoItemById(@PathVariable int id){
@@ -28,6 +31,57 @@ public class ToDoItemController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    // GET by status
+    @GetMapping(value = "/todolist/status/{status}")
+    public ResponseEntity<List<ToDoItem>> getToDoItemsByStatus(
+            @PathVariable ToDoItem.TaskStatus status) {
+        try {
+            List<ToDoItem> items = toDoItemService.findByStatus(status);
+            return new ResponseEntity<>(items, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            // fired when the path value doesn't match any enum constant
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // GET by assigned user
+    @GetMapping(value = "/todolist/user/{userId}")
+    public ResponseEntity<List<ToDoItem>> getToDoItemsByUser(@PathVariable int userId) {
+        try {
+            List<ToDoItem> items = toDoItemService.findByUserId(userId);
+            return new ResponseEntity<>(items, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //GET BY SPRINT 2
+    @GetMapping(value = "/todolist/sprint/{sprintId}")
+    public ResponseEntity<List<ToDoItem>> getToDoItemsBySprint(@PathVariable int sprintId) {
+        try {
+            List<ToDoItem> items = toDoItemService.findBySprintId(sprintId);
+            return new ResponseEntity<>(items, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // GET BY SPRINT 2 USER 3
+    @GetMapping(value = "/todolist/user/{userId}/sprint/{sprintId}/active")
+    public ResponseEntity<List<ToDoItem>> getActiveByUserAndSprint(
+            @PathVariable int userId,
+            @PathVariable int sprintId) {
+        try {
+            List<ToDoItem> items = toDoItemService.findActiveByUserAndSprint(userId, sprintId);
+            return new ResponseEntity<>(items, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     //@CrossOrigin
     @PostMapping(value = "/todolist")
     public ResponseEntity<ToDoItem> addToDoItem(@RequestBody ToDoItem todoItem) throws Exception{

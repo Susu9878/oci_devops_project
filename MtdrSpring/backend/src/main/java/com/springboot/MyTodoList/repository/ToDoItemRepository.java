@@ -51,4 +51,11 @@ public interface ToDoItemRepository extends JpaRepository<ToDoItem,Integer> {
     List<Object[]> getUserKpisRaw(int sprintId, int teamId);
     @Query("SELECT t FROM ToDoItem t WHERE t.user.userId = :userId AND t.sprint.sprintId = :sprintId AND t.status != 'DONE'")
     List<ToDoItem> findActiveTasksByUserAndSprint(int userId, int sprintId);
+
+
+    List<ToDoItem> findByStatus(ToDoItem.TaskStatus status);
+
+    List<ToDoItem> findByUser_UserId(int userId);
+
+    List<ToDoItem> findBySprint_SprintId(int sprintId);
 }

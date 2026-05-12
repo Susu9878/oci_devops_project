@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ public class ToDoItemService {
 
     @Autowired
     private ToDoItemRepository toDoItemRepository;
+
     public List<ToDoItem> findAll(){
         List<ToDoItem> todoItems = toDoItemRepository.findAll();
         return todoItems;
@@ -37,32 +39,70 @@ public class ToDoItemService {
         }
     }
 
-    
-    public ToDoItem addToDoItem(ToDoItem toDoItem){
+    // Filteringf gets (?)
+
+
+    public List<ToDoItem> findByStatus(ToDoItem.TaskStatus status) {
+        return toDoItemRepository.findByStatus(status);
+    }
+
+    public List<ToDoItem> findByUserId(int userId) {
+        return toDoItemRepository.findByUser_UserId(userId);
+    }
+
+    public List<ToDoItem> findBySprintId(int sprintId) {
+        return toDoItemRepository.findBySprint_SprintId(sprintId);
+    }
+
+    public List<ToDoItem> findActiveByUserAndSprint(int userId, int sprintId) {
+        return toDoItemRepository.findActiveTasksByUserAndSprint(userId, sprintId);
+    }
+
+    //MUTATIONS
+
+
+    public ToDoItem addToDoItem(ToDoItem toDoItem) {
+        if (toDoItem.getCreation_ts() == null) {
+            toDoItem.setCreation_ts(OffsetDateTime.now());
+        }
+        if (toDoItem.getStatus() == null) {
+            toDoItem.setStatus(ToDoItem.TaskStatus.NOT_STARTED);
+        }
+        if (toDoItem.getPriority() == null) {
+            toDoItem.setPriority(ToDoItem.TaskPriority.MEDIUM);
+        }
         return toDoItemRepository.save(toDoItem);
     }
 
-    public boolean deleteToDoItem(int id){
-        try{
+
+    public boolean deleteToDoItem(int id) {
+        try {
             toDoItemRepository.deleteById(id);
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
-    public ToDoItem updateToDoItem(int id, ToDoItem td){
+
+
+    public ToDoItem updateToDoItem(int id, ToDoItem td) {
         Optional<ToDoItem> toDoItemData = toDoItemRepository.findById(id);
-        if(toDoItemData.isPresent()){
+        if (toDoItemData.isPresent()) {
             ToDoItem toDoItem = toDoItemData.get();
             toDoItem.setTaskId(id);
-            toDoItem.setCreation_ts(td.getCreation_ts());
+            toDoItem.setTaskName(td.getTaskName());
             toDoItem.setDescription(td.getDescription());
+            toDoItem.setStoryPoints(td.getStoryPoints());
+            toDoItem.setExpectedHours(td.getExpectedHours());
+            toDoItem.setPriority(td.getPriority());
+            toDoItem.setStatus(td.getStatus());
+            toDoItem.setCreation_ts(td.getCreation_ts());
+            toDoItem.setStartDate(td.getStartDate());
+            toDoItem.setCompletionDate(td.getCompletionDate());
             toDoItem.setDone(td.isDone());
             return toDoItemRepository.save(toDoItem);
-        }else{
+        } else {
             return null;
         }
     }
-    
-
 }

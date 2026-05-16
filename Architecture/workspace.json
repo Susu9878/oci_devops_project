@@ -1,0 +1,917 @@
+{
+  "configuration" : { },
+  "description" : "AI-assisted sprint and task management platform deployed on OCI with RAG integration.",
+  "documentation" : {
+    "decisions" : [ {
+      "content" : "# ADR 0001: Adopt a Layered Modular Monolith Architecture\n\n## Status\nAccepted\n\n## Context\n\nSTAMP (Sky Tec Assisted Management Program) is an AI-assisted sprint and task management platform designed to support software development teams through contextual task prioritization, sprint tracking, KPI visualization, and AI-generated roadmap recommendations.\n\nThe system integrates:\n- React frontend\n- Spring Boot backend\n- Oracle Autonomous Database\n- Oracle Kubernetes Engine (OKE)\n- Oracle Generative AI Services\n- Retrieval-Augmented Generation (RAG)\n\nThe project required selecting an architectural style that balanced:\n- Simplicity\n- Maintainability\n- Scalability\n- Deployment complexity\n- AI integration flexibility\n- Team development velocity\n\nSeveral architectural styles were evaluated.\n\n---\n\n## Evaluated Architectural Styles\n\n### Microservices Architecture\nMicroservices would provide strong scalability and independent deployment capabilities. However, the project currently operates as a single Spring Boot application with tightly related business domains and a relatively small development team. Adopting microservices would introduce unnecessary operational complexity, service orchestration, distributed communication concerns, and increased deployment overhead.\n\n### Event-Driven Architecture\nAn event-driven approach was considered for asynchronous task updates and AI processing. While useful for future scalability, the current project requirements do not justify introducing message brokers and asynchronous event pipelines.\n\n### Service-Oriented Architecture (SOA)\nSOA concepts partially align with the platform due to the existence of service boundaries and external AI integrations. However, the project does not require heavyweight enterprise service orchestration.\n\n### Hexagonal Architecture\nHexagonal architecture concepts are partially adopted for AI provider abstraction. The platform separates AI integrations through adapters and service interfaces, allowing Oracle Generative AI Services and Claude fallback providers to be interchangeable without affecting the business logic.\n\n### Layered Architecture\nThe system naturally aligns with layered architecture through its separation into:\n- Controllers\n- Services\n- Repositories\n- Configuration\n- Security\n- Models\n\nThis structure improves maintainability, readability, and separation of concerns.\n\n### Modular Monolith Architecture\nThe system is implemented as a modular monolith because all business capabilities are deployed as a single application while remaining logically separated into modules.\n\nThis architecture:\n- Simplifies deployment\n- Reduces operational complexity\n- Accelerates development\n- Improves maintainability\n- Aligns with the current project scope\n\n---\n\n## Decision\n\nSTAMP will adopt a Layered Modular Monolith architecture with selective Hexagonal Architecture concepts for AI provider abstraction.\n\n---\n\n## Consequences\n\n### Positive Consequences\n- Simplified deployment and infrastructure management\n- Easier development and debugging\n- Lower operational complexity compared to microservices\n- Clear separation of concerns\n- Easier AI provider replacement through adapters\n- Faster feature iteration\n\n### Negative Consequences\n- Backend services scale together as a single deployable unit\n- Stronger coupling than a distributed microservices architecture\n- Future scaling may require decomposition into services\n\n---\n\n## Related Views\n- Container Diagram\n- Component Diagram\n- Dynamic AI Recommendation Flow\n",
+      "date" : "2026-05-16T02:47:29Z",
+      "format" : "Markdown",
+      "id" : "1",
+      "status" : "Accepted",
+      "title" : " ADR 0001: Adopt a Layered Modular Monolith Architecture"
+    }, {
+      "content" : "# ADR 0002: Adopt Retrieval-Augmented Generation (RAG) with Oracle Generative AI Services\n\n## Status\nAccepted\n\n## Context\n\nSTAMP provides AI-assisted sprint planning and task prioritization capabilities through the Sky-Tec telegram assistant chatbot.\n\nThe platform required an AI integration strategy capable of:\n- generating contextual recommendations\n- reducing hallucinations\n- incorporating sprint and task information\n- supporting future enterprise knowledge integration\n- maintaining provider flexibility\n\nThe system processes:\n- active sprint tasks\n- task priorities\n- story points\n- expected hours\n- task descriptions\n- KPI metrics\n\nA Retrieval-Augmented Generation (RAG) approach was selected to improve contextual understanding and recommendation quality.\n\n---\n\n## Decision\n\nSTAMP will adopt Retrieval-Augmented Generation (RAG) using Oracle Generative AI Services as the primary inference provider.\n\nThe AI architecture includes:\n- retrieval services\n- prompt construction\n- contextual task enrichment\n- AI provider abstraction\n- fallback provider support\n\nThe system uses Oracle Generative AI Services as the primary AI provider and maintains Claude integration as a secondary fallback provider.\n\n---\n\n## Architecture Overview\n\nThe AI workflow consists of:\n\n1. Retrieve active sprint and task information from Oracle Autonomous Database\n2. Build contextual prompts using sprint metadata\n3. Enrich prompts through RAG orchestration\n4. Send requests to Oracle Generative AI Services\n5. Generate AI-assisted roadmap recommendations\n6. Return contextual responses to the user\n\n---\n\n## Consequences\n\n### Positive Consequences\n- More contextual AI recommendations\n- Reduced hallucinations\n- Better sprint prioritization accuracy\n- Easier future enterprise knowledge integration\n- Provider abstraction improves flexibility\n- Improved maintainability of AI integrations\n\n### Negative Consequences\n- Increased architectural complexity\n- Additional orchestration logic required\n- Greater infrastructure dependency on OCI AI services\n\n---\n\n## Related Views\n- System Context Diagram\n- AI Component Diagram\n- Dynamic AI Recommendation Flow\n",
+      "date" : "2026-05-16T02:47:29Z",
+      "format" : "Markdown",
+      "id" : "2",
+      "status" : "Accepted",
+      "title" : " ADR 0002: Adopt Retrieval-Augmented Generation (RAG) with Oracle Generative AI Services"
+    }, {
+      "content" : "# ADR 0003: Adopt Cloud-Native DevOps Deployment Architecture on OCI\n\n## Status\nProposed\n\n## Context\n\nSTAMP (Sky Tec Assisted Management Program) requires a deployment architecture capable of supporting:\n- Scalable AI-assisted task management\n- Cloud-native deployment\n- Infrastructure automation\n- Container orchestration\n- Future AI service expansion\n- Continuous integration and deployment workflows\n\nThe platform currently includes:\n- React frontend\n- Spring Boot backend\n- Oracle Autonomous Database\n- Oracle Generative AI integrations\n- Terraform infrastructure definitions\n- Docker containerization\n- Kubernetes deployment configurations\n\n---\n\n## Evaluated Deployment Approaches\n\n### Traditional Virtual Machine Deployment\nDeploying the application directly on virtual machines would simplify the initial infrastructure setup. \nThis approach does limit scalability, portability, orchestration capabilities, and automated recovery mechanisms.\n\n### Serverless Deployment\nA serverless architecture was considered for reducing operational overhead. Yet, the application contains \nlong-running backend services, AI orchestration logic, and persistent integrations that are better suited for \ncontainerized execution.\n\n### Kubernetes-Based Deployment\nKubernetes provides:\n- Container orchestration\n- Scalability\n- Service discovery\n- Rolling deployments\n- Self-healing capabilities\n- Cloud-native extensibility\n\nThis approach aligns with the long-term scalability goals of STAMP and integrates naturally with OCI services.\n\n---\n\n## Decision\n\nSTAMP will adopt a cloud-native DevOps architecture deployed on Oracle Kubernetes Engine (OKE) using Docker \ncontainers and Terraform-based Infrastructure as Code (IaC).\n\nThe deployment architecture includes:\n- React frontend container\n- Spring Boot backend container\n- Oracle Kubernetes Engine (OKE)\n- OCI Load Balancer\n- Oracle Autonomous Database\n- Oracle Generative AI Services\n- Terraform-managed infrastructure\n- Container registry integration\n- Future CI/CD pipeline support\n\n---\n\n## Architecture Overview\n\nThe deployment workflow consists of:\n\n1. Developers build application containers using Docker\n2. Infrastructure resources are provisioned using Terraform\n3. Containers are deployed to Oracle Kubernetes Engine (OKE)\n4. OCI Load Balancer exposes application services\n5. Backend services connect securely to Oracle Autonomous Database\n6. AI orchestration services communicate with Oracle Generative AI Services\n7. Kubernetes manages scaling, orchestration, and service recovery\n\n---\n\n## Consequences\n\n### Positive Consequences\n- Improved scalability and orchestration\n- Infrastructure reproducibility through Terraform\n- Better deployment portability\n- Cloud-native extensibility\n- Easier future CI/CD integration\n- Improved resilience and recovery capabilities\n\n### Negative Consequences\n- Increased infrastructure complexity\n- Higher operational learning curve\n- Additional Kubernetes management overhead\n- More complex debugging compared to local deployments\n\n---\n\n## Future Considerations\n\nThe current deployment architecture remains under active implementation and refinement.\n\nFuture improvements may include:\n- Automated CI/CD pipelines\n- Observability and monitoring\n- Centralized logging\n- Autoscaling policies\n- Secrets management improvements\n- Service mesh integration\n- Advanced AI workload orchestration\n\n---\n\n## Related Views\n- Deployment Diagram\n- Container Diagram\n- Infrastructure View\n",
+      "date" : "2026-05-16T02:47:29Z",
+      "format" : "Markdown",
+      "id" : "3",
+      "status" : "Proposed",
+      "title" : " ADR 0003: Adopt Cloud-Native DevOps Deployment Architecture on OCI"
+    } ]
+  },
+  "id" : 1,
+  "lastModifiedDate" : "2026-05-16T02:47:29Z",
+  "model" : {
+    "deploymentNodes" : [ {
+      "children" : [ {
+        "children" : [ {
+          "containerInstances" : [ {
+            "containerId" : "4",
+            "environment" : "Production",
+            "id" : "43",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "0f635669-d4f9-43ac-bbfe-37b6b82de9e5"
+            },
+            "relationships" : [ {
+              "description" : "Sends REST API requests",
+              "destinationId" : "45",
+              "id" : "46",
+              "linkedRelationshipId" : "22",
+              "sourceId" : "43",
+              "technology" : "HTTPS/JSON"
+            } ],
+            "tags" : "Container Instance"
+          } ],
+          "environment" : "Production",
+          "id" : "42",
+          "instances" : "1",
+          "name" : "Frontend Pod",
+          "properties" : {
+            "structurizr.dsl.identifier" : "44d340cf-00cf-4457-89bb-bf8acdd539d2"
+          },
+          "tags" : "Element,Deployment Node"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "5",
+            "environment" : "Production",
+            "id" : "45",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "505d4a2a-3923-45ce-929c-979b7127986c"
+            },
+            "relationships" : [ {
+              "description" : "Requests AI-assisted prioritization and roadmap generation",
+              "destinationId" : "47",
+              "id" : "48",
+              "linkedRelationshipId" : "24",
+              "sourceId" : "45"
+            }, {
+              "description" : "Reads and writes application data",
+              "destinationId" : "51",
+              "id" : "52",
+              "linkedRelationshipId" : "23",
+              "sourceId" : "45",
+              "technology" : "JPA/JDBC"
+            } ],
+            "tags" : "Container Instance"
+          }, {
+            "containerId" : "15",
+            "environment" : "Production",
+            "id" : "47",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "08e308ee-08c1-4db9-8dd5-1cd8c1ef97e1"
+            },
+            "relationships" : [ {
+              "description" : "Retrieves contextual sprint and task data",
+              "destinationId" : "51",
+              "id" : "53",
+              "linkedRelationshipId" : "39",
+              "sourceId" : "47"
+            } ],
+            "tags" : "Container Instance"
+          } ],
+          "environment" : "Production",
+          "id" : "44",
+          "instances" : "1",
+          "name" : "Backend Pod",
+          "properties" : {
+            "structurizr.dsl.identifier" : "24a5e26e-db60-4344-933e-c6fd02db94fb"
+          },
+          "tags" : "Element,Deployment Node"
+        }, {
+          "environment" : "Production",
+          "id" : "49",
+          "instances" : "1",
+          "name" : "OCI Load Balancer",
+          "properties" : {
+            "structurizr.dsl.identifier" : "511f8d32-2fb5-4007-a688-40e42aa866be"
+          },
+          "tags" : "Element,Deployment Node"
+        } ],
+        "description" : "Oracle Kubernetes Engine",
+        "environment" : "Production",
+        "id" : "41",
+        "instances" : "1",
+        "name" : "OKE Cluster",
+        "properties" : {
+          "structurizr.dsl.identifier" : "2db20c5c-eb1d-4050-9449-1b0b5ba9170d"
+        },
+        "tags" : "Element,Deployment Node"
+      }, {
+        "containerInstances" : [ {
+          "containerId" : "21",
+          "environment" : "Production",
+          "id" : "51",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "4211fc50-d7d9-42dc-ac76-14a0c45ceb32"
+          },
+          "tags" : "Container Instance"
+        } ],
+        "environment" : "Production",
+        "id" : "50",
+        "instances" : "1",
+        "name" : "Oracle Autonomous Database",
+        "properties" : {
+          "structurizr.dsl.identifier" : "3fea03d2-1950-4908-8f61-b0e31681d9d2"
+        },
+        "tags" : "Element,Deployment Node"
+      }, {
+        "environment" : "Production",
+        "id" : "54",
+        "instances" : "1",
+        "name" : "Oracle Generative AI Services",
+        "properties" : {
+          "structurizr.dsl.identifier" : "9e082378-9470-4d2b-b0b5-e0e42dde3ae9"
+        },
+        "tags" : "Element,Deployment Node"
+      } ],
+      "description" : "OCI Cloud Environment",
+      "environment" : "Production",
+      "id" : "40",
+      "instances" : "1",
+      "name" : "Oracle Cloud Infrastructure",
+      "properties" : {
+        "structurizr.dsl.identifier" : "2323b240-ec22-4389-a99f-e1a89d9a99f7"
+      },
+      "tags" : "Element,Deployment Node"
+    } ],
+    "people" : [ {
+      "description" : "Uses STAMP to manage tasks, sprints, and AI-assisted roadmap generation.",
+      "id" : "1",
+      "name" : "Developer/User",
+      "properties" : {
+        "structurizr.dsl.identifier" : "user"
+      },
+      "relationships" : [ {
+        "description" : "Uses",
+        "destinationId" : "4",
+        "id" : "34",
+        "sourceId" : "1",
+        "tags" : "Relationship"
+      }, {
+        "description" : "Uses",
+        "destinationId" : "3",
+        "id" : "35",
+        "linkedRelationshipId" : "34",
+        "sourceId" : "1"
+      } ],
+      "tags" : "Element,Person"
+    }, {
+      "description" : "Manages users, tasks, sprint assignments, task prioritization, and overall platform operations.",
+      "id" : "2",
+      "name" : "Administrator",
+      "properties" : {
+        "structurizr.dsl.identifier" : "admin"
+      },
+      "relationships" : [ {
+        "description" : "Monitors and manages",
+        "destinationId" : "3",
+        "id" : "36",
+        "sourceId" : "2",
+        "tags" : "Relationship"
+      } ],
+      "tags" : "Element,Person"
+    } ],
+    "softwareSystems" : [ {
+      "containers" : [ {
+        "description" : "Provides the user interface for sprint management and AI interactions.",
+        "documentation" : { },
+        "id" : "4",
+        "name" : "React Frontend",
+        "properties" : {
+          "structurizr.dsl.identifier" : "frontend"
+        },
+        "relationships" : [ {
+          "description" : "Sends REST API requests",
+          "destinationId" : "5",
+          "id" : "22",
+          "sourceId" : "4",
+          "tags" : "Relationship",
+          "technology" : "HTTPS/JSON"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "React"
+      }, {
+        "components" : [ {
+          "description" : "REST API endpoints for tasks, users, KPIs, and AI interactions.",
+          "documentation" : { },
+          "id" : "6",
+          "name" : "Controllers",
+          "properties" : {
+            "structurizr.dsl.identifier" : "controller"
+          },
+          "relationships" : [ {
+            "description" : "Invokes business logic",
+            "destinationId" : "7",
+            "id" : "11",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring REST Controllers"
+        }, {
+          "description" : "Business logic and application orchestration.",
+          "documentation" : { },
+          "id" : "7",
+          "name" : "Services",
+          "properties" : {
+            "structurizr.dsl.identifier" : "service"
+          },
+          "relationships" : [ {
+            "description" : "Reads/writes entities",
+            "destinationId" : "8",
+            "id" : "12",
+            "sourceId" : "7",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Validates authentication and permissions",
+            "destinationId" : "9",
+            "id" : "13",
+            "sourceId" : "7",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Requests AI orchestration",
+            "destinationId" : "10",
+            "id" : "14",
+            "sourceId" : "7",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring Services"
+        }, {
+          "description" : "Database access layer.",
+          "documentation" : { },
+          "id" : "8",
+          "name" : "Repositories",
+          "properties" : {
+            "structurizr.dsl.identifier" : "repository"
+          },
+          "tags" : "Element,Component",
+          "technology" : "Spring Data JPA"
+        }, {
+          "description" : "Authentication and authorization handling.",
+          "documentation" : { },
+          "id" : "9",
+          "name" : "Security Layer",
+          "properties" : {
+            "structurizr.dsl.identifier" : "security"
+          },
+          "tags" : "Element,Component",
+          "technology" : "Spring Security"
+        }, {
+          "description" : "Abstracts AI provider integrations and fallback providers.",
+          "documentation" : { },
+          "id" : "10",
+          "name" : "AI Provider Adapter Layer",
+          "properties" : {
+            "structurizr.dsl.identifier" : "aiadapter"
+          },
+          "relationships" : [ {
+            "description" : "Requests contextual retrieval",
+            "destinationId" : "16",
+            "id" : "25",
+            "sourceId" : "10",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Requests contextual retrieval",
+            "destinationId" : "15",
+            "id" : "26",
+            "linkedRelationshipId" : "25",
+            "sourceId" : "10"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Adapter Layer"
+        } ],
+        "description" : "Core business logic, REST APIs, authentication, KPI management, and AI orchestration.",
+        "documentation" : { },
+        "id" : "5",
+        "name" : "Spring Boot Backend",
+        "properties" : {
+          "structurizr.dsl.identifier" : "backend"
+        },
+        "relationships" : [ {
+          "description" : "Reads and writes application data",
+          "destinationId" : "21",
+          "id" : "23",
+          "sourceId" : "5",
+          "tags" : "Relationship",
+          "technology" : "JPA/JDBC"
+        }, {
+          "description" : "Requests AI-assisted prioritization and roadmap generation",
+          "destinationId" : "15",
+          "id" : "24",
+          "sourceId" : "5",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Requests contextual retrieval",
+          "destinationId" : "16",
+          "id" : "27",
+          "linkedRelationshipId" : "25",
+          "sourceId" : "5"
+        }, {
+          "description" : "Sends enriched AI prompts",
+          "destinationId" : "28",
+          "id" : "30",
+          "sourceId" : "5",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Fallback AI requests",
+          "destinationId" : "29",
+          "id" : "32",
+          "sourceId" : "5",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "Spring Boot"
+      }, {
+        "components" : [ {
+          "description" : "Retrieves contextual sprint and task information for RAG workflows.",
+          "documentation" : { },
+          "id" : "16",
+          "name" : "Retrieval Service",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ragservice"
+          },
+          "relationships" : [ {
+            "description" : "Builds enriched prompts",
+            "destinationId" : "17",
+            "id" : "20",
+            "sourceId" : "16",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Builds enriched prompts for AI processing.",
+          "documentation" : { },
+          "id" : "17",
+          "name" : "Prompt Builder",
+          "properties" : {
+            "structurizr.dsl.identifier" : "promptbuilder"
+          },
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Primary Oracle Generative AI integration.",
+          "documentation" : { },
+          "id" : "18",
+          "name" : "Oracle AI Adapter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "oracleadapter"
+          },
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Fallback AI provider integration.",
+          "documentation" : { },
+          "id" : "19",
+          "name" : "Claude Fallback Adapter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "claudefallback"
+          },
+          "tags" : "Element,Component"
+        } ],
+        "description" : "Handles contextual retrieval, prompt enrichment, and AI orchestration workflows.",
+        "documentation" : { },
+        "id" : "15",
+        "name" : "RAG Orchestrator",
+        "properties" : {
+          "structurizr.dsl.identifier" : "rag"
+        },
+        "relationships" : [ {
+          "description" : "Primary AI inference requests",
+          "destinationId" : "28",
+          "id" : "37",
+          "sourceId" : "15",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Fallback inference requests",
+          "destinationId" : "29",
+          "id" : "38",
+          "sourceId" : "15",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Retrieves contextual sprint and task data",
+          "destinationId" : "21",
+          "id" : "39",
+          "sourceId" : "15",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "Java Service"
+      }, {
+        "description" : "Stores users, tasks, sprints, KPIs, and application data.",
+        "documentation" : { },
+        "id" : "21",
+        "name" : "Oracle Autonomous Database",
+        "properties" : {
+          "structurizr.dsl.identifier" : "db"
+        },
+        "tags" : "Element,Container",
+        "technology" : "Oracle Autonomous Database"
+      } ],
+      "description" : "Sky Tec Assisted Management Program. AI-assisted sprint and task management platform.",
+      "documentation" : { },
+      "id" : "3",
+      "name" : "STAMP",
+      "properties" : {
+        "structurizr.dsl.identifier" : "stamp"
+      },
+      "relationships" : [ {
+        "description" : "Sends enriched AI prompts",
+        "destinationId" : "28",
+        "id" : "31",
+        "linkedRelationshipId" : "30",
+        "sourceId" : "3"
+      }, {
+        "description" : "Fallback AI requests",
+        "destinationId" : "29",
+        "id" : "33",
+        "linkedRelationshipId" : "32",
+        "sourceId" : "3"
+      } ],
+      "tags" : "Element,Software System"
+    }, {
+      "description" : "Primary AI provider used for RAG-based roadmap generation.",
+      "documentation" : { },
+      "id" : "28",
+      "name" : "Oracle Generative AI Services",
+      "properties" : {
+        "structurizr.dsl.identifier" : "oracleai"
+      },
+      "tags" : "Element,Software System"
+    }, {
+      "description" : "Fallback AI provider used for secondary inference support.",
+      "documentation" : { },
+      "id" : "29",
+      "name" : "Claude AI API",
+      "properties" : {
+        "structurizr.dsl.identifier" : "claude"
+      },
+      "tags" : "Element,Software System"
+    } ]
+  },
+  "name" : "STAMP - Sky Tec Assisted Management Program",
+  "properties" : {
+    "structurizr.inspection.error" : "42",
+    "structurizr.inspection.info" : "0",
+    "structurizr.inspection.ignore" : "0",
+    "structurizr.inspection.warning" : "0"
+  },
+  "views" : {
+    "componentViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "containerId" : "5",
+      "description" : "Internal backend component structure.",
+      "elements" : [ {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "backend-components",
+      "name" : "Component View: STAMP - Spring Boot Backend",
+      "order" : 4,
+      "relationships" : [ {
+        "id" : "11"
+      }, {
+        "id" : "12"
+      }, {
+        "id" : "13"
+      }, {
+        "id" : "14"
+      }, {
+        "id" : "26"
+      } ],
+      "title" : "STAMP - Backend Components"
+    }, {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "containerId" : "15",
+      "description" : "RAG orchestration and AI integration components.",
+      "elements" : [ {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "16",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "17",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "18",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "19",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "rag-components",
+      "name" : "Component View: STAMP - RAG Orchestrator",
+      "order" : 5,
+      "relationships" : [ {
+        "id" : "20"
+      }, {
+        "id" : "27"
+      } ],
+      "title" : "STAMP - RAG Components"
+    } ],
+    "configuration" : {
+      "styles" : {
+        "elements" : [ {
+          "background" : "#85bbf0",
+          "color" : "#000000",
+          "tag" : "Component"
+        }, {
+          "background" : "#438dd5",
+          "color" : "#ffffff",
+          "tag" : "Container"
+        }, {
+          "shape" : "Cylinder",
+          "tag" : "Database"
+        }, {
+          "background" : "#08427b",
+          "color" : "#ffffff",
+          "shape" : "Person",
+          "tag" : "Person"
+        }, {
+          "background" : "#1168bd",
+          "color" : "#ffffff",
+          "tag" : "Software System"
+        } ]
+      },
+      "terminology" : { },
+      "themes" : [ "https://static.structurizr.com/themes/default/theme.json" ]
+    },
+    "containerViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "Container-level architecture for STAMP.",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "21",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "28",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "29",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "containers",
+      "name" : "Container View: STAMP",
+      "order" : 3,
+      "relationships" : [ {
+        "id" : "22"
+      }, {
+        "id" : "23"
+      }, {
+        "id" : "24"
+      }, {
+        "id" : "30"
+      }, {
+        "id" : "32"
+      }, {
+        "id" : "34"
+      }, {
+        "id" : "37"
+      }, {
+        "id" : "38"
+      }, {
+        "id" : "39"
+      } ],
+      "softwareSystemId" : "3",
+      "title" : "STAMP - Container Diagram"
+    } ],
+    "deploymentViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "Cloud-native deployment architecture on OCI.",
+      "elements" : [ {
+        "id" : "40",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "41",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "42",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "43",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "44",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "45",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "47",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "50",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "51",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "environment" : "Production",
+      "key" : "deployment",
+      "name" : "Deployment View: STAMP - Production",
+      "order" : 6,
+      "relationships" : [ {
+        "id" : "46"
+      }, {
+        "id" : "48"
+      }, {
+        "id" : "52"
+      }, {
+        "id" : "53"
+      } ],
+      "softwareSystemId" : "3",
+      "title" : "STAMP - Deployment Diagram"
+    } ],
+    "dynamicViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "elementId" : "3",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "21",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "28",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "ai-prioritization-flow",
+      "name" : "Dynamic View: STAMP",
+      "order" : 7,
+      "relationships" : [ {
+        "description" : "Requests AI roadmap generation",
+        "id" : "34",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "POST /ai/chat",
+        "id" : "22",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "Retrieves active sprint tasks",
+        "id" : "23",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "Sends contextual task information",
+        "id" : "24",
+        "order" : "4",
+        "response" : false
+      }, {
+        "description" : "Retrieves additional contextual data",
+        "id" : "39",
+        "order" : "5",
+        "response" : false
+      }, {
+        "description" : "Generates prioritized roadmap",
+        "id" : "37",
+        "order" : "6",
+        "response" : false
+      }, {
+        "description" : "Returns AI recommendations",
+        "id" : "37",
+        "order" : "7",
+        "response" : true
+      }, {
+        "description" : "Returns enriched roadmap",
+        "id" : "24",
+        "order" : "8",
+        "response" : true
+      }, {
+        "description" : "Returns AI response",
+        "id" : "22",
+        "order" : "9",
+        "response" : true
+      }, {
+        "description" : "Displays roadmap and prioritization",
+        "id" : "34",
+        "order" : "10",
+        "response" : true
+      } ],
+      "title" : "AI-Assisted Sprint Prioritization Flow"
+    } ],
+    "systemContextViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "System context view for STAMP.",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "28",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "29",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "system-context",
+      "name" : "System Context View: STAMP",
+      "order" : 2,
+      "relationships" : [ {
+        "id" : "31"
+      }, {
+        "id" : "33"
+      }, {
+        "id" : "35"
+      }, {
+        "id" : "36"
+      } ],
+      "softwareSystemId" : "3",
+      "title" : "STAMP - System Context"
+    } ],
+    "systemLandscapeViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "High-level overview of STAMP and external systems.",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "28",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "29",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "system-landscape",
+      "name" : "System Landscape View",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "31"
+      }, {
+        "id" : "33"
+      }, {
+        "id" : "35"
+      }, {
+        "id" : "36"
+      } ],
+      "title" : "STAMP - System Landscape"
+    } ]
+  }
+}

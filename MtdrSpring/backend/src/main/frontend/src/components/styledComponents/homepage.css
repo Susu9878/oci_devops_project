@@ -1,5 +1,7 @@
 .home-container {
   position: relative;
+  margin: 105px 1em 1em 0.2rem;
+  width: 100rem;
 }
 
 .home-content {
@@ -9,10 +11,11 @@
     flex-direction: column;
     align-items: center;
     font-size: max(12px, min(2vw, 18px)); /*calc(1vw + 1vmin);*/
-    margin: 105px 1em 1em 40px;
+    margin: 105px 1em 1em 0.2rem;
     padding: 1rem;
     position: relative;
     border-radius: 0.5rem;
+    width: 100rem;
 }
 
 /* Header buttons */
@@ -125,27 +128,6 @@
 
 .task-header:hover {
   background-color: #b8a68f;
-}
-
-.star-button {
-  position: absolute;
-  left: -8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-.star-icon {
-  width: 20px;
-  height: 20px;
 }
 
 .task-header-content {

@@ -258,7 +258,7 @@ function Analytics() {
                 <Tooltip />
                 <Legend />
                 {devs.map((dev) => (
-                  <Bar key={dev} dataKey={dev} fill="#564dfa" />
+                  <Bar key={dev} dataKey={dev} fill="#3479c7" />
                 ))}
               </BarChart>
             </ResponsiveContainer>
@@ -273,7 +273,7 @@ function Analytics() {
                 <Tooltip />
                 <Legend />
                 {devs.map((dev) => (
-                  <Bar key={dev} dataKey={dev} fill="#564dfa" />
+                  <Bar key={dev} dataKey={dev} fill="#ffc353" />
                 ))}
               </BarChart>
             </ResponsiveContainer>

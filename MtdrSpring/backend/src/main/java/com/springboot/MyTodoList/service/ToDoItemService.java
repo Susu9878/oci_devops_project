@@ -64,6 +64,20 @@ public class ToDoItemService {
             return null;
         }
     }
+
+    public Integer getToDoSprintById(int id){
+        Optional<ToDoItem> todoData = toDoItemRepository.findById(id);
+        if (todoData.isPresent()){
+            ToDoItem item = todoData.get();
+            return item.getSprintId();
+        }else{
+            return null;
+        }
+    }
+
+    public List<ToDoItem> getToDoItemsByUserAndSprint(int userId, int sprintId) {
+        return toDoItemRepository.findByUserIdAndSprintId(userId, sprintId);
+    }
     
 
 }

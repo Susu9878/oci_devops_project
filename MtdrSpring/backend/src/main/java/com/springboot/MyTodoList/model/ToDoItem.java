@@ -90,9 +90,36 @@ public class ToDoItem {
         this.taskId = ID;
     }
 
-    public String getDescription() {
-        return description;
+    public void setSprintId(Sprint SprintId) {
+        this.sprint = SprintId;
     }
+
+    public void setSprintId(int sprintId) {
+        this.sprint = new Sprint();
+        this.sprint.setSprintId(sprintId);
+    }
+
+    public int getSprintId() {
+        return this.sprint.getSprintId();
+    }
+
+    public void setUserId(User UserId) {
+        this.user = UserId;
+    }
+
+    public void setUserId(int userId) {
+        this.user = new User();
+        this.user.setUserId(userId);
+    }
+
+    public int getUserId() {
+        return this.user.getUserId();
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+    
 
     public void setDescription(String description) {
         this.description = description;

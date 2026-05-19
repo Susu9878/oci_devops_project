@@ -1,291 +1,126 @@
-/*
-## MyToDoReact version 1.0.
-##
-## Copyright (c) 2022 Oracle, Inc.
-## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
-*/
-/*
- * This is the application main React component. We're using "function"
- * components in this application. No "class" components should be used for
- * consistency.
- * @author  jean.de.lavarene@oracle.com
- */
-import React, { useState, useEffect } from "react";
-import NewItem from "./NewItem";
-import API_LIST from "./API";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Button, TableBody, CircularProgress } from "@mui/material";
-import Moment from "react-moment";
+import { useState } from "react";
+import API_LIST from "./API"; // '/todolist'
 
-/* In this application we're using Function Components with the State Hooks
- * to manage the states. See the doc: https://reactjs.org/docs/hooks-state.html
- * This App component represents the entire app. It renders a NewItem component
- * and two tables: one that lists the todo items that are to be done and another
- * one with the items that are already done.
- */
 function App() {
-  // isLoading is true while waiting for the backend to return the list
-  // of items. We use this state to display a spinning circle:
-  const [isLoading, setLoading] = useState(false);
-  // Similar to isLoading, isInserting is true while waiting for the backend
-  // to insert a new item:
-  const [isInserting, setInserting] = useState(false);
-  // The list of todo items is stored in this state. It includes the "done"
-  // "not-done" items:
-  const [items, setItems] = useState([]);
-  // In case of an error during the API call:
-  const [error, setError] = useState();
+  const [sprintId, setSprintId] = useState(1);
+  const [teamId, setTeamId] = useState(1);
 
-  function deleteItem(deleteId) {
-    // console.log("deleteItem("+deleteId+")")
-    fetch(API_LIST + "/" + deleteId, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        // console.log("response=");
-        // console.log(response);
-        if (response.ok) {
-          // console.log("deleteItem FETCH call is ok");
-          return response;
-        } else {
-          throw new Error("Something went wrong ...");
-        }
-      })
-      .then(
-        (result) => {
-          const remainingItems = items.filter((item) => item.taskId !== deleteId);
-          setItems(remainingItems);
-        },
-        (error) => {
-          setError(error);
-        },
+  const [teamKpis, setTeamKpis] = useState(null);
+  const [userKpis, setUserKpis] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const fetchKpis = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      // TEAM KPIs
+      const teamResponse = await fetch(
+        `${API_LIST}/kpis/team/sprint?sprintId=${sprintId}&teamId=${teamId}`
       );
-  }
-  function toggleDone(event, id, description, done) {
-    event.preventDefault();
-    modifyItem(id, description, done).then(
-      (result) => {
-        reloadOneItem(id);
-      },
-      (error) => {
-        setError(error);
-      },
-    );
-  }
-  function reloadOneItem(id) {
-    fetch(API_LIST + "/" + id)
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error("Something went wrong ...");
-        }
-      })
-      .then(
-        (result) => {
-          const items2 = items.map((x) =>
-            x.taskId === id
-              ? {
-                  ...x,
-                  description: result.description,
-                  done: result.done,
-                }
-              : x,
-          );
-          setItems(items2);
-        },
-        (error) => {
-          setError(error);
-        },
+
+      if (!teamResponse.ok) throw new Error("Failed to fetch team KPIs");
+
+      const teamData = await teamResponse.json();
+      setTeamKpis(teamData);
+
+      // USER KPIs
+      const userResponse = await fetch(
+        `${API_LIST}/kpis/users/sprint?sprintId=${sprintId}&teamId=${teamId}`
       );
-  }
-  function modifyItem(id, description, done) {
-    // console.log("deleteItem("+deleteId+")")
-    var data = { description: description, done: done };
-    return fetch(API_LIST + "/" + id, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }).then((response) => {
-      // console.log("response=");
-      // console.log(response);
-      if (response.ok) {
-        // console.log("deleteItem FETCH call is ok");
-        return response;
-      } else {
-        throw new Error("Something went wrong ...");
-      }
-    });
-  }
-  /*
-    To simulate slow network, call sleep before making API calls.
-    const sleep = (milliseconds) => {
-      return new Promise(resolve => setTimeout(resolve, milliseconds))
+
+      if (!userResponse.ok) throw new Error("Failed to fetch user KPIs");
+
+      const userData = await userResponse.json();
+      setUserKpis(userData);
+
+    } catch (err) {
+      console.error(err);
+      setError("Error fetching KPIs");
+    } finally {
+      setLoading(false);
     }
-    */
-  useEffect(
-    () => {
-      setLoading(true);
-      // sleep(5000).then(() => {
-      fetch(API_LIST)
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error("Something went wrong ...");
-          }
-        })
-        .then(
-          (result) => {
-            setLoading(false);
-            setItems(result);
-          },
-          (error) => {
-            setLoading(false);
-            setError(error);
-          },
-        );
+  };
 
-      //})
-    },
-    // https://en.reactjs.org/docs/faq-ajax.html
-    [], // empty deps array [] means
-    // this useEffect will run once
-    // similar to componentDidMount()
-  );
-  function addItem(text) {
-    console.log("addItem(" + text + ")");
-    setInserting(true);
-    var data = {};
-    console.log(data);
-    data.description = text;
-    fetch(API_LIST, {
-      method: "POST",
-      // We convert the React state to JSON and send it as the POST body
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        // This API doens't return a JSON document
-        console.log(response);
-        console.log();
-        console.log(response.headers.location);
-        // return response.json();
-        if (response.ok) {
-          return response;
-        } else {
-          throw new Error("Something went wrong ...");
-        }
-      })
-      .then(
-        (result) => {
-          var id = result.headers.get("location");
-          var newItem = { "taskId": id, description: text };
-          setItems([newItem, ...items]);
-          setInserting(false);
-        },
-        (error) => {
-          setInserting(false);
-          setError(error);
-        },
-      );
-  }
   return (
-    <div className="App">
-      <h1>MY TODO LIST</h1>
-      <NewItem addItem={addItem} isInserting={isInserting} />
-      {error && <p>Error: {error.message}</p>}
-      {isLoading && <CircularProgress />}
-      {!isLoading && (
-        <div id="maincontent">
-          <table id="itemlistNotDone" className="itemlist">
-            <TableBody>
-              {items.map(
-                (item) =>
-                  !item.done && (
-                    <tr key={item.taskId}>
-                      <td className="description">{item.description}</td>
-                      {/*<td>{JSON.stringify(item, null, 2) }</td>*/}
-                      <td className="date">
-                        <Moment format="MMM Do hh:mm:ss">
-                          {item.createdAt}
-                        </Moment>
-                      </td>
-                      <td>
-                        <Button
-                          variant="contained"
-                          className="DoneButton"
-                          onClick={(event) =>
-                            toggleDone(
-                              event,
-                              item.taskId,
-                              item.description,
-                              !item.done,
-                            )
-                          }
-                          size="small"
-                        >
-                          Done
-                        </Button>
-                      </td>
-                    </tr>
-                  ),
-              )}
-            </TableBody>
-          </table>
-          <h2 id="donelist">Done items</h2>
-          <table id="itemlistDone" className="itemlist">
-            <TableBody>
-              {items.map(
-                (item) =>
-                  item.done && (
-                    <tr key={item.taskId}>
-                      <td className="description">{item.description}</td>
-                      <td className="date">
-                        <Moment format="MMM Do hh:mm:ss">
-                          {item.createdAt}
-                        </Moment>
-                      </td>
-                      <td>
-                        <Button
-                          variant="contained"
-                          className="DoneButton"
-                          onClick={(event) =>
-                            toggleDone(
-                              event,
-                              item.taskId,
-                              item.description,
-                              !item.done,
-                            )
-                          }
-                          size="small"
-                        >
-                          Undo
-                        </Button>
-                      </td>
-                      <td>
-                        <Button
-                          startIcon={<DeleteIcon />}
-                          variant="contained"
-                          className="DeleteButton"
-                          onClick={() => deleteItem(item.taskId)}
-                          size="small"
-                        >
-                          Delete
-                        </Button>
-                      </td>
-                    </tr>
-                  ),
-              )}
-            </TableBody>
+    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+      <h1>KPI Dashboard</h1>
+
+      {/* INPUTS */}
+      <div style={{ marginBottom: "20px" }}>
+        <label>
+          Sprint ID:
+          <input
+            type="number"
+            value={sprintId}
+            onChange={(e) => setSprintId(e.target.value)}
+            style={{ marginLeft: "10px", marginRight: "20px" }}
+          />
+        </label>
+
+        <label>
+          Team ID:
+          <input
+            type="number"
+            value={teamId}
+            onChange={(e) => setTeamId(e.target.value)}
+            style={{ marginLeft: "10px", marginRight: "20px" }}
+          />
+        </label>
+
+        <button onClick={fetchKpis}>Load KPIs</button>
+      </div>
+
+      {/* LOADING / ERROR */}
+      {loading && <p>Loading...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {/* TEAM KPIs */}
+      {teamKpis && (
+        <div style={{ marginBottom: "30px" }}>
+          <h2>Team KPIs</h2>
+          <ul>
+            <li>Avg Tasks Per User: {teamKpis.avgTasksPerUser}</li>
+            <li>Avg Hours Per User: {teamKpis.avgHoursPerUser}</li>
+            <li>Total Tasks Assigned: {teamKpis.totalTasksAssigned}</li>
+            <li>Total Tasks Completed: {teamKpis.totalTasksCompleted}</li>
+            <li>Total Hours Worked: {teamKpis.totalHoursWorked}</li>
+          </ul>
+        </div>
+      )}
+
+      {/* USER KPIs */}
+      {userKpis.length > 0 && (
+        <div>
+          <h2>User KPIs</h2>
+          <table border="1" cellPadding="10">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Completed</th>
+                <th>In Progress</th>
+                <th>Not Started</th>
+                <th>Hours Worked</th>
+              </tr>
+            </thead>
+            <tbody>
+              {userKpis.map((user) => (
+                <tr key={user.userId}>
+                  <td>{user.username}</td>
+                  <td>{user.tasksCompleted}</td>
+                  <td>{user.tasksInProgress}</td>
+                  <td>{user.tasksNotStarted}</td>
+                  <td>{user.hoursWorked}</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
       )}
     </div>
   );
 }
+
 export default App;

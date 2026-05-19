@@ -23,6 +23,7 @@ public class DeepSeekService{
 
         try {
             httpPost.setEntity(new StringEntity(requestBody));
+            @SuppressWarnings("deprecation") //me molestaba que saliera en amarillo
             CloseableHttpResponse response = httpClient.execute(httpPost);
             return EntityUtils.toString(response.getEntity());
         } catch (IOException e) {

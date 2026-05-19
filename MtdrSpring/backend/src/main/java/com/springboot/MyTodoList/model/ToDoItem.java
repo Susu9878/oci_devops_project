@@ -1,6 +1,5 @@
 package com.springboot.MyTodoList.model;
 
-
 import jakarta.persistence.*;
 
 import java.time.OffsetDateTime;
@@ -35,9 +34,9 @@ public class ToDoItem {
     @Column(name = "ID")
     @JsonProperty("taskId")
     private int taskId;
-    @Column(name = "TASK_NAME")//NOT NULL
+    @Column(name = "TASK_NAME") // NOT NULL
     private String taskName;
-    @Column(name = "DESCRIPTION")//NOT NULL
+    @Column(name = "DESCRIPTION") // NOT NULL
     private String description;
     @Column(name = "STORY_POINTS")
     private Integer storyPoints;
@@ -49,13 +48,13 @@ public class ToDoItem {
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS", nullable = false)
     private TaskStatus status = TaskStatus.NOT_STARTED;
-    @Column(name = "CREATED_AT")//NOT NULL
+    @Column(name = "CREATED_AT") // NOT NULL
     private OffsetDateTime createdAt;
     @Column(name = "START_DATE")
     private OffsetDateTime startDate;
     @Column(name = "COMPLETION_DATE")
     private OffsetDateTime completionDate;
-    //FK
+    // FK
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     @JsonIgnore
@@ -65,13 +64,14 @@ public class ToDoItem {
     @JsonIgnore
     private Sprint sprint;
 
-    //TODO delete later
+    // TODO delete later
     @Column(name = "done")
     private boolean done;
 
-    public ToDoItem(){
+    public ToDoItem() {
 
     }
+
     public ToDoItem(Integer taskId, String taskName, String description,
                 Integer storyPoints, Double expectedHours, TaskPriority priority,
                 TaskStatus status, OffsetDateTime createdAt, OffsetDateTime startDate,
@@ -115,12 +115,13 @@ public class ToDoItem {
         this.createdAt = created_at;
     }
 
-    //TODO delete later
+    // TODO delete later
     @Transient
     @JsonProperty("done")
     public boolean isDone() {
         return done;
     }
+
     public void setDone(boolean done) {
         this.done = done;
     }

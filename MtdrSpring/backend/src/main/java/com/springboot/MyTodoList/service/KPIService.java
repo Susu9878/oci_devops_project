@@ -62,7 +62,7 @@ public class KPIService {
         }).toList();
     }
 
-    //team kpis for all sprints
+    // team kpis for all sprints
     public TeamSprintKpiDTO getTeamKpisForTeamOnly(int teamId) {
         List<Object[]> results = workLogRepository.getTeamKpisAllSprints(teamId);
 
@@ -88,23 +88,23 @@ public class KPIService {
         return dto;
     }
 
-    //Graph 1 service
+    // Graph 1 service
     public List<TasksPerSprintDTO> getTasksPerSprint(int teamId) {
         List<Object[]> results = workLogRepository.getCompletedTasksPerUserPerSprint(teamId);
 
         return results.stream().map(row -> {
             TasksPerSprintDTO dto = new TasksPerSprintDTO();
 
-            // row[1] = userId 
+            // row[1] = userId
             dto.setSprintId(((Number) row[0]).intValue());
             dto.setUsername((String) row[2]);
-            dto.setCompletedTasks(((Number) row[3]).longValue()); 
+            dto.setCompletedTasks(((Number) row[3]).longValue());
 
             return dto;
         }).toList();
     }
 
-    //Graph 1 service
+    // Graph 2 service
     public List<HoursPerSprintDTO> getHoursPerSprint(int teamId) {
         List<Object[]> results = workLogRepository.getHoursPerUserPerSprint(teamId);
 
@@ -112,8 +112,8 @@ public class KPIService {
             HoursPerSprintDTO dto = new HoursPerSprintDTO();
 
             dto.setSprintId(row[0] != null ? ((Number) row[0]).intValue() : 0);
-            dto.setTotalHours(row[1] != null ? ((Number) row[1]).doubleValue() : 0);
             dto.setUsername((String) row[2]);
+            dto.setTotalHours(row[3] != null ? ((Number) row[3]).doubleValue() : 0);
 
             return dto;
         }).toList();

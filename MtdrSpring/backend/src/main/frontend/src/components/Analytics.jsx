@@ -46,7 +46,6 @@ function Analytics() {
   const [sprintId, setSprintId] = useState(1);
   const [teamId, setTeamId] = useState(1);
 
-  const [teamKpis, setTeamKpis] = useState(null);
   const [userKpis, setUserKpis] = useState([]);
   const [taskGraphKpis, setTaskGraphKpis] = useState([]);
   const [hourGraphKpis, setHourGraphKpis] = useState([]);
@@ -59,19 +58,9 @@ function Analytics() {
     setError("");
 
     try {
-      // TEAM KPIs
-      const teamResponse = await fetch(
-        `${API_LIST}/kpis/team/sprint?sprintId=${sprintId}&teamId=${teamId}`,
-      );
-
-      if (!teamResponse.ok) throw new Error("Failed to fetch team KPIs");
-
-      const teamData = await teamResponse.json();
-      setTeamKpis(teamData);
-
       // USER KPIs
       const userResponse = await fetch(
-        `${API_LIST}/kpis/users/sprint?sprintId=${sprintId}&teamId=${teamId}`,
+        `${API_LIST}/kpis/team?sprintId=${sprintId}&teamId=${teamId}`,
       );
 
       if (!userResponse.ok) throw new Error("Failed to fetch user KPIs");
@@ -128,7 +117,7 @@ function Analytics() {
   const devs = [...new Set(taskGraphKpis.map(item => item.username))];
   console.log(devs);
   console.log(groupedFirst);
-  
+
 
   //SECOND GRAPH
   const secondData = hourGraphKpis.map(item => ({
@@ -152,22 +141,16 @@ function Analytics() {
     <div className="analytics">
       <div className="page-header">
         <h1 className="sprint-title">Analytics</h1>
-        <input
-          type="number"
-          value={sprintId}
-          onChange={(e) => setSprintId(e.target.value)}
-          style={{ marginLeft: "10px", marginRight: "20px" }}
-        />
         <span className="project-manager">
-          {" "}
+          {" Team Id "}
           <input
             type="number"
             value={teamId}
             onChange={(e) => setTeamId(e.target.value)}
-            style={{ marginLeft: "10px", marginRight: "20px" }}
+            className="inputStyle"
           />
         </span>
-        <button onClick={fetchKpis}>Load KPIs</button>
+        <button onClick={fetchKpis} className="kpiButton">Load KPIs</button>
       </div>
 
       {/* LOADING / ERROR */}
@@ -176,108 +159,83 @@ function Analytics() {
 
       <div className="stats-section">
         <div className="stats-grid">
-          {teamKpis && (
+          {userKpis && (
           <StatsCard
             colorClass="orange"
-            icon={<ClipboardCheck />}
-            value={teamKpis.totalTasksCompleted}
-            label="Tasks completed this sprint"
+            icon={<ClipboardCheck className="stats-card-icon"/>}
+            value={userKpis.totalTasksCompleted}
+            label="Tasks completed"
           />)}
 
-          {teamKpis && (
+          {userKpis && (
           <StatsCard
-            colorClass="yellow"
-            icon={<ListTodo />}
-            value={teamKpis.totalTasksAssigned}
+            colorClass="mustard"
+            icon={<ListTodo className="stats-card-icon"/>}
+            value={userKpis.totalTasksAssigned}
             label="Total tasks assigned"
           />)}
           
-          {teamKpis && (
+          {userKpis && (
           <StatsCard
             colorClass="yellow"
-            icon={<ListTodo />}
-            value={teamKpis.avgTasksPerUser}
+            icon={<ListTodo className="stats-card-icon"/>}
+            value={userKpis.avgTasksPerUser}
             label="Tasks assigned avg /dev"
           />)}
 
-          {teamKpis && (
+          {userKpis && (
           <StatsCard
             colorClass="blue"
-            icon={<ClockFading />}
-            value={teamKpis.avgHoursPerUser}
+            icon={<ClockFading className="stats-card-icon"/>}
+            value={userKpis.avgHoursPerUser}
             label="Hours avg /dev"
           />)}
 
-          {teamKpis && (
+          {userKpis && (
             <StatsCard
             colorClass="light-blue"
-            icon={<ClockCheck />}
-            value={teamKpis.totalHoursWorked}
+            icon={<ClockCheck className="stats-card-icon"/>}
+            value={userKpis.totalHoursWorked}
             label="Total hours worked"
           />)}
         </div>
       </div>
 
-      {/* USER KPIs */}
-      {userKpis.length > 0 && (
-        <div>
-          <h2>User KPIs</h2>
-          <table border="1" cellPadding="10">
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Completed</th>
-                <th>In Progress</th>
-                <th>Not Started</th>
-                <th>Hours Worked</th>
-              </tr>
-            </thead>
-            <tbody>
-              {userKpis.map((user) => (
-                <tr key={user.userId}>
-                  <td>{user.username}</td>
-                  <td>{user.tasksCompleted}</td>
-                  <td>{user.tasksInProgress}</td>
-                  <td>{user.tasksNotStarted}</td>
-                  <td>{user.hoursWorked}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
       <div className="charts-section">
         <div className="charts-grid">
-          <ChartContainer title="Daily Task Completion">
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={groupedFirst}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="sprint" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                {devs.map((dev) => (
-                  <Bar key={dev} dataKey={dev} fill="#564dfa" />
-                ))}
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
+          <div className="sprintGrid">
+            <ChartContainer title="Daily Task Completion">
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={groupedFirst}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="sprint" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  {devs.map((dev) => (
+                    <Bar key={dev} dataKey={dev} fill="#ef9b00" />
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </div>
 
-          <ChartContainer title="Hours Worked by Developer">
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={groupedSecond}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="sprint" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                {devs.map((dev) => (
-                  <Bar key={dev} dataKey={dev} fill="#564dfa" />
-                ))}
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
+          <div className="hourGrid">
+            <ChartContainer title="Hours Worked by Developer">
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={groupedSecond}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="sprint" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  {devs.map((dev) => (
+                    <Bar key={dev} dataKey={dev} fill="#08d" />
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </div>
 
         </div>
       </div>

@@ -25,7 +25,7 @@ public class KPIController {
     @Autowired
     private KPIService kpiService;
 
-    /* GETS team statisctics PER sprint
+    /* GETS team statistics PER sprint
         {
             avgTasksPerUser: num,
             avgHoursPerUser: num,

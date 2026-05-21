@@ -1,7 +1,12 @@
 import React from "react";
 import "./styledComponents/analytics.css";
 import API_LIST from "../API";
-import {ListTodo,ClipboardCheck,ClockFading,ClockCheck,} from "lucide-react";
+import {
+  ListTodo,
+  ClipboardCheck,
+  ClockFading,
+  ClockCheck,
+} from "lucide-react";
 import { Button, TableBody, CircularProgress } from "@mui/material";
 import { useState, useEffect } from "react";
 import {
@@ -18,7 +23,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-
 
 function StatsCard({ colorClass, icon, value, label }) {
   return (
@@ -85,7 +89,6 @@ function Analytics() {
       if (!hourGraphResponse.ok) throw new Error("Failed to fetch graph KPIs");
       const hourGraphData = await hourGraphResponse.json();
       setHourGraphKpis(hourGraphData);
-
     } catch (err) {
       console.error(err);
       setError("Error fetching KPIs");
@@ -95,12 +98,12 @@ function Analytics() {
   };
 
   //FIRST GRAPH
-  
-  const firstData = taskGraphKpis.map(item => ({
+
+  const firstData = taskGraphKpis.map((item) => ({
     sprint: item.sprintId,
     dev: item.username,
-    tasks: item.completedTasks
-  }))
+    tasks: item.completedTasks,
+  }));
 
   const groupedFirst = Object.values(
     firstData.reduce((acc, { sprint, dev, tasks }) => {
@@ -111,20 +114,19 @@ function Analytics() {
       acc[sprint][dev] = (acc[sprint][dev] || 0) + tasks;
 
       return acc;
-    }, {})
+    }, {}),
   );
 
-  const devs = [...new Set(taskGraphKpis.map(item => item.username))];
+  const devs = [...new Set(taskGraphKpis.map((item) => item.username))];
   console.log(devs);
   console.log(groupedFirst);
 
-
   //SECOND GRAPH
-  const secondData = hourGraphKpis.map(item => ({
+  const secondData = hourGraphKpis.map((item) => ({
     sprint: item.sprintId,
     dev: item.username,
-    hours: item.totalHours
-  }))
+    hours: item.totalHours,
+  }));
   const groupedSecond = Object.values(
     secondData.reduce((acc, { sprint, dev, hours }) => {
       if (!acc[sprint]) {
@@ -134,7 +136,7 @@ function Analytics() {
       acc[sprint][dev] = (acc[sprint][dev] || 0) + hours;
 
       return acc;
-    }, {})
+    }, {}),
   );
 
   return (
@@ -150,7 +152,9 @@ function Analytics() {
             className="inputStyle"
           />
         </span>
-        <button onClick={fetchKpis} className="kpiButton">Load KPIs</button>
+        <button onClick={fetchKpis} className="kpiButton">
+          Load KPIs
+        </button>
       </div>
 
       {/* LOADING / ERROR */}
@@ -160,44 +164,49 @@ function Analytics() {
       <div className="stats-section">
         <div className="stats-grid">
           {userKpis && (
-          <StatsCard
-            colorClass="orange"
-            icon={<ClipboardCheck className="stats-card-icon"/>}
-            value={userKpis.totalTasksCompleted}
-            label="Tasks completed"
-          />)}
-
-          {userKpis && (
-          <StatsCard
-            colorClass="mustard"
-            icon={<ListTodo className="stats-card-icon"/>}
-            value={userKpis.totalTasksAssigned}
-            label="Total tasks assigned"
-          />)}
-          
-          {userKpis && (
-          <StatsCard
-            colorClass="yellow"
-            icon={<ListTodo className="stats-card-icon"/>}
-            value={userKpis.avgTasksPerUser}
-            label="Tasks assigned avg /dev"
-          />)}
-
-          {userKpis && (
-          <StatsCard
-            colorClass="blue"
-            icon={<ClockFading className="stats-card-icon"/>}
-            value={userKpis.avgHoursPerUser}
-            label="Hours avg /dev"
-          />)}
+            <StatsCard
+              colorClass="orange"
+              icon={<ClipboardCheck className="stats-card-icon" />}
+              value={userKpis.totalTasksCompleted}
+              label="Tasks completed"
+            />
+          )}
 
           {userKpis && (
             <StatsCard
-            colorClass="light-blue"
-            icon={<ClockCheck className="stats-card-icon"/>}
-            value={userKpis.totalHoursWorked}
-            label="Total hours worked"
-          />)}
+              colorClass="mustard"
+              icon={<ListTodo className="stats-card-icon" />}
+              value={userKpis.totalTasksAssigned}
+              label="Total tasks assigned"
+            />
+          )}
+
+          {userKpis && (
+            <StatsCard
+              colorClass="yellow"
+              icon={<ListTodo className="stats-card-icon" />}
+              value={(userKpis.avgTasksPerUser ?? 0).toFixed(2)}
+              label="Tasks assigned avg /dev"
+            />
+          )}
+
+          {userKpis && (
+            <StatsCard
+              colorClass="blue"
+              icon={<ClockFading className="stats-card-icon" />}
+              value={(userKpis.avgHoursPerUser ?? 0).toFixed(2)}
+              label="Hours avg /dev"
+            />
+          )}
+
+          {userKpis && (
+            <StatsCard
+              colorClass="light-blue"
+              icon={<ClockCheck className="stats-card-icon" />}
+              value={(userKpis.totalHoursWorked ?? 0).toFixed(2)}
+              label="Total hours worked"
+            />
+          )}
         </div>
       </div>
 
@@ -212,8 +221,12 @@ function Analytics() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  {devs.map((dev) => (
-                    <Bar key={dev} dataKey={dev} fill="#ef9b00" />
+                  {devs.map((dev, index) => (
+                    <Bar
+                      key={dev}
+                      dataKey={dev}
+                      className={`bar-color-${index}`}
+                    />
                   ))}
                 </BarChart>
               </ResponsiveContainer>
@@ -229,17 +242,19 @@ function Analytics() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  {devs.map((dev) => (
-                    <Bar key={dev} dataKey={dev} fill="#08d" />
+                  {devs.map((dev, index) => (
+                    <Bar
+                      key={dev}
+                      dataKey={dev}
+                      className={`bar-color-${index}`}
+                    />
                   ))}
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
           </div>
-
         </div>
       </div>
-
     </div>
   );
 }

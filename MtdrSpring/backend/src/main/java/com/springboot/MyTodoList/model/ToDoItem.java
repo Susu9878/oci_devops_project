@@ -21,6 +21,7 @@ public class ToDoItem {
         DONE,
         NOT_DONE
     }
+
     public enum TaskPriority {
         LOWEST,
         LOW,
@@ -73,9 +74,9 @@ public class ToDoItem {
     }
 
     public ToDoItem(Integer taskId, String taskName, String description,
-                Integer storyPoints, Double expectedHours, TaskPriority priority,
-                TaskStatus status, OffsetDateTime createdAt, OffsetDateTime startDate,
-                OffsetDateTime completionDate, User userId, Sprint sprintId) {
+            Integer storyPoints, Double expectedHours, TaskPriority priority,
+            TaskStatus status, OffsetDateTime createdAt, OffsetDateTime startDate,
+            OffsetDateTime completionDate, User userId, Sprint sprintId) {
 
         this.taskId = taskId;
         this.taskName = taskName;
@@ -113,6 +114,10 @@ public class ToDoItem {
 
     public void setCreation_ts(OffsetDateTime created_at) {
         this.createdAt = created_at;
+    }
+
+    public User getUserId() {
+        return user;
     }
 
     // TODO delete later

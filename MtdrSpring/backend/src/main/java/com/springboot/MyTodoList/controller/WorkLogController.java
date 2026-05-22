@@ -10,7 +10,6 @@ import com.springboot.MyTodoList.DTO.WorkLogDTO;
 import com.springboot.MyTodoList.service.WorkLogService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/todolist/worklogs")

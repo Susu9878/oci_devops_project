@@ -1,6 +1,5 @@
 package com.springboot.MyTodoList.repository;
 
-
 import com.springboot.MyTodoList.model.ToDoItem;
 
 import java.util.List;
@@ -16,6 +15,7 @@ import jakarta.transaction.Transactional;
 @Transactional
 @EnableTransactionManagement
 public interface ToDoItemRepository extends JpaRepository<ToDoItem,Integer> {
+
     /*
     this include
     save()
@@ -38,20 +38,25 @@ public interface ToDoItemRepository extends JpaRepository<ToDoItem,Integer> {
                 FROM TODOUSER.WORK_LOG w
                 JOIN TODOUSER.TODOITEM t2 ON w.TASK_ID = t2.ID
                 WHERE w.USER_ID = u.ID
-                AND t2.SPRINT_ID = :sprintId   
+                AND t2.SPRINT_ID = :sprintId
             ), 0) AS hoursWorked
         FROM TODOUSER.USERS u
-        LEFT JOIN TODOUSER.TODOITEM t 
-            ON t.USER_ID = u.ID 
+        LEFT JOIN TODOUSER.TODOITEM t
+            ON t.USER_ID = u.ID
             AND t.SPRINT_ID = :sprintId
         WHERE u.TEAM_ID = :teamId
         GROUP BY u.ID, u.USERNAME
     """, nativeQuery = true)
-
     List<Object[]> getUserKpisRaw(int sprintId, int teamId);
-    @Query("SELECT t FROM ToDoItem t WHERE t.user.userId = :userId AND t.sprint.sprintId = :sprintId AND t.status != 'DONE'")
-    List<ToDoItem> findActiveTasksByUserAndSprint(int userId, int sprintId);
 
+    @Query("""
+        SELECT t
+        FROM ToDoItem t
+        WHERE t.user.userId = :userId
+        AND t.sprint.sprintId = :sprintId
+        AND t.status != com.springboot.MyTodoList.model.ToDoItem.TaskStatus.DONE
+    """)
+    List<ToDoItem> findActiveTasksByUserAndSprint(int userId, int sprintId);
 
     List<ToDoItem> findByStatus(ToDoItem.TaskStatus status);
 

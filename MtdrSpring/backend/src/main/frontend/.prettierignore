@@ -1,0 +1,6 @@
+# Ignore artifacts:
+node_modules,
+package-lock.json,
+package.json,
+vite.config.json,
+*.log,

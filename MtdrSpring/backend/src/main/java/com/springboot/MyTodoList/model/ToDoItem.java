@@ -73,9 +73,9 @@ public class ToDoItem {
 
     }
     public ToDoItem(Integer taskId, String taskName, String description,
-                Integer storyPoints, Double expectedHours, TaskPriority priority,
-                TaskStatus status, OffsetDateTime createdAt, OffsetDateTime startDate,
-                OffsetDateTime completionDate, User userId, Sprint sprintId) {
+                    Integer storyPoints, Double expectedHours, TaskPriority priority,
+                    TaskStatus status, OffsetDateTime createdAt, OffsetDateTime startDate,
+                    OffsetDateTime completionDate, User userId, Sprint sprintId) {
 
         this.taskId = taskId;
         this.taskName = taskName;

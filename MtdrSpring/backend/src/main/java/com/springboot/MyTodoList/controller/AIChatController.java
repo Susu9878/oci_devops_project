@@ -105,8 +105,8 @@ public class AIChatController {
         int sprintId = getLatestSprintId();
 
         // 2. Fetch KPI data
-        Optional<UserKpiDTO> userKpiOpt = toDoItemRepository
-                .getUserKpisRaw(sprintId, teamId)
+        Optional<UserKpiDTO> userKpiOpt = userRepository
+                .getUserKpisPerSprint(sprintId, teamId)
                 .stream()
                 .map(this::mapRow)
                 .filter(k -> k.getUsername().equalsIgnoreCase(req.username))

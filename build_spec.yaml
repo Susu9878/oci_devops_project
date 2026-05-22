@@ -9,6 +9,7 @@ env:
 
   exportedVariables:
     - BuildServiceDemoVersion
+    - IMAGE_VERSION
 
 steps:
   - type: Command
@@ -27,6 +28,12 @@ steps:
               tar -xzvf deployment_config.tgz;
               source env.sh;
               cat at.cfg | docker login -u "axoynx02qynb/a01645013@tec.mx" --password-stdin qro.ocir.io
+
+  - type: Command
+    name: "Generate Image Version"
+    command: |
+      export IMAGE_VERSION=$(date +%s)
+      echo "Generated IMAGE_VERSION=$IMAGE_VERSION"
 
   - type: Command
     name: "Build"

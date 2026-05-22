@@ -1,7 +1,9 @@
 #!/bin/bash
 
 export IMAGE_NAME=todolistapp-springboot
-export IMAGE_VERSION=0.1
+
+
+echo "Using IMAGE_VERSION=$IMAGE_VERSION"
 
 
 if [ -z "$DOCKER_REGISTRY" ]; then
@@ -14,6 +16,7 @@ if [ -z "$DOCKER_REGISTRY" ]; then
 fi
 
 export IMAGE=${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_VERSION}
+
 
 mvn clean package spring-boot:repackage
 docker build -f Dockerfile -t $IMAGE .

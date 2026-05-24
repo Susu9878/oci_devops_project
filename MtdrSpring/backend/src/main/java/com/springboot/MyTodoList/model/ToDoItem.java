@@ -21,6 +21,7 @@ public class ToDoItem {
         DONE,
         NOT_DONE
     }
+
     public enum TaskPriority {
         LOWEST,
         LOW,
@@ -57,11 +58,11 @@ public class ToDoItem {
     // FK
     @ManyToOne
     @JoinColumn(name = "USER_ID")
-    @JsonIgnore
+    // @JsonIgnore
     private User user;
     @ManyToOne
     @JoinColumn(name = "SPRINT_ID")
-    @JsonIgnore
+    // @JsonIgnore
     private Sprint sprint;
 
     // TODO delete later
@@ -72,10 +73,17 @@ public class ToDoItem {
 
     }
 
+    // TODO delete later
+    @Transient
+    @JsonProperty("done")
+    public boolean isDone() {
+        return done;
+    }
+
     public ToDoItem(Integer taskId, String taskName, String description,
-                Integer storyPoints, Double expectedHours, TaskPriority priority,
-                TaskStatus status, OffsetDateTime createdAt, OffsetDateTime startDate,
-                OffsetDateTime completionDate, User userId, Sprint sprintId) {
+            Integer storyPoints, Double expectedHours, TaskPriority priority,
+            TaskStatus status, OffsetDateTime createdAt, OffsetDateTime startDate,
+            OffsetDateTime completionDate, User userId, Sprint sprintId) {
 
         this.taskId = taskId;
         this.taskName = taskName;
@@ -91,12 +99,20 @@ public class ToDoItem {
         this.sprint = sprintId;
     }
 
-    public int getTaskId() {
+    public Integer getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(int ID) {
-        this.taskId = ID;
+    public void setTaskId(Integer taskId) {
+        this.taskId = taskId;
+    }
+
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
     }
 
     public String getDescription() {
@@ -107,19 +123,76 @@ public class ToDoItem {
         this.description = description;
     }
 
-    public OffsetDateTime getCreation_ts() {
+    public Integer getStoryPoints() {
+        return storyPoints;
+    }
+
+    public void setStoryPoints(Integer storyPoints) {
+        this.storyPoints = storyPoints;
+    }
+
+    public Double getExpectedHours() {
+        return expectedHours;
+    }
+
+    public void setExpectedHours(Double expectedHours) {
+        this.expectedHours = expectedHours;
+    }
+
+    public TaskPriority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(TaskPriority priority) {
+        this.priority = priority;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
+    public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreation_ts(OffsetDateTime created_at) {
-        this.createdAt = created_at;
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    // TODO delete later
-    @Transient
-    @JsonProperty("done")
-    public boolean isDone() {
-        return done;
+    public OffsetDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(OffsetDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public OffsetDateTime getCompletionDate() {
+        return completionDate;
+    }
+
+    public void setCompletionDate(OffsetDateTime completionDate) {
+        this.completionDate = completionDate;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Sprint getSprint() {
+        return sprint;
+    }
+
+    public void setSprint(Sprint sprint) {
+        this.sprint = sprint;
     }
 
     public void setDone(boolean done) {

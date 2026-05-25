@@ -50,6 +50,7 @@ function Homepage() {
   const [expandedTaskId, setExpandedTaskId] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [sprintId, setSprintId] = useState(1); //default sprint
 
   // isLoading is true while waiting for the backend to return the list
   // of items. We use this state to display a spinning circle:
@@ -63,7 +64,6 @@ function Homepage() {
   // In case of an error during the API call:
   const [error, setError] = useState();
 
-
   const [filters, setFilters] = useState({
     dateSort: "none",
     tags: [],
@@ -71,7 +71,7 @@ function Homepage() {
   });
 
   const handleCreateTask = (items) => {
-    const newItem= {
+    const newItem = {
       ...items,
       id: Math.max(...items.map((t) => t.id), 0) + 1,
     };
@@ -88,36 +88,62 @@ function Homepage() {
 
     if (filters.tags.length > 0) {
       filtered = filtered.filter((items) =>
-        items.tags.some((tag) => filters.tags.includes(tag))
+        items.tags.some((tag) => filters.tags.includes(tag)),
       );
     }
 
     if (filters.importance !== "all") {
       filtered = filtered.filter(
-        (items) => items.importance === filters.importance
+        (items) => items.importance === filters.importance,
       );
     }
 
     if (filters.dateSort === "added") {
-      filtered.sort(
-        (a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)
-      );
+      filtered.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
     } else if (filters.dateSort === "due") {
-      filtered.sort(
-        (a, b) => new Date(a.dateDue) - new Date(b.dateDue)
-      );
+      filtered.sort((a, b) => new Date(a.dateDue) - new Date(b.dateDue));
     }
 
     return filtered;
   };
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${API_LIST}/sprint?sprintId=${sprintId}`);
+        if (!response.ok) {
+          throw new Error("Failed task fecth");
+        }
+
+        const data = await response.json();
+
+        setItems(data);
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, [sprintId]);
 
   const filteredTasks = getFilteredTasks();
 
   return (
     <div className="home-container">
       <div className="home-content">
-
         <div className="header-buttons">
+          <input
+            type="number"
+            value={sprintId}
+            onChange={(e) => setSprintId(Number(e.target.value))}
+            placeholder="Sprint ID"
+            min="1"
+          />
+
           <div className="filter-button-wrapper">
             <button
               onClick={() => setShowFilterDropdown(!showFilterDropdown)}
@@ -150,17 +176,17 @@ function Homepage() {
 
         <div className="tasks-list">
           {filteredTasks.map((items) => (
-            <div key={items.id} className="task-item">
+            <div key={items.taskId} className="task-item">
               <div className="task-header">
                 <div
                   className="task-header-content"
-                  onClick={() => toggleTaskExpansion(items.id)}
+                  onClick={() => toggleTaskExpansion(items.taskId)}
                 >
                   <div>
-                    <span className="task-name">{items.name}</span>
+                    <span className="task-name">{items.taskName}</span>
 
                     <div className="task-tags">
-                      {items.tags.map((tag) => (
+                      {items.tags?.map((tag) => (
                         <span key={tag}>{tag}</span>
                       ))}
                     </div>
@@ -168,17 +194,17 @@ function Homepage() {
 
                   <div>
                     <span>
-                      {items.dateAdded} - {items.dateDue}
+                      {items.sprint?.startDate} - {items.sprint?.endDate}
                     </span>
                     <ChevronDown />
                   </div>
                 </div>
               </div>
 
-              {expandedTaskId === items.id && (
+              {expandedTaskId === items.taskId && (
                 <div className="task-expanded">
                   <p>{items.description}</p>
-                  <span>{items.importance.toUpperCase()}</span>
+                  <span>{items.priority.toUpperCase()}</span>
                 </div>
               )}
             </div>

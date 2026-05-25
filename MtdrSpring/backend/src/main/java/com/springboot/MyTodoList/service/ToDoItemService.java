@@ -17,24 +17,32 @@ public class ToDoItemService {
     @Autowired
     private ToDoItemRepository toDoItemRepository;
 
-    public List<ToDoItem> findAll(){
+    public List<ToDoItem> findAll() {
         List<ToDoItem> todoItems = toDoItemRepository.findAll();
         return todoItems;
     }
-    public ResponseEntity<ToDoItem> getItemById(int id){
+
+    public List<ToDoItem> findBySprint(int sprintId) {
+        return toDoItemRepository.findAll()
+                .stream()
+                .filter(item -> item.getSprint().getSprintId() == sprintId)
+                .toList();
+    }
+
+    public ResponseEntity<ToDoItem> getItemById(int id) {
         Optional<ToDoItem> todoData = toDoItemRepository.findById(id);
-        if (todoData.isPresent()){
+        if (todoData.isPresent()) {
             return new ResponseEntity<>(todoData.get(), HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    public ToDoItem getToDoItemById(int id){
+    public ToDoItem getToDoItemById(int id) {
         Optional<ToDoItem> todoData = toDoItemRepository.findById(id);
-        if (todoData.isPresent()){
+        if (todoData.isPresent()) {
             return todoData.get();
-        }else{
+        } else {
             return null;
         }
     }
@@ -48,10 +56,6 @@ public class ToDoItemService {
 
     public List<ToDoItem> findByUserId(int userId) {
         return toDoItemRepository.findByUser_UserId(userId);
-    }
-
-    public List<ToDoItem> findBySprintId(int sprintId) {
-        return toDoItemRepository.findBySprint_SprintId(sprintId);
     }
 
     public List<ToDoItem> findActiveByUserAndSprint(int userId, int sprintId) {
@@ -71,38 +75,32 @@ public class ToDoItemService {
         if (toDoItem.getPriority() == null) {
             toDoItem.setPriority(ToDoItem.TaskPriority.MEDIUM);
         }
+    public ToDoItem addToDoItem(ToDoItem toDoItem) {
         return toDoItemRepository.save(toDoItem);
     }
-
 
     public boolean deleteToDoItem(int id) {
         try {
             toDoItemRepository.deleteById(id);
             return true;
-        } catch (Exception e) {
+        }catch(Exception e){
             return false;
         }
     }
-
 
     public ToDoItem updateToDoItem(int id, ToDoItem td) {
         Optional<ToDoItem> toDoItemData = toDoItemRepository.findById(id);
         if (toDoItemData.isPresent()) {
             ToDoItem toDoItem = toDoItemData.get();
             toDoItem.setTaskId(id);
-            toDoItem.setTaskName(td.getTaskName());
+            toDoItem.setCreatedAt(td.getCreatedAt());
             toDoItem.setDescription(td.getDescription());
-            toDoItem.setStoryPoints(td.getStoryPoints());
-            toDoItem.setExpectedHours(td.getExpectedHours());
-            toDoItem.setPriority(td.getPriority());
-            toDoItem.setStatus(td.getStatus());
-            toDoItem.setCreation_ts(td.getCreation_ts());
-            toDoItem.setStartDate(td.getStartDate());
-            toDoItem.setCompletionDate(td.getCompletionDate());
             toDoItem.setDone(td.isDone());
             return toDoItemRepository.save(toDoItem);
         } else {
             return null;
         }
     }
+    
+
 }

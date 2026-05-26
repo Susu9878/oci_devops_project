@@ -13,11 +13,16 @@ function Layout() {
         <nav>
       <div className="header">
         <div className="header-container">
+          {/* 
           <img src={userIcon} className="icon" alt="user" />
           <h3 className="user-role">
             USER
             <strong>position</strong>
           </h3>
+          */}
+          <div>
+            <Link to="/login" className="iconLogin"><Menu /></Link>
+          </div>
         </div>
       </div>
       <div className="styledBar" />
@@ -28,6 +33,7 @@ function Layout() {
           <Link to="/" className="linkStyle">Home</Link>
           <Link to="/analytics" className="linkStyle">Analytics</Link>
           <Link to="/feature" className="linkStyle">Feature</Link>
+          <Link to="/hours" className="linkStyle">Register hours</Link>
         </div>
       </div>
       

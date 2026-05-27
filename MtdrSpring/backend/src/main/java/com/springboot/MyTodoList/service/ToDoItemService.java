@@ -66,8 +66,8 @@ public class ToDoItemService {
 
 
     public ToDoItem addToDoItem(ToDoItem toDoItem) {
-        if (toDoItem.getCreation_ts() == null) {
-            toDoItem.setCreation_ts(OffsetDateTime.now());
+        if (toDoItem.getCreatedAt() == null) {
+            toDoItem.setCreatedAt(OffsetDateTime.now());
         }
         if (toDoItem.getStatus() == null) {
             toDoItem.setStatus(ToDoItem.TaskStatus.NOT_STARTED);
@@ -75,7 +75,7 @@ public class ToDoItemService {
         if (toDoItem.getPriority() == null) {
             toDoItem.setPriority(ToDoItem.TaskPriority.MEDIUM);
         }
-    public ToDoItem addToDoItem(ToDoItem toDoItem) {
+
         return toDoItemRepository.save(toDoItem);
     }
 

@@ -65,29 +65,6 @@ public class ToDoItemController {
         }
     }
 
-    //GET BY SPRINT 2
-    @GetMapping(value = "/todolist/sprint/{sprintId}")
-    public ResponseEntity<List<ToDoItem>> getToDoItemsBySprint(@PathVariable int sprintId) {
-        try {
-            List<ToDoItem> items = toDoItemService.findBySprintId(sprintId);
-            return new ResponseEntity<>(items, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // GET BY SPRINT 2 USER 3
-    @GetMapping(value = "/todolist/user/{userId}/sprint/{sprintId}/active")
-    public ResponseEntity<List<ToDoItem>> getActiveByUserAndSprint(
-            @PathVariable int userId,
-            @PathVariable int sprintId) {
-        try {
-            List<ToDoItem> items = toDoItemService.findActiveByUserAndSprint(userId, sprintId);
-            return new ResponseEntity<>(items, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     //@CrossOrigin
     @PostMapping(value = "/todolist")

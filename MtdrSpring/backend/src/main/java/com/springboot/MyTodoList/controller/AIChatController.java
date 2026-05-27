@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class AIChatController {
 
-    @Value("${anthropic.api.key}")
+    @Value("${anthropic_api_key}")
     private String anthropicApiKey;
 
     @Autowired

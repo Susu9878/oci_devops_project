@@ -32,7 +32,6 @@
 
 .form-label {
   display: block;
-  font-family: 'Open_Sans:Regular', sans-serif;
   font-weight: normal;
   color: #201e1c;
   font-size: 16px;
@@ -48,7 +47,6 @@
   border: 2px solid #c5b39c;
   border-radius: 5px;
   padding: 8px 16px;
-  font-family: 'Open_Sans:Regular', sans-serif;
   font-size: 16px;
 }
 
@@ -83,7 +81,6 @@
 }
 
 .form-checkbox-label {
-  font-family: 'Open_Sans:Regular', sans-serif;
   font-weight: normal;
   color: #201e1c;
   font-size: 16px;
@@ -102,7 +99,6 @@
   flex: 1;
   border-radius: 5px;
   padding: 12px 24px;
-  font-family: 'Open_Sans:Regular', sans-serif;
   font-size: 18px;
   border: none;
   cursor: pointer;

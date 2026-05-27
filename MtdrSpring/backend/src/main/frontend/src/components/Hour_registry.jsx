@@ -1,15 +1,57 @@
+import { useState } from "react";
 import "./styledComponents/hourRegistry.css"
 
 function Hour_Registry(){
+    const [hours, setHours] = useState('');
+    const [workDay, setworkDay] = useState('');
+    const [taskId, setTaskId] = useState('');
+    const [isPending, setIsPending] = useState(false);
+
+    
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const registry = {hours,workDay,taskId}
+        setIsPending(true);
+        
+         fetch("http://localhost:8080/todolist/worklogs", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            
+            body: JSON.stringify(registry)
+            }).then(() => {
+                console.log('Hours registered');
+                setIsPending(false);
+            })
+        }
+
     return(
         <div className="registry">
-            <h1>Register work hours</h1>
-
-            <h2>Hello user</h2>
-            <h3>Hours worked:</h3>
-            <input />
-            <h3>Work day: </h3>
-            
+            <h1>Work hours Registry</h1>
+            <form onSubmit={handleSubmit}>
+                <label> Hours worked: </label>
+                <input
+                    type= "number"
+                    value={hours}
+                    onChange={(e) => setHours(e.target.value)}
+                />
+                <label> Work day: </label>
+                <input
+                    type= "number"
+                    value={workDay}
+                    onChange={(e) => setworkDay(e.target.value)}
+                />
+                <label> Task ID: </label>
+                <input
+                    type= "number"
+                    value={taskId}
+                    onChange={(e) => setTaskId(e.target.value)}
+                />
+                {!isPending && <button>Register hours</button>}
+                {isPending && <button disabled>Registering hours...</button>}
+                
+            </form>
 
 
         </div>

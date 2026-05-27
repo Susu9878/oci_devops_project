@@ -31,7 +31,6 @@ export default function CreateTask({ onClose, onCreate }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal-content"
         onClick={(e) => e.stopPropagation()}
@@ -146,6 +145,5 @@ export default function CreateTask({ onClose, onCreate }) {
           </div>
         </form>
       </div>
-    </div>
   );
 }

@@ -33,7 +33,14 @@ function Layout() {
           <Link to="/" className="linkStyle">Home</Link>
           <Link to="/analytics" className="linkStyle">Analytics</Link>
           <Link to="/feature" className="linkStyle">Feature</Link>
-          <Link to="/hours" className="linkStyle">Register hours</Link>
+          <li className="dropdown">
+            Management
+            <div className="dropdown-content">
+              <Link to="/task" className="linkStyle">Add task</Link>
+              <Link to="/hours" className="linkStyle">Register hours</Link>
+            </div>
+          </li>
+          
         </div>
       </div>
       

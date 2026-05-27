@@ -1,25 +1,18 @@
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
-
 .modal-content {
-  background-color: #e4d9cb;
-  border-radius: 6px;
-  padding: 32px;
-  width: 600px;
-  max-height: 80vh;
-  overflow-y: auto;
+    background: #e4d9cb;
+    color: #201e1c;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: max(12px, min(2vw, 18px)); /*calc(1vw + 1vmin);*/
+    margin: 105px 1em 1em 40px;
+    padding: 1rem;
+    position: relative;
+    border-radius: 0.5rem;
+    height: 45rem;
 }
 
 .modal-title {
-  font-family: 'Open_Sans:Regular', sans-serif;
-  font-weight: normal;
   color: #201e1c;
   font-size: 28px;
   margin-bottom: 24px;

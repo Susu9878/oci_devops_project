@@ -96,3 +96,17 @@
 .iconLogin{
   color: #fff6e6;
 }
+
+.dropdown {
+  cursor: pointer;
+}
+
+.dropdown-content {
+  display: none;
+  flex-direction: column;
+  padding-left: 10px;
+}
+
+.dropdown:hover .dropdown-content {
+  display: flex;
+}

@@ -1,8 +1,12 @@
 package com.springboot.MyTodoList.util;
 
 import com.springboot.MyTodoList.model.ToDoItem;
+import com.springboot.MyTodoList.model.ToDoItem.TaskStatus;
 import com.springboot.MyTodoList.service.DeepSeekService;
 import com.springboot.MyTodoList.service.ToDoItemService;
+
+import static org.mockito.Mockito.calls;
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,45 +80,101 @@ public class BotActions {
         exit = true;
     }
 
-    public void fnDone() {
-        if (!(requestText.indexOf(BotLabels.DONE.getLabel()) != -1) || exit)
+    /*
+     * public void fnDone() {
+     * if (!(requestText.indexOf(BotLabels.DONE.getLabel()) != -1) || exit)
+     * return;
+     * 
+     * String done = requestText.substring(0,
+     * requestText.indexOf(BotLabels.DASH.getLabel()));
+     * Integer id = Integer.valueOf(done);
+     * 
+     * try {
+     * 
+     * ToDoItem item = todoService.getToDoItemById(id);
+     * // TODO REPLACE WITH STATUS and completion date
+     * item.setDone(true);
+     * todoService.updateToDoItem(id, item);
+     * BotHelper.sendMessageToTelegram(chatId, BotMessages.ITEM_DONE.getMessage(),
+     * telegramClient);
+     * 
+     * } catch (Exception e) {
+     * logger.error(e.getLocalizedMessage(), e);
+     * }
+     * exit = true;
+     * }
+     * 
+     * public void fnUndo() {
+     * if (requestText.indexOf(BotLabels.UNDO.getLabel()) == -1 || exit)
+     * return;
+     * 
+     * String undo = requestText.substring(0,
+     * requestText.indexOf(BotLabels.DASH.getLabel()));
+     * Integer id = Integer.valueOf(undo);
+     * 
+     * try {
+     * 
+     * ToDoItem item = todoService.getToDoItemById(id);
+     * item.setDone(false);
+     * todoService.updateToDoItem(id, item);
+     * BotHelper.sendMessageToTelegram(chatId, BotMessages.ITEM_UNDONE.getMessage(),
+     * telegramClient);
+     * 
+     * } catch (Exception e) {
+     * logger.error(e.getLocalizedMessage(), e);
+     * }
+     * exit = true;
+     * }
+     */
+
+    public void fnUpdateStatus() {
+        if (exit)
             return;
 
-        String done = requestText.substring(0, requestText.indexOf(BotLabels.DASH.getLabel()));
-        Integer id = Integer.valueOf(done);
-
         try {
+            String[] parts = requestText.split("-");
+            if (parts.length != 2)
+                return;
 
-            ToDoItem item = todoService.getToDoItemById(id);
-            item.setDone(true);
-            todoService.updateToDoItem(id, item);
-            BotHelper.sendMessageToTelegram(chatId, BotMessages.ITEM_DONE.getMessage(), telegramClient);
+            Integer id = Integer.valueOf(parts[0]);
+            String action = parts[1].trim().toUpperCase();
+            ToDoItem task = todoService.getToDoItemById(id);
 
+            switch (action) {
+                case "DONE":
+                    task.setStatus(TaskStatus.DONE);
+                    break;
+                case "UNDO":
+                    task.setStatus(TaskStatus.NOT_STARTED);
+                    task.setCompletionDate(null);
+                    break;
+                case "START":
+                    task.setStatus(TaskStatus.IN_PROGRESS);
+                    if (task.getStartDate() == null) {
+                        task.setStartDate(OffsetDateTime.now());
+                    }
+                    break;
+                case "RESET":
+                    task.setStatus(TaskStatus.NOT_STARTED);
+                    task.setStartDate(null);
+                    task.setCompletionDate(null);
+                    break;
+                default:
+                    return;
+            }
+
+            todoService.updateToDoItem(id, task);
+
+            BotHelper.sendMessageToTelegram(
+                    chatId,
+                    "Task updated to: " + task.getStatus(),
+                    telegramClient);
+
+            exit = true;
         } catch (Exception e) {
             logger.error(e.getLocalizedMessage(), e);
         }
-        exit = true;
-    }
 
-    public void fnUndo() {
-        if (requestText.indexOf(BotLabels.UNDO.getLabel()) == -1 || exit)
-            return;
-
-        String undo = requestText.substring(0,
-                requestText.indexOf(BotLabels.DASH.getLabel()));
-        Integer id = Integer.valueOf(undo);
-
-        try {
-
-            ToDoItem item = todoService.getToDoItemById(id);
-            item.setDone(false);
-            todoService.updateToDoItem(id, item);
-            BotHelper.sendMessageToTelegram(chatId, BotMessages.ITEM_UNDONE.getMessage(), telegramClient);
-
-        } catch (Exception e) {
-            logger.error(e.getLocalizedMessage(), e);
-        }
-        exit = true;
     }
 
     public void fnDelete() {
@@ -144,6 +204,7 @@ public class BotActions {
         exit = true;
     }
 
+    // TODO REFACTOR ALL
     public void fnListAll() {
         if (!(requestText.equals(BotCommands.TODO_LIST.getCommand())
                 || requestText.equals(BotLabels.LIST_ALL_ITEMS.getLabel())
@@ -205,6 +266,7 @@ public class BotActions {
         exit = true;
     }
 
+    // TODO DEPRECATE OR REFACTOR
     public void fnAddItem() {
         logger.info("Adding item");
         if (!(requestText.contains(BotCommands.ADD_ITEM.getCommand())

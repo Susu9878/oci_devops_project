@@ -66,6 +66,7 @@ public class ToDoItem {
     private Sprint sprint;
 
     // TODO delete later
+    @Deprecated
     @Column(name = "done")
     private boolean done;
 

@@ -1,9 +1,13 @@
 package com.springboot.MyTodoList.util;
 
+import com.springboot.MyTodoList.model.Sprint;
 import com.springboot.MyTodoList.model.ToDoItem;
+import com.springboot.MyTodoList.model.User;
 import com.springboot.MyTodoList.model.ToDoItem.TaskStatus;
 import com.springboot.MyTodoList.service.DeepSeekService;
+import com.springboot.MyTodoList.service.SprintService;
 import com.springboot.MyTodoList.service.ToDoItemService;
+import com.springboot.MyTodoList.service.UserService;
 
 import static org.mockito.Mockito.calls;
 
@@ -13,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
@@ -25,14 +30,20 @@ public class BotActions {
     long chatId;
     TelegramClient telegramClient;
     boolean exit;
+    private Integer userId;
 
     ToDoItemService todoService;
     DeepSeekService deepSeekService;
+    UserService userService;
+    SprintService sprintService;
 
-    public BotActions(TelegramClient tc, ToDoItemService ts, DeepSeekService ds) {
+    public BotActions(TelegramClient tc, ToDoItemService ts, DeepSeekService ds, UserService us, SprintService ss) {
         telegramClient = tc;
         todoService = ts;
         deepSeekService = ds;
+        userService = us;
+        sprintService = ss;
+
         exit = false;
     }
 
@@ -64,6 +75,14 @@ public class BotActions {
         return deepSeekService;
     }
 
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
     public void fnStart() {
         if (!(requestText.equals(BotCommands.START_COMMAND.getCommand())
                 || requestText.equals(BotLabels.SHOW_MAIN_SCREEN.getLabel())) || exit)
@@ -73,59 +92,13 @@ public class BotActions {
                 ReplyKeyboardMarkup
                         .builder()
                         .keyboardRow(
-                                new KeyboardRow(BotLabels.LIST_ALL_ITEMS.getLabel(), BotLabels.ADD_NEW_ITEM.getLabel()))
+                                new KeyboardRow(BotLabels.LIST_ACTIVE_TASKS.getLabel(),
+                                        BotLabels.ADD_NEW_ITEM.getLabel()))
                         .keyboardRow(new KeyboardRow(BotLabels.SHOW_MAIN_SCREEN.getLabel(),
                                 BotLabels.HIDE_MAIN_SCREEN.getLabel()))
                         .build());
         exit = true;
     }
-
-    /*
-     * public void fnDone() {
-     * if (!(requestText.indexOf(BotLabels.DONE.getLabel()) != -1) || exit)
-     * return;
-     * 
-     * String done = requestText.substring(0,
-     * requestText.indexOf(BotLabels.DASH.getLabel()));
-     * Integer id = Integer.valueOf(done);
-     * 
-     * try {
-     * 
-     * ToDoItem item = todoService.getToDoItemById(id);
-     * // TODO REPLACE WITH STATUS and completion date
-     * item.setDone(true);
-     * todoService.updateToDoItem(id, item);
-     * BotHelper.sendMessageToTelegram(chatId, BotMessages.ITEM_DONE.getMessage(),
-     * telegramClient);
-     * 
-     * } catch (Exception e) {
-     * logger.error(e.getLocalizedMessage(), e);
-     * }
-     * exit = true;
-     * }
-     * 
-     * public void fnUndo() {
-     * if (requestText.indexOf(BotLabels.UNDO.getLabel()) == -1 || exit)
-     * return;
-     * 
-     * String undo = requestText.substring(0,
-     * requestText.indexOf(BotLabels.DASH.getLabel()));
-     * Integer id = Integer.valueOf(undo);
-     * 
-     * try {
-     * 
-     * ToDoItem item = todoService.getToDoItemById(id);
-     * item.setDone(false);
-     * todoService.updateToDoItem(id, item);
-     * BotHelper.sendMessageToTelegram(chatId, BotMessages.ITEM_UNDONE.getMessage(),
-     * telegramClient);
-     * 
-     * } catch (Exception e) {
-     * logger.error(e.getLocalizedMessage(), e);
-     * }
-     * exit = true;
-     * }
-     */
 
     public void fnUpdateStatus() {
         if (exit)
@@ -138,36 +111,37 @@ public class BotActions {
 
             Integer id = Integer.valueOf(parts[0]);
             String action = parts[1].trim().toUpperCase();
-            ToDoItem task = todoService.getToDoItemById(id);
+            ToDoItem item = todoService.getToDoItemById(id);
 
             switch (action) {
                 case "DONE":
-                    task.setStatus(TaskStatus.DONE);
+                    item.setStatus(TaskStatus.DONE);
+                    item.setCompletionDate(OffsetDateTime.now());
                     break;
                 case "UNDO":
-                    task.setStatus(TaskStatus.NOT_STARTED);
-                    task.setCompletionDate(null);
+                    item.setStatus(TaskStatus.NOT_STARTED);
+                    item.setCompletionDate(null);
                     break;
                 case "START":
-                    task.setStatus(TaskStatus.IN_PROGRESS);
-                    if (task.getStartDate() == null) {
-                        task.setStartDate(OffsetDateTime.now());
+                    item.setStatus(TaskStatus.IN_PROGRESS);
+                    if (item.getStartDate() == null) {
+                        item.setStartDate(OffsetDateTime.now());
                     }
                     break;
                 case "RESET":
-                    task.setStatus(TaskStatus.NOT_STARTED);
-                    task.setStartDate(null);
-                    task.setCompletionDate(null);
+                    item.setStatus(TaskStatus.NOT_STARTED);
+                    item.setStartDate(null);
+                    item.setCompletionDate(null);
                     break;
                 default:
                     return;
             }
 
-            todoService.updateToDoItem(id, task);
+            todoService.updateToDoItem(id, item);
 
             BotHelper.sendMessageToTelegram(
                     chatId,
-                    "Task updated to: " + task.getStatus(),
+                    "Task updated to: " + item.getStatus(),
                     telegramClient);
 
             exit = true;
@@ -187,7 +161,7 @@ public class BotActions {
 
         try {
             todoService.deleteToDoItem(id);
-            BotHelper.sendMessageToTelegram(chatId, BotMessages.ITEM_DELETED.getMessage(), telegramClient);
+            BotHelper.sendMessageToTelegram(chatId, BotMessages.TASK_DELETED.getMessage(), telegramClient);
 
         } catch (Exception e) {
             logger.error(e.getLocalizedMessage(), e);
@@ -196,22 +170,31 @@ public class BotActions {
     }
 
     public void fnHide() {
-        if (requestText.equals(BotCommands.HIDE_COMMAND.getCommand())
-                || requestText.equals(BotLabels.HIDE_MAIN_SCREEN.getLabel()) && !exit)
+        if ((requestText.equals(BotCommands.HIDE_COMMAND.getCommand())
+                || requestText.equals(BotLabels.HIDE_MAIN_SCREEN.getLabel()))
+                && !exit)
             BotHelper.sendMessageToTelegram(chatId, BotMessages.BYE.getMessage(), telegramClient);
         else
             return;
         exit = true;
     }
 
-    // TODO REFACTOR ALL
-    public void fnListAll() {
-        if (!(requestText.equals(BotCommands.TODO_LIST.getCommand())
-                || requestText.equals(BotLabels.LIST_ALL_ITEMS.getLabel())
-                || requestText.equals(BotLabels.MY_TODO_LIST.getLabel())) || exit)
+    public void fnListActiveSprintTasks() {
+        if (userId == null) {
+            BotHelper.sendMessageToTelegram(
+                    chatId,
+                    "Please login first using:\n/login <userId>",
+                    telegramClient);
+
+            exit = true;
             return;
-        logger.info("todoSvc: " + todoService);
-        List<ToDoItem> allItems = todoService.findAll();
+        }
+        if (!(requestText.equals(BotCommands.TASK_LIST.getCommand())
+                || requestText.equals(BotLabels.LIST_ACTIVE_TASKS.getLabel())))
+            return;
+
+        List<ToDoItem> tasks = todoService.findTasksByUserAndActiveSprint(userId);
+
         ReplyKeyboardMarkup keyboardMarkup = ReplyKeyboardMarkup.builder()
                 .resizeKeyboard(true)
                 .oneTimeKeyboard(false)
@@ -220,49 +203,50 @@ public class BotActions {
 
         List<KeyboardRow> keyboard = new ArrayList<>();
 
-        // command back to main screen
-        KeyboardRow mainScreenRowTop = new KeyboardRow();
-        mainScreenRowTop.add(BotLabels.SHOW_MAIN_SCREEN.getLabel());
-        keyboard.add(mainScreenRowTop);
+        // top controls
+        KeyboardRow topRow = new KeyboardRow();
+        topRow.add(BotLabels.SHOW_MAIN_SCREEN.getLabel());
+        keyboard.add(topRow);
 
-        KeyboardRow firstRow = new KeyboardRow();
-        firstRow.add(BotLabels.ADD_NEW_ITEM.getLabel());
-        keyboard.add(firstRow);
+        for (ToDoItem item : tasks) {
 
-        KeyboardRow myTodoListTitleRow = new KeyboardRow();
-        myTodoListTitleRow.add(BotLabels.MY_TODO_LIST.getLabel());
-        keyboard.add(myTodoListTitleRow);
+            KeyboardRow row = new KeyboardRow();
 
-        List<ToDoItem> activeItems = allItems.stream().filter(item -> item.isDone() == false)
-                .collect(Collectors.toList());
+            row.add(item.getTaskName());
 
-        for (ToDoItem item : activeItems) {
-            KeyboardRow currentRow = new KeyboardRow();
-            currentRow.add(item.getDescription());
-            currentRow.add(item.getTaskId() + BotLabels.DASH.getLabel() + BotLabels.DONE.getLabel());
-            keyboard.add(currentRow);
+            switch (item.getStatus()) {
+
+                case NOT_STARTED, NOT_DONE:
+                    row.add(item.getTaskId() + "-START");
+                    break;
+
+                case IN_PROGRESS:
+                    row.add(item.getTaskId() + "-DONE");
+                    row.add(item.getTaskId() + "-RESET");
+                    break;
+
+                case DONE:
+                    row.add(item.getTaskId() + "-UNDO");
+                    break;
+            }
+
+            row.add(item.getTaskId() + "-DELETE");
+
+            keyboard.add(row);
         }
 
-        List<ToDoItem> doneItems = allItems.stream().filter(item -> item.isDone() == true)
-                .collect(Collectors.toList());
-
-        for (ToDoItem item : doneItems) {
-            KeyboardRow currentRow = new KeyboardRow();
-            currentRow.add(item.getDescription());
-            currentRow.add(item.getTaskId() + BotLabels.DASH.getLabel() + BotLabels.UNDO.getLabel());
-            currentRow.add(item.getTaskId() + BotLabels.DASH.getLabel() + BotLabels.DELETE.getLabel());
-            keyboard.add(currentRow);
-        }
-
-        // command back to main screen
-        KeyboardRow mainScreenRowBottom = new KeyboardRow();
-        mainScreenRowBottom.add(BotLabels.SHOW_MAIN_SCREEN.getLabel());
-        keyboard.add(mainScreenRowBottom);
+        KeyboardRow bottomRow = new KeyboardRow();
+        bottomRow.add(BotLabels.ADD_NEW_ITEM.getLabel());
+        keyboard.add(bottomRow);
 
         keyboardMarkup.setKeyboard(keyboard);
 
-        //
-        BotHelper.sendMessageToTelegram(chatId, BotLabels.MY_TODO_LIST.getLabel(), telegramClient, keyboardMarkup);//
+        BotHelper.sendMessageToTelegram(
+                chatId,
+                "Active Sprint Tasks",
+                telegramClient,
+                keyboardMarkup);
+
         exit = true;
     }
 
@@ -273,7 +257,7 @@ public class BotActions {
                 || requestText.contains(BotLabels.ADD_NEW_ITEM.getLabel())) || exit)
             return;
         logger.info("Adding item by BotHelper");
-        BotHelper.sendMessageToTelegram(chatId, BotMessages.TYPE_NEW_TODO_ITEM.getMessage(), telegramClient);
+        BotHelper.sendMessageToTelegram(chatId, BotMessages.TYPE_NEW_TASK.getMessage(), telegramClient);
         exit = true;
     }
 
@@ -281,12 +265,22 @@ public class BotActions {
         if (exit)
             return;
         ToDoItem newItem = new ToDoItem();
+
+        ResponseEntity<User> response = userService.getUserById(userId);
+        User user = response.getBody();
+
+        Sprint activeSprint = sprintService.findActiveSprintByUserId(userId);
+
+        newItem.setUser(user);
+        newItem.setSprint(activeSprint);
+
+        newItem.setTaskName(requestText);
         newItem.setDescription(requestText);
         newItem.setCreatedAt(OffsetDateTime.now());
-        newItem.setDone(false);
+        newItem.setStatus(TaskStatus.NOT_STARTED);
         todoService.addToDoItem(newItem);
 
-        BotHelper.sendMessageToTelegram(chatId, BotMessages.NEW_ITEM_ADDED.getMessage(), telegramClient, null);
+        BotHelper.sendMessageToTelegram(chatId, BotMessages.TASK_ADDED.getMessage(), telegramClient, null);
     }
 
     public void fnLLM() {

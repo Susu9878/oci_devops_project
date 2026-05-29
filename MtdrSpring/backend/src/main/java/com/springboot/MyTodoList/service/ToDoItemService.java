@@ -1,5 +1,6 @@
 package com.springboot.MyTodoList.service;
 
+import com.springboot.MyTodoList.model.Sprint;
 import com.springboot.MyTodoList.model.ToDoItem;
 import com.springboot.MyTodoList.repository.ToDoItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,4 +74,12 @@ public class ToDoItemService {
         }
     }
 
+    public List<ToDoItem> findTasksByUserAndActiveSprint(int userId) {
+        return findAll().stream()
+                .filter(task -> task.getUser() != null)
+                .filter(task -> task.getSprint() != null)
+                .filter(task -> task.getUser().getUserId() == userId)
+                .filter(task -> task.getSprint().getStatus() == Sprint.SprintStatus.ACTIVE)
+                .toList();
+    }
 }

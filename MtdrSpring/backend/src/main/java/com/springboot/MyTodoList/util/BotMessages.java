@@ -10,6 +10,11 @@ public enum BotMessages {
 	ITEM_DELETED("Item deleted! Select /todolist to return to the list of todo items, or /start to go to the main screen."),
 	TYPE_NEW_TODO_ITEM("Type a new todo item below and press the send button (blue arrow) on the rigth-hand side."),
 	NEW_ITEM_ADDED("New item added! Select /todolist to return to the list of todo items, or /start to go to the main screen."),
+	REGISTER_WORK_HOURS_TASK_ID("Please enter the task ID you wish to save hours to, or /start to go to the main screen."),
+	REGISTER_WORK_HOURS_USER_ID("Please enter the user ID you wish to save hours to, or /start to go to the main screen."),
+	REGISTER_WORK_HOURS_WORKED_DAY("Please enter the day you wish to save hours for, or /start to go to the main screen."),
+	REGISTER_WORK_HOURS_WORKED_HOURS("Please enter the number of hours worked and press send, or /start to go to the main screen."),
+	WORK_HOURS_REGISTERED("Worked hours registered! Select /start to go to the main screen."),
 	BYE("Bye! Select /start to resume!");
 
 	private String message;

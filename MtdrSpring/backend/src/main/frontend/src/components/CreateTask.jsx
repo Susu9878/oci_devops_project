@@ -8,8 +8,7 @@ export default function CreateTask({ onClose, onCreate }) {
     description: "",
     dateAdded: new Date().toISOString().split("T")[0],
     dateDue: "",
-    tags: "",
-    importance: "medium",
+    priority: "pending",
   });
 
   const handleSubmit = (e) => {
@@ -22,11 +21,7 @@ export default function CreateTask({ onClose, onCreate }) {
       description: formData.description,
       dateAdded: formData.dateAdded,
       dateDue: formData.dateDue,
-      tags: formData.tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
-      importance: formData.importance,
+      priority: formData.priority,
     });
   };
 
@@ -99,28 +94,13 @@ export default function CreateTask({ onClose, onCreate }) {
           </div>
 
           <div className="form-group">
-            <label className="form-label">
-              Tags (comma-separated)
-            </label>
-            <input
-              type="text"
-              value={formData.tags}
-              onChange={(e) =>
-                setFormData({ ...formData, tags: e.target.value })
-              }
-              placeholder="e.g., design, frontend, urgent"
-              className="form-input"
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Importance</label>
+            <label className="form-label">Priority</label>
             <select
-              value={formData.importance}
+              value={formData.priority}
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  importance: e.target.value,
+                  priority: e.target.value,
                 })
               }
               className="form-select"

@@ -13,15 +13,15 @@ function Layout() {
         <nav>
       <div className="header">
         <div className="header-container">
-          {/* 
+
           <img src={userIcon} className="icon" alt="user" />
           <h3 className="user-role">
             USER
             <strong>position</strong>
           </h3>
-          */}
+          <Link to="/login"><button className="loginButton">Login</button></Link>
           <div>
-            <Link to="/login" className="iconLogin"><Menu /></Link>
+
           </div>
         </div>
       </div>

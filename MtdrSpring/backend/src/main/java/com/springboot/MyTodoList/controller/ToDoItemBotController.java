@@ -82,7 +82,7 @@ public class ToDoItemBotController implements SpringLongPollingBot, LongPollingS
 				loggedUsers.put(chatId, userId);
 				BotHelper.sendMessageToTelegram(
 						chatId,
-						"Logged in as user " + userId,
+						"Logged in as user " + userId + " type Main Screen to see more options.",
 						telegramClient);
 			} catch (Exception e) {
 				BotHelper.sendMessageToTelegram(
@@ -99,7 +99,9 @@ public class ToDoItemBotController implements SpringLongPollingBot, LongPollingS
 				sprintService);
 		actions.setRequestText(messageTextFromTelegram);
 		actions.setChatId(chatId);
-		actions.setUserId(userId.intValue());
+		if (userId != null) {
+			actions.setUserId(userId.intValue());
+		}
 
 		if (actions.getTodoService() == null) {
 			logger.info("todosvc error");

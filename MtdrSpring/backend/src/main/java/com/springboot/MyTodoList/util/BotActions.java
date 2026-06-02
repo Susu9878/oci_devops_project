@@ -101,17 +101,22 @@ public class BotActions {
     }
 
     public void fnUpdateStatus() {
+        logger.info("fnUpdateStatus called with [{}]", requestText);
+
         if (exit)
             return;
 
         try {
             String[] parts = requestText.split("-");
+            // logger.info("parts.length={}", parts.length);
             if (parts.length != 2)
                 return;
 
             Integer id = Integer.valueOf(parts[0]);
             String action = parts[1].trim().toUpperCase();
+            // logger.info("id={} action={}", id, action);
             ToDoItem item = todoService.getToDoItemById(id);
+            // logger.info("before status={}", item.getStatus());
 
             switch (action) {
                 case "DONE":
@@ -180,6 +185,7 @@ public class BotActions {
     }
 
     public void fnListActiveSprintTasks() {
+        // logger.info("userId={}", userId);
         if (userId == null) {
             BotHelper.sendMessageToTelegram(
                     chatId,
@@ -194,13 +200,13 @@ public class BotActions {
             return;
 
         List<ToDoItem> tasks = todoService.findTasksByUserAndActiveSprint(userId);
+        // logger.info("Found {} tasks", tasks.size());
 
         ReplyKeyboardMarkup keyboardMarkup = ReplyKeyboardMarkup.builder()
                 .resizeKeyboard(true)
                 .oneTimeKeyboard(false)
                 .selective(true)
                 .build();
-
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         // top controls
@@ -209,43 +215,48 @@ public class BotActions {
         keyboard.add(topRow);
 
         for (ToDoItem item : tasks) {
+            KeyboardRow taskrow = new KeyboardRow();
+            taskrow.add("[" + item.getStatus() + "] " + item.getTaskName());
+            keyboard.add(taskrow);
 
-            KeyboardRow row = new KeyboardRow();
-
-            row.add(item.getTaskName());
-
+            KeyboardRow actionsRow = new KeyboardRow();
             switch (item.getStatus()) {
 
-                case NOT_STARTED, NOT_DONE:
-                    row.add(item.getTaskId() + "-START");
+                case NOT_STARTED:
+                    actionsRow.add(item.getTaskId() + "-START");
                     break;
 
                 case IN_PROGRESS:
-                    row.add(item.getTaskId() + "-DONE");
-                    row.add(item.getTaskId() + "-RESET");
+                    actionsRow.add(item.getTaskId() + "-DONE");
+                    actionsRow.add(item.getTaskId() + "-RESET");
                     break;
 
                 case DONE:
-                    row.add(item.getTaskId() + "-UNDO");
+                    actionsRow.add(item.getTaskId() + "-UNDO");
                     break;
             }
 
-            row.add(item.getTaskId() + "-DELETE");
+            // actionsRow.add(item.getTaskId() + "-DELETE");
 
-            keyboard.add(row);
+            keyboard.add(actionsRow);
         }
 
         KeyboardRow bottomRow = new KeyboardRow();
         bottomRow.add(BotLabels.ADD_NEW_ITEM.getLabel());
         keyboard.add(bottomRow);
-
         keyboardMarkup.setKeyboard(keyboard);
 
-        BotHelper.sendMessageToTelegram(
-                chatId,
-                "Active Sprint Tasks",
-                telegramClient,
-                keyboardMarkup);
+        try {
+            logger.info("step1.h");
+            BotHelper.sendMessageToTelegram(
+                    chatId,
+                    "Active Sprint Tasks",
+                    telegramClient,
+                    keyboardMarkup);
+
+        } catch (Exception e) {
+            logger.error("Telegram send failed", e);
+        }
 
         exit = true;
     }

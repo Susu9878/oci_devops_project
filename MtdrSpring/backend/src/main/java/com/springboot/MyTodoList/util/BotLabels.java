@@ -10,7 +10,8 @@ public enum BotLabels {
 	UNDO("UNDO"),
 	DELETE("DELETE"),
 	MY_TODO_LIST("MY TODO LIST"),
-	DASH("-");
+	DASH("-"),
+	REGISTER_WORK_HOURS("Register Work Hours");
 
 	private String label;
 

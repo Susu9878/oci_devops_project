@@ -55,19 +55,19 @@ public class Review {
         this.comment = comment;
     }
 
-    public User getUserId() {
+    public User getUser() {
         return user;
     }
 
-    public void setUserId(User userId) {
+    public void setUser(User userId) {
         this.user = userId;
     }
 
-    public ToDoItem getTaskId() {
+    public ToDoItem getTask() {
         return task;
     }
 
-    public void setTaskId(ToDoItem taskId) {
+    public void setTask(ToDoItem taskId) {
         this.task = taskId;
     }
     

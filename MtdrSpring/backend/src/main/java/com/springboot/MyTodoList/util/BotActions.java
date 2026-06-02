@@ -23,7 +23,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
-public class BotActions{
+public class BotActions {
 
     private static final Logger logger = LoggerFactory.getLogger(BotActions.class);
 
@@ -57,31 +57,31 @@ public class BotActions{
         exit  = false;
     }
 
-    public void setRequestText(String cmd){
-        requestText=cmd;
+    public void setRequestText(String cmd) {
+        requestText = cmd;
     }
 
-    public void setChatId(long chId){
-        chatId=chId;
+    public void setChatId(long chId) {
+        chatId = chId;
     }
 
-    public void setTelegramClient(TelegramClient tc){
-        telegramClient=tc;
+    public void setTelegramClient(TelegramClient tc) {
+        telegramClient = tc;
     }
 
-    public void setTodoService(ToDoItemService tsvc){
+    public void setTodoService(ToDoItemService tsvc) {
         todoService = tsvc;
     }
 
-    public ToDoItemService getTodoService(){
+    public ToDoItemService getTodoService() {
         return todoService;
     }
 
-    public void setDeepSeekService(DeepSeekService dssvc){
+    public void setDeepSeekService(DeepSeekService dssvc) {
         deepSeekService = dssvc;
     }
 
-    public DeepSeekService getDeepSeekService(){
+    public DeepSeekService getDeepSeekService() {
         return deepSeekService;
     }
 
@@ -110,22 +110,25 @@ public class BotActions{
     }
 
     public void fnStart() {
-        if (!(requestText.equals(BotCommands.START_COMMAND.getCommand()) || requestText.equals(BotLabels.SHOW_MAIN_SCREEN.getLabel())) || exit) 
+        if (!(requestText.equals(BotCommands.START_COMMAND.getCommand())
+                || requestText.equals(BotLabels.SHOW_MAIN_SCREEN.getLabel())) || exit)
             return;
 
-        BotHelper.sendMessageToTelegram(chatId, BotMessages.HELLO_MYTODO_BOT.getMessage(), telegramClient,  ReplyKeyboardMarkup
-            .builder()
-            .keyboardRow(new KeyboardRow(BotLabels.LIST_ALL_ITEMS.getLabel(),BotLabels.ADD_NEW_ITEM.getLabel()))
-            .keyboardRow(new KeyboardRow(BotLabels.SHOW_MAIN_SCREEN.getLabel(),BotLabels.HIDE_MAIN_SCREEN.getLabel()))
-            .build()
-        );
+        BotHelper.sendMessageToTelegram(chatId, BotMessages.HELLO_MYTODO_BOT.getMessage(), telegramClient,
+                ReplyKeyboardMarkup
+                        .builder()
+                        .keyboardRow(
+                                new KeyboardRow(BotLabels.LIST_ALL_ITEMS.getLabel(), BotLabels.ADD_NEW_ITEM.getLabel()))
+                        .keyboardRow(new KeyboardRow(BotLabels.SHOW_MAIN_SCREEN.getLabel(),
+                                BotLabels.HIDE_MAIN_SCREEN.getLabel()))
+                        .build());
         exit = true;
     }
 
     public void fnDone() {
-        if (!(requestText.indexOf(BotLabels.DONE.getLabel()) != -1) || exit) 
+        if (!(requestText.indexOf(BotLabels.DONE.getLabel()) != -1) || exit)
             return;
-            
+
         String done = requestText.substring(0, requestText.indexOf(BotLabels.DASH.getLabel()));
         Integer id = Integer.valueOf(done);
 
@@ -163,7 +166,7 @@ public class BotActions{
         exit = true;
     }
 
-    public void fnDelete(){
+    public void fnDelete() {
         if (requestText.indexOf(BotLabels.DELETE.getLabel()) == -1 || exit)
             return;
 
@@ -181,27 +184,27 @@ public class BotActions{
         exit = true;
     }
 
-    public void fnHide(){
+    public void fnHide() {
         if (requestText.equals(BotCommands.HIDE_COMMAND.getCommand())
-				|| requestText.equals(BotLabels.HIDE_MAIN_SCREEN.getLabel()) && !exit)
-			BotHelper.sendMessageToTelegram(chatId, BotMessages.BYE.getMessage(), telegramClient);
+                || requestText.equals(BotLabels.HIDE_MAIN_SCREEN.getLabel()) && !exit)
+            BotHelper.sendMessageToTelegram(chatId, BotMessages.BYE.getMessage(), telegramClient);
         else
             return;
         exit = true;
     }
 
-    public void fnListAll(){
+    public void fnListAll() {
         if (!(requestText.equals(BotCommands.TODO_LIST.getCommand())
-				|| requestText.equals(BotLabels.LIST_ALL_ITEMS.getLabel())
-				|| requestText.equals(BotLabels.MY_TODO_LIST.getLabel())) || exit)
+                || requestText.equals(BotLabels.LIST_ALL_ITEMS.getLabel())
+                || requestText.equals(BotLabels.MY_TODO_LIST.getLabel())) || exit)
             return;
-        logger.info("todoSvc: "+todoService);
+        logger.info("todoSvc: " + todoService);
         List<ToDoItem> allItems = todoService.findAll();
         ReplyKeyboardMarkup keyboardMarkup = ReplyKeyboardMarkup.builder()
-            .resizeKeyboard(true)
-            .oneTimeKeyboard(false)
-            .selective(true)
-            .build();
+                .resizeKeyboard(true)
+                .oneTimeKeyboard(false)
+                .selective(true)
+                .build();
 
         List<KeyboardRow> keyboard = new ArrayList<>();
 
@@ -247,46 +250,46 @@ public class BotActions{
         keyboardMarkup.setKeyboard(keyboard);
 
         //
-        BotHelper.sendMessageToTelegram(chatId, BotLabels.MY_TODO_LIST.getLabel(), telegramClient,  keyboardMarkup);//
+        BotHelper.sendMessageToTelegram(chatId, BotLabels.MY_TODO_LIST.getLabel(), telegramClient, keyboardMarkup);//
         exit = true;
     }
 
-    public void fnAddItem(){
+    public void fnAddItem() {
         logger.info("Adding item");
-		if (!(requestText.contains(BotCommands.ADD_ITEM.getCommand())
-				|| requestText.contains(BotLabels.ADD_NEW_ITEM.getLabel())) || exit )
+        if (!(requestText.contains(BotCommands.ADD_ITEM.getCommand())
+                || requestText.contains(BotLabels.ADD_NEW_ITEM.getLabel())) || exit)
             return;
         logger.info("Adding item by BotHelper");
         BotHelper.sendMessageToTelegram(chatId, BotMessages.TYPE_NEW_TODO_ITEM.getMessage(), telegramClient);
         exit = true;
     }
 
-    public void fnElse(){
-        if(exit)
+    public void fnElse() {
+        if (exit)
             return;
         ToDoItem newItem = new ToDoItem();
         newItem.setDescription(requestText);
-        newItem.setCreation_ts(OffsetDateTime.now());
+        newItem.setCreatedAt(OffsetDateTime.now());
         newItem.setDone(false);
         todoService.addToDoItem(newItem);
 
         BotHelper.sendMessageToTelegram(chatId, BotMessages.NEW_ITEM_ADDED.getMessage(), telegramClient, null);
     }
 
-    public void fnLLM(){
+    public void fnLLM() {
         logger.info("Calling LLM");
         if (!(requestText.contains(BotCommands.LLM_REQ.getCommand())) || exit)
             return;
-        
+
         String prompt = "Dame los datos del clima en mty";
         String out = "<empty>";
-        try{
+        try {
             out = deepSeekService.generateText(prompt);
-        }catch(Exception exc){
+        } catch (Exception exc) {
 
         }
 
-        BotHelper.sendMessageToTelegram(chatId, "LLM: "+out, telegramClient, null);
+        BotHelper.sendMessageToTelegram(chatId, "LLM: " + out, telegramClient, null);
 
     }
 

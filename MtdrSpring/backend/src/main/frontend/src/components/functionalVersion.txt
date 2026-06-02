@@ -1,18 +1,8 @@
-/*
-## MyToDoReact version 1.0.
-##
-## Copyright (c) 2022 Oracle, Inc.
-## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
-*/
-/*
- * This is the application main React component. We're using "function"
- * components in this application. No "class" components should be used for
- * consistency.
- * @author  jean.de.lavarene@oracle.com
- */
+import "./styledComponents/homepage.css";
+
 import React, { useState, useEffect } from "react";
-import NewItem from "./NewItem";
-import API_LIST from "./API";
+import NewItem from "../NewItem";
+import API_LIST from "../API";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Button, TableBody, CircularProgress } from "@mui/material";
 import Moment from "react-moment";
@@ -23,7 +13,8 @@ import Moment from "react-moment";
  * and two tables: one that lists the todo items that are to be done and another
  * one with the items that are already done.
  */
-function App() {
+
+function Homepage() {
   // isLoading is true while waiting for the backend to return the list
   // of items. We use this state to display a spinning circle:
   const [isLoading, setLoading] = useState(false);
@@ -53,7 +44,7 @@ function App() {
       })
       .then(
         (result) => {
-          const remainingItems = items.filter((item) => item.taskId !== deleteId);
+          const remainingItems = items.filter((item) => item.id !== deleteId);
           setItems(remainingItems);
         },
         (error) => {
@@ -65,14 +56,14 @@ function App() {
     event.preventDefault();
     modifyItem(id, description, done).then(
       (result) => {
-        reloadOneItem(id);
+        reloadOneIteam(id);
       },
       (error) => {
         setError(error);
       },
     );
   }
-  function reloadOneItem(id) {
+  function reloadOneIteam(id) {
     fetch(API_LIST + "/" + id)
       .then((response) => {
         if (response.ok) {
@@ -84,7 +75,7 @@ function App() {
       .then(
         (result) => {
           const items2 = items.map((x) =>
-            x.taskId === id
+            x.id === id
               ? {
                   ...x,
                   description: result.description,
@@ -184,7 +175,7 @@ function App() {
       .then(
         (result) => {
           var id = result.headers.get("location");
-          var newItem = { "taskId": id, description: text };
+          var newItem = { id: id, description: text };
           setItems([newItem, ...items]);
           setInserting(false);
         },
@@ -196,7 +187,7 @@ function App() {
   }
   return (
     <div className="App">
-      <h1>MY TODO LIST</h1>
+      <h1>MY TO DO LIST</h1>
       <NewItem addItem={addItem} isInserting={isInserting} />
       {error && <p>Error: {error.message}</p>}
       {isLoading && <CircularProgress />}
@@ -207,7 +198,7 @@ function App() {
               {items.map(
                 (item) =>
                   !item.done && (
-                    <tr key={item.taskId}>
+                    <tr key={item.id}>
                       <td className="description">{item.description}</td>
                       {/*<td>{JSON.stringify(item, null, 2) }</td>*/}
                       <td className="date">
@@ -222,7 +213,7 @@ function App() {
                           onClick={(event) =>
                             toggleDone(
                               event,
-                              item.taskId,
+                              item.id,
                               item.description,
                               !item.done,
                             )
@@ -243,7 +234,7 @@ function App() {
               {items.map(
                 (item) =>
                   item.done && (
-                    <tr key={item.taskId}>
+                    <tr key={item.id}>
                       <td className="description">{item.description}</td>
                       <td className="date">
                         <Moment format="MMM Do hh:mm:ss">
@@ -257,7 +248,7 @@ function App() {
                           onClick={(event) =>
                             toggleDone(
                               event,
-                              item.taskId,
+                              item.id,
                               item.description,
                               !item.done,
                             )
@@ -272,7 +263,7 @@ function App() {
                           startIcon={<DeleteIcon />}
                           variant="contained"
                           className="DeleteButton"
-                          onClick={() => deleteItem(item.taskId)}
+                          onClick={() => deleteItem(item.id)}
                           size="small"
                         >
                           Delete
@@ -288,4 +279,5 @@ function App() {
     </div>
   );
 }
-export default App;
+
+export default Homepage;

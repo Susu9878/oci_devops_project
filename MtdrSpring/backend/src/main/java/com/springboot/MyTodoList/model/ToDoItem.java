@@ -182,7 +182,6 @@ public class ToDoItem {
     public User getUser() {
         return user;
     }
-
     public void setUser(User user) {
         this.user = user;
     }
@@ -194,7 +193,6 @@ public class ToDoItem {
     public void setSprint(Sprint sprint) {
         this.sprint = sprint;
     }
-
     public void setDone(boolean done) {
         this.done = done;
     }

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +47,35 @@ public class ToDoItemService {
         }
     }
 
+    // Filteringf gets (?)
+
+
+    public List<ToDoItem> findByStatus(ToDoItem.TaskStatus status) {
+        return toDoItemRepository.findByStatus(status);
+    }
+
+    public List<ToDoItem> findByUserId(int userId) {
+        return toDoItemRepository.findByUser_UserId(userId);
+    }
+
+    public List<ToDoItem> findActiveByUserAndSprint(int userId, int sprintId) {
+        return toDoItemRepository.findActiveTasksByUserAndSprint(userId, sprintId);
+    }
+
+    //MUTATIONS
+
+
     public ToDoItem addToDoItem(ToDoItem toDoItem) {
+        if (toDoItem.getCreatedAt() == null) {
+            toDoItem.setCreatedAt(OffsetDateTime.now());
+        }
+        if (toDoItem.getStatus() == null) {
+            toDoItem.setStatus(ToDoItem.TaskStatus.NOT_STARTED);
+        }
+        if (toDoItem.getPriority() == null) {
+            toDoItem.setPriority(ToDoItem.TaskPriority.MEDIUM);
+        }
+
         return toDoItemRepository.save(toDoItem);
     }
 
@@ -54,7 +83,7 @@ public class ToDoItemService {
         try {
             toDoItemRepository.deleteById(id);
             return true;
-        } catch (Exception e) {
+        }catch(Exception e){
             return false;
         }
     }
@@ -72,5 +101,6 @@ public class ToDoItemService {
             return null;
         }
     }
+    
 
 }

@@ -38,6 +38,35 @@ public class ToDoItemController {
     }
 
     // @CrossOrigin
+
+    // GET by status
+    @GetMapping(value = "/todolist/status/{status}")
+    public ResponseEntity<List<ToDoItem>> getToDoItemsByStatus(
+            @PathVariable ToDoItem.TaskStatus status) {
+        try {
+            List<ToDoItem> items = toDoItemService.findByStatus(status);
+            return new ResponseEntity<>(items, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            // fired when the path value doesn't match any enum constant
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // GET by assigned user
+    @GetMapping(value = "/todolist/user/{userId}")
+    public ResponseEntity<List<ToDoItem>> getToDoItemsByUser(@PathVariable int userId) {
+        try {
+            List<ToDoItem> items = toDoItemService.findByUserId(userId);
+            return new ResponseEntity<>(items, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    //@CrossOrigin
     @PostMapping(value = "/todolist")
     public ResponseEntity<ToDoItem> addToDoItem(@RequestBody ToDoItem todoItem) throws Exception {
         ToDoItem td = toDoItemService.addToDoItem(todoItem);

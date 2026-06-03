@@ -27,32 +27,31 @@ function Hour_Registry(){
         }
 
     return(
-        <div className="container-temp">
+        <div className="formContainer">
             <h1>Work hours Registry</h1>
             <form onSubmit={handleSubmit}>
-                <label> Hours worked: </label>
+                <p className="labelP"> Hours worked: </p>
                 <input
                     type= "number"
                     value={hours}
                     onChange={(e) => setHours(e.target.value)}
                 />
-                <label> Work day: </label>
+                <p className="labelP"> Work day: </p>
                 <input
                     type= "number"
                     value={workDay}
                     onChange={(e) => setworkDay(e.target.value)}
                 />
-                <label> Task ID: </label>
+                <p className="labelP"> Task ID: </p>
                 <input
                     type= "number"
                     value={taskId}
                     onChange={(e) => setTaskId(e.target.value)}
                 />
-                {!isPending && <button>Register hours</button>}
+                {!isPending && <button className="hourBtn">Register hours</button>}
                 {isPending && <button disabled>Registering hours...</button>}
                 
             </form>
-
 
         </div>
     );

@@ -13,6 +13,7 @@ import static org.mockito.Mockito.calls;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -199,7 +200,10 @@ public class BotActions {
                 || requestText.equals(BotLabels.LIST_ACTIVE_TASKS.getLabel())))
             return;
 
-        List<ToDoItem> tasks = todoService.findTasksByUserAndActiveSprint(userId);
+        List<ToDoItem> tasks = todoService.findTasksByUserAndActiveSprint(userId)
+                .stream()
+                .sorted(Comparator.comparing(ToDoItem::getStatus))
+                .toList();
         // logger.info("Found {} tasks", tasks.size());
 
         ReplyKeyboardMarkup keyboardMarkup = ReplyKeyboardMarkup.builder()

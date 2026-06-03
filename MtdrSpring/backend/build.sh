@@ -1,7 +1,7 @@
 #!/bin/bash
-
+TAG=$(git rev-parse --short HEAD)
 export IMAGE_NAME=todolistapp-springboot
-
+export IMAGE_VERSION=${IMAGE_VERSION:-$(date +%s)}
 
 echo "Using IMAGE_VERSION=$IMAGE_VERSION"
 

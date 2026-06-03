@@ -2,19 +2,6 @@
   position: relative;
 }
 
-.home-content {
-    background: #e4d9cb;
-    color: #201e1c;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: max(12px, min(2vw, 18px)); /*calc(1vw + 1vmin);*/
-    margin: 105px 1em 1em 40px;
-    padding: 1rem;
-    position: relative;
-    border-radius: 0.5rem;
-}
-
 /* Header buttons */
 .header-buttons {
   display: flex;
@@ -113,10 +100,7 @@
 }
 
 .task-name {
-  font-family: 'Open_Sans:Regular', sans-serif;
   font-weight: normal;
-  color: #1e1e1e;
-  font-size: 20px;
   font-variation-settings: 'wdth' 100;
 }
 
@@ -135,7 +119,6 @@
 }
 
 .task-tag-text {
-  font-family: 'Open_Sans:Regular', sans-serif;
   font-weight: normal;
   color: #11bb8e;
   font-size: 16px;
@@ -149,10 +132,7 @@
 }
 
 .task-dates {
-  font-family: 'Open_Sans:Regular', sans-serif;
   font-weight: normal;
-  color: #1e1e1e;
-  font-size: 20px;
   font-variation-settings: 'wdth' 100;
 }
 
@@ -179,10 +159,8 @@
 }
 
 .task-description {
-  font-family: 'Open_Sans:Regular', sans-serif;
   font-weight: normal;
-  color: #1e1e1e;
-  font-size: 16px;
+  font-size: 16vw;
   margin-bottom: 8px;
   font-variation-settings: 'wdth' 100;
 }
@@ -195,10 +173,8 @@
 }
 
 .task-importance-label {
-  font-family: 'Open_Sans:Regular', sans-serif;
   font-weight: normal;
-  color: #1e1e1e;
-  font-size: 14px;
+  font-size: 14vw;
   font-variation-settings: 'wdth' 100;
 }
 
@@ -206,7 +182,7 @@
   padding: 4px 8px;
   border-radius: 4px;
   color: white;
-  font-size: 14px;
+  font-size: 14vw;
 }
 
 .task-importance-badge.high {

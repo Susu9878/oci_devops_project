@@ -30,14 +30,16 @@ function Layout() {
     <div className="layout-container">
       <div className="sidebar">
         <div className="side-container">
-          <Link to="/" className="linkStyle">Home</Link>
-          <Link to="/analytics" className="linkStyle">Analytics</Link>
-          <Link to="/feature" className="linkStyle">Feature</Link>
+          <Link to="/" className="linkStyle"><p>Home</p></Link>
+          <Link to="/analytics" className="linkStyle"><p>Analytics</p></Link>
+          <Link to="/feature" className="linkStyle"><p>Feature</p></Link>
           <li className="dropdown">
-            Management
+            <p>
+              Management
+            </p>
             <div className="dropdown-content">
-              <Link to="/task" className="linkStyle">Add task</Link>
-              <Link to="/hours" className="linkStyle">Register hours</Link>
+              <Link to="/task" className="linkStyle"><p>Add task</p></Link>
+              <Link to="/hours" className="linkStyle"><p>Register hours</p></Link>
             </div>
           </li>
           

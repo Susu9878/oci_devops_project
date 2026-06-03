@@ -27,10 +27,10 @@ export default function CreateTask({ onClose, onCreate }) {
 
   return (
       <div
-        className="modal-content"
+        className="container-temp"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="modal-title">Create New Task</h2>
+        <h2>Create New Task</h2>
 
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-group">

@@ -142,7 +142,7 @@ function Analytics() {
   return (
     <div className="analytics">
       <div className="page-header">
-        <h1 className="sprint-title">Analytics</h1>
+        <h1>Analytics</h1>
         <span className="project-manager">
           {" Team Id "}
           <input

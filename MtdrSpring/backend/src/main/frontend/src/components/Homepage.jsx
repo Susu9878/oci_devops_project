@@ -96,7 +96,7 @@ function Homepage() {
 
   return (
     <div className="home-container">
-      <div className="home-content">
+      <div className="container-temp">
         <div className="header-buttons">
           <input
             type="number"

@@ -1,8 +1,6 @@
-import "./styledComponents/feature.css"
-
 function AI_Feature(){
     return(
-        <div className="feature">
+        <div className="container-temp">
             <h1>AI FEATURE</h1>
         </div>
     );

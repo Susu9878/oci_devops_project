@@ -104,7 +104,7 @@ function Homepage() {
             onChange={(e) => setSprintId(Number(e.target.value))}
             placeholder="Sprint ID"
             min="1"
-            className="inputStyle"
+            className="inputStyleH"
           />
 
           <div className="filter-button-wrapper">

@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./styledComponents/createTask.css"
 
 
-export default function CreateTask({ onClose, onCreate }) {
+export default function CreateTask({ onCreate }) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -27,7 +27,7 @@ export default function CreateTask({ onClose, onCreate }) {
 
   return (
       <div
-        className="container-temp"
+        className="formContainer"
         onClick={(e) => e.stopPropagation()}
       >
         <h2>Create New Task</h2>
@@ -117,7 +117,6 @@ export default function CreateTask({ onClose, onCreate }) {
             </button>
             <button
               type="button"
-              onClick={onClose}
               className="form-cancel-button"
             >
               Cancel

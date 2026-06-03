@@ -1,9 +1,13 @@
-
+.formContainer{
+    width:40rem;
+    height: 100%;
+}
 
 .modal-form {
   display: flex;
   flex-direction: column;
   gap: 16px;
+
 }
 
 .form-group {
@@ -24,10 +28,11 @@
 .form-select {
   width: 100%;
   background-color: #fff6e6;
-  border: 2px solid #c5b39c;
+  border: 2px solid #a39480;
   border-radius: 5px;
   padding: 8px 16px;
   font-size: max(16px, min(2vw, 18px));
+
 }
 
 .form-textarea {
@@ -92,14 +97,14 @@
 }
 
 .form-submit-button:hover {
-  background-color: #2d6bb0;
+  background-color: #2264b1;
 }
 
 .form-cancel-button {
-  background-color: #c5b39c;
+  background-color: #ffc75e;
   color: #201e1c;
 }
 
 .form-cancel-button:hover {
-  background-color: #b8a68f;
+  background-color: #ffad14;
 }

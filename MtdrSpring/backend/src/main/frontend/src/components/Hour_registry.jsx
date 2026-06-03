@@ -28,7 +28,7 @@ function Hour_Registry(){
 
     return(
         <div className="formContainer">
-            <h1>Work hours Registry</h1>
+            <h2>Work Hours Registry</h2>
             <form onSubmit={handleSubmit}>
                 <p className="labelP"> Hours worked: </p>
                 <input

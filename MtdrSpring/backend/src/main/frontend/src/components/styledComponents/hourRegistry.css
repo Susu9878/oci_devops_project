@@ -25,14 +25,15 @@ form{
 }
 
 .labelP{
-    font-size: max(20px, min(2vw, 24px));
-    margin-top: 0.5rem;
+    font-size: max(16px, min(2vw, 18px));
+    margin-bottom: 0.5rem;
 }
 
 input{
     width: 100%;
     margin-bottom: 1rem;
     border-radius: 4px;
-    padding: 6px;
-    border-color: #8f8170;
+    padding: 10px;
+    background-color: #fff6e6;
+    border: 2px solid #a39480;
 }

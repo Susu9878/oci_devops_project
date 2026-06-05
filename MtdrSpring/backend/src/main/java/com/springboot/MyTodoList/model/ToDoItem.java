@@ -51,9 +51,9 @@ public class ToDoItem {
     private TaskStatus status = TaskStatus.NOT_STARTED;
     @Column(name = "CREATED_AT") // NOT NULL
     private OffsetDateTime createdAt;
-    @Column(name = "START_DATE")
+    @Column(name = "START_DATE") //null
     private OffsetDateTime startDate;
-    @Column(name = "COMPLETION_DATE")
+    @Column(name = "COMPLETION_DATE") //null
     private OffsetDateTime completionDate;
     // FK
     @ManyToOne
@@ -67,7 +67,7 @@ public class ToDoItem {
 
     // TODO delete later
     @Column(name = "done")
-    private boolean done;
+    private Boolean done = false;
 
     public ToDoItem() {
 
@@ -77,7 +77,7 @@ public class ToDoItem {
     @Transient
     @JsonProperty("done")
     public boolean isDone() {
-        return done;
+        return done != null && done;
     }
 
     public ToDoItem(Integer taskId, String taskName, String description,
@@ -193,7 +193,7 @@ public class ToDoItem {
     public void setSprint(Sprint sprint) {
         this.sprint = sprint;
     }
-    public void setDone(boolean done) {
+    public void setDone(Boolean done) {
         this.done = done;
     }
 

@@ -3,6 +3,7 @@ package com.springboot.MyTodoList.util;
 import com.springboot.MyTodoList.model.ToDoItem;
 import com.springboot.MyTodoList.service.DeepSeekService;
 import com.springboot.MyTodoList.service.ToDoItemService;
+import com.springboot.MyTodoList.DTO.ToDoItemRequestDTO;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,19 +78,14 @@ public class BotActions {
     }
 
     public void fnDone() {
-        if (!(requestText.indexOf(BotLabels.DONE.getLabel()) != -1) || exit)
-            return;
-
+        if (!(requestText.indexOf(BotLabels.DONE.getLabel()) != -1) || exit) return;
         String done = requestText.substring(0, requestText.indexOf(BotLabels.DASH.getLabel()));
         Integer id = Integer.valueOf(done);
-
         try {
-
             ToDoItem item = todoService.getToDoItemById(id);
             item.setDone(true);
-            todoService.updateToDoItem(id, item);
+            todoService.updateToDoItem(id, toDTO(item)); // <-- was: updateToDoItem(id, item)
             BotHelper.sendMessageToTelegram(chatId, BotMessages.ITEM_DONE.getMessage(), telegramClient);
-
         } catch (Exception e) {
             logger.error(e.getLocalizedMessage(), e);
         }
@@ -97,20 +93,14 @@ public class BotActions {
     }
 
     public void fnUndo() {
-        if (requestText.indexOf(BotLabels.UNDO.getLabel()) == -1 || exit)
-            return;
-
-        String undo = requestText.substring(0,
-                requestText.indexOf(BotLabels.DASH.getLabel()));
+        if (requestText.indexOf(BotLabels.UNDO.getLabel()) == -1 || exit) return;
+        String undo = requestText.substring(0, requestText.indexOf(BotLabels.DASH.getLabel()));
         Integer id = Integer.valueOf(undo);
-
         try {
-
             ToDoItem item = todoService.getToDoItemById(id);
             item.setDone(false);
-            todoService.updateToDoItem(id, item);
+            todoService.updateToDoItem(id, toDTO(item)); // <-- was: updateToDoItem(id, item)
             BotHelper.sendMessageToTelegram(chatId, BotMessages.ITEM_UNDONE.getMessage(), telegramClient);
-
         } catch (Exception e) {
             logger.error(e.getLocalizedMessage(), e);
         }
@@ -216,14 +206,10 @@ public class BotActions {
     }
 
     public void fnElse() {
-        if (exit)
-            return;
-        ToDoItem newItem = new ToDoItem();
-        newItem.setDescription(requestText);
-        newItem.setCreatedAt(OffsetDateTime.now());
-        newItem.setDone(false);
-        todoService.addToDoItem(newItem);
-
+        if (exit) return;
+        ToDoItemRequestDTO dto = new ToDoItemRequestDTO(); // <-- was: new ToDoItem()
+        dto.setDescription(requestText);
+        todoService.addToDoItem(dto);
         BotHelper.sendMessageToTelegram(chatId, BotMessages.NEW_ITEM_ADDED.getMessage(), telegramClient, null);
     }
 
@@ -242,6 +228,19 @@ public class BotActions {
 
         BotHelper.sendMessageToTelegram(chatId, "LLM: " + out, telegramClient, null);
 
+    }
+
+    private ToDoItemRequestDTO toDTO(ToDoItem item) {
+        ToDoItemRequestDTO dto = new ToDoItemRequestDTO();
+        dto.setTaskName(item.getTaskName());
+        dto.setDescription(item.getDescription());
+        dto.setStoryPoints(item.getStoryPoints());
+        dto.setExpectedHours(item.getExpectedHours());
+        if (item.getPriority() != null) dto.setPriority(item.getPriority().name());
+        if (item.getStatus() != null)   dto.setStatus(item.getStatus().name());
+        if (item.getUser() != null)     dto.setUserId(item.getUser().getUserId());
+        if (item.getSprint() != null)   dto.setSprintId(item.getSprint().getSprintId());
+        return dto;
     }
 
 }

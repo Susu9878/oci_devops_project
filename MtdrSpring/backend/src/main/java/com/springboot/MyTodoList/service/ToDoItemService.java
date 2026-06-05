@@ -1,7 +1,12 @@
 package com.springboot.MyTodoList.service;
 
+import com.springboot.MyTodoList.DTO.ToDoItemRequestDTO;
+import com.springboot.MyTodoList.model.Sprint;
 import com.springboot.MyTodoList.model.ToDoItem;
+import com.springboot.MyTodoList.model.User;
+import com.springboot.MyTodoList.repository.SprintRepository;
 import com.springboot.MyTodoList.repository.ToDoItemRepository;
+import com.springboot.MyTodoList.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +21,10 @@ public class ToDoItemService {
 
     @Autowired
     private ToDoItemRepository toDoItemRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private SprintRepository sprintRepository;
 
     public List<ToDoItem> findAll() {
         List<ToDoItem> todoItems = toDoItemRepository.findAll();
@@ -47,7 +56,7 @@ public class ToDoItemService {
         }
     }
 
-    // Filteringf gets (?)
+    // Filtering gets (?)
 
 
     public List<ToDoItem> findByStatus(ToDoItem.TaskStatus status) {
@@ -65,19 +74,27 @@ public class ToDoItemService {
     //MUTATIONS
 
 
-    public ToDoItem addToDoItem(ToDoItem toDoItem) {
-        if (toDoItem.getCreatedAt() == null) {
-            toDoItem.setCreatedAt(OffsetDateTime.now());
+    public ToDoItem addToDoItem(ToDoItemRequestDTO dto) {
+        ToDoItem item = dto.toEntity();
+
+        item.setCreatedAt(OffsetDateTime.now());
+        if (item.getStatus() == null)   item.setStatus(ToDoItem.TaskStatus.NOT_STARTED);
+        if (item.getPriority() == null) item.setPriority(ToDoItem.TaskPriority.MEDIUM);
+
+        if (dto.getUserId() != null) {
+            User user = userRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found: " + dto.getUserId()));
+            item.setUser(user);
         }
-        if (toDoItem.getStatus() == null) {
-            toDoItem.setStatus(ToDoItem.TaskStatus.NOT_STARTED);
-        }
-        if (toDoItem.getPriority() == null) {
-            toDoItem.setPriority(ToDoItem.TaskPriority.MEDIUM);
+        if (dto.getSprintId() != null) {
+            Sprint sprint = sprintRepository.findById(dto.getSprintId())
+                    .orElseThrow(() -> new IllegalArgumentException("Sprint not found: " + dto.getSprintId()));
+            item.setSprint(sprint);
         }
 
-        return toDoItemRepository.save(toDoItem);
+        return toDoItemRepository.save(item);
     }
+
 
     public boolean deleteToDoItem(int id) {
         try {
@@ -88,23 +105,29 @@ public class ToDoItemService {
         }
     }
 
-    public ToDoItem updateToDoItem(int id, ToDoItem td) {
-        Optional<ToDoItem> toDoItemData = toDoItemRepository.findById(id);
-        if (toDoItemData.isPresent()) {
-            ToDoItem toDoItem = toDoItemData.get();
-            toDoItem.setTaskName(td.getTaskName());
-            toDoItem.setDescription(td.getDescription());
-            toDoItem.setStoryPoints(td.getStoryPoints());
-            toDoItem.setExpectedHours(td.getExpectedHours());
-            toDoItem.setPriority(td.getPriority());
-            toDoItem.setStatus(td.getStatus());
-            toDoItem.setStartDate(td.getStartDate());
-            toDoItem.setCompletionDate(td.getCompletionDate());
-            toDoItem.setUser(td.getUser());
-            toDoItem.setSprint(td.getSprint());
-            return toDoItemRepository.save(toDoItem);
+    public ToDoItem updateToDoItem(int id, ToDoItemRequestDTO dto) {
+        ToDoItem item = toDoItemRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Task not found: " + id));
+
+        if (dto.getTaskName() != null)      item.setTaskName(dto.getTaskName());
+        if (dto.getDescription() != null)   item.setDescription(dto.getDescription());
+        if (dto.getStoryPoints() != null)   item.setStoryPoints(dto.getStoryPoints());
+        if (dto.getExpectedHours() != null) item.setExpectedHours(dto.getExpectedHours());
+        if (dto.getPriority() != null)      item.setPriority(ToDoItem.TaskPriority.valueOf(dto.getPriority()));
+        if (dto.getStatus() != null)        item.setStatus(ToDoItem.TaskStatus.valueOf(dto.getStatus()));
+
+        if (dto.getUserId() != null) {
+            User user = userRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found: " + dto.getUserId()));
+            item.setUser(user);
         }
-        return null;
+        if (dto.getSprintId() != null) {
+            Sprint sprint = sprintRepository.findById(dto.getSprintId())
+                    .orElseThrow(() -> new IllegalArgumentException("Sprint not found: " + dto.getSprintId()));
+            item.setSprint(sprint);
+        }
+
+        return toDoItemRepository.save(item);
     }
     
 

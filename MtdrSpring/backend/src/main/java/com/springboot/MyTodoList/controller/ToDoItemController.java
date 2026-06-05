@@ -1,5 +1,6 @@
 package com.springboot.MyTodoList.controller;
 
+import com.springboot.MyTodoList.DTO.ToDoItemRequestDTO;
 import com.springboot.MyTodoList.model.ToDoItem;
 import com.springboot.MyTodoList.service.ToDoItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,28 @@ import java.util.List;
 
 @RestController
 public class ToDoItemController {
+
     @Autowired
     private ToDoItemService toDoItemService;
+
+        /* GETS all tasks
+        [
+            {
+                taskId: num,
+                taskName: String,
+                description: String,
+                storyPoints: num,
+                expectedHours: num,
+                priority: "LOWEST" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",
+                status: "NOT_STARTED" | "IN_PROGRESS" | "DONE" | "NOT_DONE",
+                createdAt: DateTime,
+                startDate: DateTime,
+                completionDate: DateTime,
+                user: { userId, userName, ... },
+                sprint: { sprintId, sprintName, ... }
+            }
+        ]
+    */
 
     // @CrossOrigin
     @GetMapping(value = "/todolist")
@@ -21,12 +42,20 @@ public class ToDoItemController {
         return toDoItemService.findAll();
     }
 
+    /* GETS all tasks for a given sprint
+    query param: sprintId (int)
+    returns same shape as GET /todolist
+*/
     @GetMapping(value = "/todolist/sprint")
     public List<ToDoItem> getToDoItemsBySprint(@RequestParam int sprintId) {
         return toDoItemService.findBySprint(sprintId);
     }
 
     // @CrossOrigin
+        /* GETS a single task by id
+        path param: id (int)
+        returns single task object or 404 if not found
+    */
     @GetMapping(value = "/todolist/{id}")
     public ResponseEntity<ToDoItem> getToDoItemById(@PathVariable int id) {
         try {
@@ -39,15 +68,16 @@ public class ToDoItemController {
 
     // @CrossOrigin
 
-    // GET by status
-    @GetMapping(value = "/todolist/status/{status}")
-    public ResponseEntity<List<ToDoItem>> getToDoItemsByStatus(
-            @PathVariable ToDoItem.TaskStatus status) {
+    /* GETS all tasks filtered by status
+        path param: status — one of "NOT_STARTED" | "IN_PROGRESS" | "DONE" | "NOT_DONE"
+        returns same shape as GET /todolist
+        400 if status value is invalid
+    */
+    @GetMapping("/todolist/status/{status}")
+    public ResponseEntity<List<ToDoItem>> getToDoItemsByStatus(@PathVariable ToDoItem.TaskStatus status) {
         try {
-            List<ToDoItem> items = toDoItemService.findByStatus(status);
-            return new ResponseEntity<>(items, HttpStatus.OK);
+            return new ResponseEntity<>(toDoItemService.findByStatus(status), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            // fired when the path value doesn't match any enum constant
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -55,52 +85,88 @@ public class ToDoItemController {
     }
 
     // GET by assigned user
-    @GetMapping(value = "/todolist/user/{userId}")
+        /* GETS all tasks assigned to a user
+        path param: userId (int)
+        returns same shape as GET /todolist
+    */
+    @GetMapping("/todolist/user/{userId}")
     public ResponseEntity<List<ToDoItem>> getToDoItemsByUser(@PathVariable int userId) {
         try {
-            List<ToDoItem> items = toDoItemService.findByUserId(userId);
-            return new ResponseEntity<>(items, HttpStatus.OK);
+            return new ResponseEntity<>(toDoItemService.findByUserId(userId), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
-    //@CrossOrigin
-    @PostMapping(value = "/todolist")
-    public ResponseEntity<ToDoItem> addToDoItem(@RequestBody ToDoItem todoItem) throws Exception {
-        ToDoItem td = toDoItemService.addToDoItem(todoItem);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("location", "" + td.getTaskId());
-        responseHeaders.set("Access-Control-Expose-Headers", "location");
-        // URI location = URI.create(""+td.getID())
-
-        return ResponseEntity.ok()
-                .headers(responseHeaders).build();
-    }
-
-    // @CrossOrigin
-    @PutMapping(value = "todolist/{id}")
-    public ResponseEntity<ToDoItem> updateToDoItem(@RequestBody ToDoItem toDoItem, @PathVariable int id) {
+// Change these three signatures:
+    /* CREATES a new task
+        request body:
+        {
+            taskName: String,       (required)
+            description: String,    (required)
+            storyPoints: num,
+            expectedHours: num,
+            priority: "LOWEST" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",  (default: MEDIUM)
+            status: "NOT_STARTED" | "IN_PROGRESS" | "DONE" | "NOT_DONE",  (default: NOT_STARTED)
+            userId: num,
+            sprintId: num
+        }
+        returns 200 with location header set to the new taskId
+        400 if userId or sprintId don't exist
+    */
+    @PostMapping("/todolist")
+    public ResponseEntity<ToDoItem> addToDoItem(@RequestBody ToDoItemRequestDTO dto) {
         try {
-            ToDoItem toDoItem1 = toDoItemService.updateToDoItem(id, toDoItem);
-            System.out.println(toDoItem1.toString());
-            return new ResponseEntity<>(toDoItem1, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            ToDoItem created = toDoItemService.addToDoItem(dto);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("location", "" + created.getTaskId());
+            headers.set("Access-Control-Expose-Headers", "location");
+            return ResponseEntity.ok().headers(headers).build();
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    // @CrossOrigin
-    @DeleteMapping(value = "todolist/{id}")
-    public ResponseEntity<Boolean> deleteToDoItem(@PathVariable("id") int id) {
-        Boolean flag = false;
+    // fix PUT
+        /* UPDATES an existing task by id
+        path param: id (int)
+        request body (all fields optional, only sent fields are updated):
+        {
+            taskName: String,
+            description: String,
+            storyPoints: num,
+            expectedHours: num,
+            priority: "LOWEST" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",
+            status: "NOT_STARTED" | "IN_PROGRESS" | "DONE" | "NOT_DONE",
+            userId: num,
+            sprintId: num
+        }
+        returns updated task or 404 if not found
+    */
+    @PutMapping("/todolist/{id}")
+    public ResponseEntity<ToDoItem> updateToDoItem(@RequestBody ToDoItemRequestDTO dto, @PathVariable int id) {
         try {
-            flag = toDoItemService.deleteToDoItem(id);
-            return new ResponseEntity<>(flag, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(flag, HttpStatus.NOT_FOUND);
+            ToDoItem updated = toDoItemService.updateToDoItem(id, dto); // remove .toEntity()
+            return new ResponseEntity<>(updated, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
+    // GET methods return ToDoItemResponseDTO instead of ToDoItem — update return types accordingly
+    // @CrossOrigin
+
+    /* DELETES a task by id
+    path param: id (int)
+    returns true on success, 404 if not found
+*/
+    @DeleteMapping("/todolist/{id}")
+    public ResponseEntity<Boolean> deleteToDoItem(@PathVariable int id) {
+        try {
+            return new ResponseEntity<>(toDoItemService.deleteToDoItem(id), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+        }
+    }
 }

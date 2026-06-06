@@ -4,18 +4,23 @@ import com.springboot.MyTodoList.model.Sprint;
 import com.springboot.MyTodoList.model.ToDoItem;
 import com.springboot.MyTodoList.model.User;
 import com.springboot.MyTodoList.model.ToDoItem.TaskStatus;
+import com.springboot.MyTodoList.model.WorkLog;
 import com.springboot.MyTodoList.service.DeepSeekService;
 import com.springboot.MyTodoList.service.SprintService;
 import com.springboot.MyTodoList.service.ToDoItemService;
 import com.springboot.MyTodoList.service.UserService;
 
-import static org.mockito.Mockito.calls;
+import com.springboot.MyTodoList.service.WorkLogService;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -38,10 +43,26 @@ public class BotActions {
     UserService userService;
     SprintService sprintService;
 
-    public BotActions(TelegramClient tc, ToDoItemService ts, DeepSeekService ds, UserService us, SprintService ss) {
+    WorkLogService workedHourRegistrationService;
+    private static final Map<Long, WorkHoursRegistrationContext> workHoursRegistrationContexts = new ConcurrentHashMap<>();
+
+    enum WorkHoursRegistrationStage {
+        NONE, ASK_TASK_ID, ASK_USER_ID, ASK_WORKED_DAY, ASK_WORKED_HOURS
+    }
+
+    static class WorkHoursRegistrationContext {
+        WorkHoursRegistrationStage stage = WorkHoursRegistrationStage.NONE;
+        Integer taskId;
+        User user;
+        OffsetDateTime workedDay;
+    }
+
+    public BotActions(TelegramClient tc, ToDoItemService ts, DeepSeekService ds, UserService us, SprintService ss,
+            WorkLogService whrsvc) {
         telegramClient = tc;
         todoService = ts;
         deepSeekService = ds;
+        workedHourRegistrationService = whrsvc;
         userService = us;
         sprintService = ss;
 
@@ -82,6 +103,30 @@ public class BotActions {
 
     public Integer getUserId() {
         return userId;
+    }
+
+    public void setWorkedLogService(WorkLogService whrsvc) {
+        workedHourRegistrationService = whrsvc;
+    }
+
+    public WorkLogService getWorkLogService() {
+        return workedHourRegistrationService;
+    }
+
+    public void setUserService(UserService usvc) {
+        userService = usvc;
+    }
+
+    public UserService getUserService() {
+        return userService;
+    }
+
+    private WorkHoursRegistrationContext getRegistrationContext() {
+        return workHoursRegistrationContexts.computeIfAbsent(chatId, k -> new WorkHoursRegistrationContext());
+    }
+
+    private void clearRegistrationContext() {
+        workHoursRegistrationContexts.remove(chatId);
     }
 
     public void fnStart() {
@@ -226,7 +271,7 @@ public class BotActions {
             KeyboardRow actionsRow = new KeyboardRow();
             switch (item.getStatus()) {
 
-                case NOT_STARTED:
+                case NOT_STARTED, NOT_DONE:
                     actionsRow.add(item.getTaskId() + "-START");
                     break;
 
@@ -313,6 +358,93 @@ public class BotActions {
 
         BotHelper.sendMessageToTelegram(chatId, "LLM: " + out, telegramClient, null);
 
+    }
+
+    public void fnRegisterWorkHours() {
+        logger.info("Registering work hours");
+        WorkHoursRegistrationContext ctx = getRegistrationContext();
+        if (ctx.stage != WorkHoursRegistrationStage.NONE || exit)
+            return;
+        if (!(requestText.contains(BotCommands.REGISTER_WORK_HOURS.getCommand())
+                || requestText.contains(BotLabels.REGISTER_WORK_HOURS.getLabel())))
+            return;
+
+        ctx.stage = WorkHoursRegistrationStage.ASK_TASK_ID;
+        BotHelper.sendMessageToTelegram(chatId, BotMessages.REGISTER_WORK_HOURS_TASK_ID.getMessage(), telegramClient);
+        exit = true;
+    }
+
+    public void fnRegisterWorkHoursResponse() {
+        WorkHoursRegistrationContext ctx = getRegistrationContext();
+        if (exit)
+            return;
+
+        try {
+            switch (ctx.stage) {
+                case NONE: {
+                    return;
+                }
+                case ASK_TASK_ID: {
+                    int taskId = Integer.parseInt(requestText.trim());
+                    ToDoItem task = todoService.getToDoItemById(taskId);
+                    if (task == null) {
+                        BotHelper.sendMessageToTelegram(chatId, "Task ID not found. Please enter a valid task ID.",
+                                telegramClient);
+                        exit = true;
+                        return;
+                    }
+                    ctx.taskId = taskId;
+                    ctx.stage = WorkHoursRegistrationStage.ASK_USER_ID;
+                    BotHelper.sendMessageToTelegram(chatId, BotMessages.REGISTER_WORK_HOURS_USER_ID.getMessage(),
+                            telegramClient);
+                    break;
+                }
+                case ASK_USER_ID: {
+                    int userId = Integer.parseInt(requestText.trim());
+                    var userResponse = userService.getUserById(userId);
+                    if (!userResponse.getStatusCode().is2xxSuccessful() || userResponse.getBody() == null) {
+                        BotHelper.sendMessageToTelegram(chatId, "User ID not found. Please enter a valid user ID.",
+                                telegramClient);
+                        exit = true;
+                        return;
+                    }
+                    ctx.user = userResponse.getBody();
+                    ctx.stage = WorkHoursRegistrationStage.ASK_WORKED_DAY;
+                    BotHelper.sendMessageToTelegram(chatId, BotMessages.REGISTER_WORK_HOURS_WORKED_DAY.getMessage(),
+                            telegramClient);
+                    break;
+                }
+                case ASK_WORKED_DAY: {
+                    LocalDate workedDay = LocalDate.parse(requestText.trim());
+                    ctx.workedDay = workedDay.atStartOfDay().atOffset(ZoneOffset.UTC);
+                    ctx.stage = WorkHoursRegistrationStage.ASK_WORKED_HOURS;
+                    BotHelper.sendMessageToTelegram(chatId, BotMessages.REGISTER_WORK_HOURS_WORKED_HOURS.getMessage(),
+                            telegramClient);
+                    break;
+                }
+                case ASK_WORKED_HOURS: {
+                    double workedHours = Double.parseDouble(requestText.trim());
+                    WorkLog workLog = new WorkLog();
+                    workLog.setTaskId(todoService.getToDoItemById(ctx.taskId));
+                    workLog.setUserId(ctx.user);
+                    workLog.setWorkedDay(ctx.workedDay);
+                    workLog.setWorkedHours(workedHours);
+                    workLog.setCreatedAt(OffsetDateTime.now());
+                    workedHourRegistrationService.addWorkLog(workLog);
+                    BotHelper.sendMessageToTelegram(chatId, BotMessages.WORK_HOURS_REGISTERED.getMessage(),
+                            telegramClient);
+                    clearRegistrationContext();
+                    break;
+                }
+                default: {
+                    return;
+                }
+            }
+        } catch (NumberFormatException | DateTimeParseException e) {
+            BotHelper.sendMessageToTelegram(chatId, "Invalid input format. Please enter the value again.",
+                    telegramClient);
+        }
+        exit = true;
     }
 
 }

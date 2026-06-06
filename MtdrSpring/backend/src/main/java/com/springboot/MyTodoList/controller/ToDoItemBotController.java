@@ -5,6 +5,7 @@ import com.springboot.MyTodoList.service.DeepSeekService;
 import com.springboot.MyTodoList.service.SprintService;
 import com.springboot.MyTodoList.service.ToDoItemService;
 import com.springboot.MyTodoList.service.UserService;
+import com.springboot.MyTodoList.service.WorkLogService;
 import com.springboot.MyTodoList.util.BotActions;
 import com.springboot.MyTodoList.util.BotHelper;
 
@@ -31,6 +32,7 @@ public class ToDoItemBotController implements SpringLongPollingBot, LongPollingS
 	private ToDoItemService toDoItemService;
 	private DeepSeekService deepSeekService;
 	private SprintService sprintService;
+	private WorkLogService workedHourRegistrationService;
 	private UserService userService;
 	private final TelegramClient telegramClient;
 
@@ -50,14 +52,15 @@ public class ToDoItemBotController implements SpringLongPollingBot, LongPollingS
 		}
 	}
 
-	public ToDoItemBotController(BotProps bp, ToDoItemService tsvc, DeepSeekService ds, UserService us,
-			SprintService ss) {
+	public ToDoItemBotController(BotProps bp, ToDoItemService tsvc, DeepSeekService ds,
+			WorkLogService whrsvc, UserService usvc, SprintService ss) {
 		this.botProps = bp;
 		telegramClient = new OkHttpTelegramClient(getBotToken());
 		toDoItemService = tsvc;
 		deepSeekService = ds;
-		userService = us;
 		sprintService = ss;
+		workedHourRegistrationService = whrsvc;
+		userService = usvc;
 	}
 
 	@Override
@@ -96,7 +99,7 @@ public class ToDoItemBotController implements SpringLongPollingBot, LongPollingS
 		Long userId = loggedUsers.get(chatId);
 
 		BotActions actions = new BotActions(telegramClient, toDoItemService, deepSeekService, userService,
-				sprintService);
+				sprintService, workedHourRegistrationService);
 		actions.setRequestText(messageTextFromTelegram);
 		actions.setChatId(chatId);
 		if (userId != null) {
@@ -114,6 +117,8 @@ public class ToDoItemBotController implements SpringLongPollingBot, LongPollingS
 		actions.fnHide();
 		actions.fnListActiveSprintTasks();
 		actions.fnAddItem();
+		actions.fnRegisterWorkHours();
+		actions.fnRegisterWorkHoursResponse();
 		actions.fnLLM();
 		actions.fnElse();
 

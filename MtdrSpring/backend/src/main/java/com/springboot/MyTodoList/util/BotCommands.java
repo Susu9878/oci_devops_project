@@ -7,6 +7,7 @@ public enum BotCommands {
 	LOGIN("/login"),
 	TASK_LIST("/tasks"),
 	ADD_ITEM("/additem"),
+	REGISTER_WORK_HOURS("/registerworkhours"),
 	LLM_REQ("/llm");
 
 	private String command;

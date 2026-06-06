@@ -13,9 +13,9 @@ public enum BotLabels {
 	RESET("RESET"),
 	UNDO("UNDO"),
 	DELETE("DELETE"),
-
-	ACTIVE_SPRINT("ACTIVE SPRINT"),
-	DASH("-");
+	MY_TODO_LIST("MY TODO LIST"),
+	DASH("-"),
+	REGISTER_WORK_HOURS("Register Work Hours");
 
 	private String label;
 

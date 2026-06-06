@@ -45,19 +45,19 @@ spec:
     spec:
       containers:
         - name: todolistapp-springboot
-          image: %DOCKER_REGISTRY%/todolistapp-springboot:latest
+          image: mx-queretaro-1.ocir.io/axoynx02qynb/reacttodo/evley/todolistapp-springboot:0.1
           imagePullPolicy: Always
           env:
             - name: db_user
               value: "TODOUSER"
             - name: db_url
-              value: "jdbc:oracle:thin:@%TODO_PDB_NAME%_tp?TNS_ADMIN=/mtdrworkshop/creds"
+              value: "jdbc:oracle:thin:@reacttodoevley_tp?TNS_ADMIN=/mtdrworkshop/creds"
             - name: todo.table.name
               value: "todoitem"
             - name: driver_class_name
               value: "oracle.jdbc.OracleDriver"
             - name: OCI_REGION
-              value: "%OCI_REGION%"
+              value: "mx-queretaro-1"
             - name: dbpassword
               valueFrom:
                 secretKeyRef:
@@ -65,18 +65,13 @@ spec:
                   key: dbpassword
                   optional: true
             - name: ui_username
-              value: "%UI_USERNAME%"
+              value: "admin"
             - name: ui_password
               valueFrom:
                 secretKeyRef:
                   name: frontendadmin
                   key: password
                   optional: true
-            - name: anthropic_api_key
-              valueFrom:
-                secretKeyRef:
-                  name: anthropic-secret
-                  key: anthropic_api_key
           volumeMounts:
             - name: creds
               mountPath: /mtdrworkshop/creds

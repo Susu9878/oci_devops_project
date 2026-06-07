@@ -163,8 +163,15 @@ public class ToDoItem {
         this.createdAt = createdAt;
     }
 
-    public OffsetDateTime getStartDate() {
-        return startDate;
+    public User getUserId() {
+        return user;
+    }
+
+    // TODO delete later
+    @Transient
+    @JsonProperty("done")
+    public boolean isDone() {
+        return done;
     }
 
     public void setStartDate(OffsetDateTime startDate) {

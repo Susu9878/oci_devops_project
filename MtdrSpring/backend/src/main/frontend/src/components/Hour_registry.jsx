@@ -1,78 +1,95 @@
 import { useState } from "react";
-import "./styledComponents/hourRegistry.css"
+import "./styledComponents/hourRegistry.css";
 
-function Hour_Registry(){
-    const [hours, setHours] = useState('');
-    const [workDay, setworkDay] = useState('');
-    const [taskId, setTaskId] = useState('');
+function Hour_Registry() {
+    const [hours, setHours] = useState("");
+    const [workDay, setWorkDay] = useState("");
+    const [taskId, setTaskId] = useState("");
     const [isPending, setIsPending] = useState(false);
-    
-    const handleSubmit = (e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
         const registry = {
             workedHours: Number(hours),
             workedDay: `${workDay}T00:00:00Z`,
             taskId: Number(taskId)
-        }
+        };
+
+        console.log("Sending:", registry);
 
         try {
             setIsPending(true);
-            
-             const response = fetch("http://localhost:8080/todolist/worklogs", 
+
+            const response = await fetch(
+                "http://localhost:8080/todolist/worklogs",
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                body: JSON.stringify(registry)
-            });
+                    body: JSON.stringify(registry)
+                }
+            );
 
-            if(!response.ok){
+            if (!response.ok) {
                 throw new Error(`HTTP Error: ${response.status}`);
             }
 
             console.log("Hours registered successfully");
 
+            // Clear form after successful registration
             setHours("");
-            setworkDay("");
+            setWorkDay("");
             setTaskId("");
-        } catch(error){
+        } catch (error) {
             console.error("Error registering hours:", error);
-        }finally{
+        } finally {
             setIsPending(false);
         }
     };
 
-    return(
+    return (
         <div className="formContainer">
             <h2>Work Hours Registry</h2>
+
             <form onSubmit={handleSubmit}>
-                <p className="labelP"> Hours worked: </p>
+                <p className="labelP">Hours worked:</p>
                 <input
-                    type= "number"
+                    type="number"
                     value={hours}
                     onChange={(e) => setHours(e.target.value)}
                     required
                 />
-                <p className="labelP"> Work day: </p>
+
+                <p className="labelP">Work day:</p>
                 <input
-                    type= "date"
+                    type="date"
                     value={workDay}
-                    onChange={(e) => setworkDay(e.target.value)}
+                    onChange={(e) => setWorkDay(e.target.value)}
                     required
                 />
-                <p className="labelP"> Task ID: </p>
+
+                <p className="labelP">Task ID:</p>
                 <input
-                    type= "number"
+                    type="number"
                     value={taskId}
                     onChange={(e) => setTaskId(e.target.value)}
                     required
                 />
-                {!isPending && <button className="hourBtn">Register hours</button>}
-                {isPending && <button disabled>Registering hours...</button>}
-                
-            </form>
 
+                {!isPending && (
+                    <button className="hourBtn">
+                        Register hours
+                    </button>
+                )}
+
+                {isPending && (
+                    <button disabled>
+                        Registering hours...
+                    </button>
+                )}
+            </form>
         </div>
     );
 }

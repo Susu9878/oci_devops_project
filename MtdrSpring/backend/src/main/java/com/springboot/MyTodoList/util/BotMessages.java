@@ -2,9 +2,7 @@ package com.springboot.MyTodoList.util;
 
 public enum BotMessages {
 
-	HELLO_MYTODO_BOT(
-			"Hello! I'm Sprint Task Bot!\n" +
-					"Use /login <userId> to access your tasks."),
+	HELLO_MYTODO_BOT("Hello! I'm Sprint Task Bot!"),
 
 	BOT_REGISTERED_STARTED("Bot registered and started successfully!"),
 

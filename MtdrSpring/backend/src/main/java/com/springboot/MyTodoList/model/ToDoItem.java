@@ -65,20 +65,8 @@ public class ToDoItem {
     // @JsonIgnore
     private Sprint sprint;
 
-    // TODO delete later
-    @Deprecated
-    @Column(name = "done")
-    private boolean done;
-
     public ToDoItem() {
 
-    }
-
-    // TODO delete later
-    @Transient
-    @JsonProperty("done")
-    public boolean isDone() {
-        return done;
     }
 
     public ToDoItem(Integer taskId, String taskName, String description,
@@ -194,10 +182,6 @@ public class ToDoItem {
 
     public void setSprint(Sprint sprint) {
         this.sprint = sprint;
-    }
-
-    public void setDone(boolean done) {
-        this.done = done;
     }
 
     @Override

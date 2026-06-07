@@ -3,6 +3,7 @@ package com.springboot.MyTodoList.util;
 import com.springboot.MyTodoList.model.Sprint;
 import com.springboot.MyTodoList.model.ToDoItem;
 import com.springboot.MyTodoList.model.User;
+import com.springboot.MyTodoList.model.ToDoItem.TaskPriority;
 import com.springboot.MyTodoList.model.ToDoItem.TaskStatus;
 import com.springboot.MyTodoList.model.WorkLog;
 import com.springboot.MyTodoList.service.DeepSeekService;
@@ -45,11 +46,12 @@ public class BotActions {
 
     WorkLogService workedHourRegistrationService;
     private static final Map<Long, WorkHoursRegistrationContext> workHoursRegistrationContexts = new ConcurrentHashMap<>();
+    private static final Map<Long, TaskCreationContext> taskCreationContexts = new ConcurrentHashMap<>();
 
     enum WorkHoursRegistrationStage {
         NONE,
         ASK_TASK_ID,
-        ASK_USER_ID,
+        // ASK_USER_ID,
         ASK_WORKED_DAY,
         ASK_WORKED_HOURS
     }
@@ -73,7 +75,7 @@ public class BotActions {
     static class TaskCreationContext {
         TaskCreationStage stage = TaskCreationStage.NONE;
 
-        String name;
+        String taskName;
         String description;
         Integer storyPoints;
         Double expectedHours;
@@ -149,6 +151,14 @@ public class BotActions {
 
     private void clearRegistrationContext() {
         workHoursRegistrationContexts.remove(chatId);
+    }
+
+    private TaskCreationContext getTaskContext() {
+        return taskCreationContexts.computeIfAbsent(chatId, k -> new TaskCreationContext());
+    }
+
+    private void clearTaskContext() {
+        taskCreationContexts.remove(chatId);
     }
 
     public void fnStart() {
@@ -334,37 +344,109 @@ public class BotActions {
         }
     }
 
-    // TODO DEPRECATE OR REFACTOR
     public void fnAddItem() {
-        logger.info("Adding item");
         if (!(requestText.contains(BotCommands.ADD_ITEM.getCommand())
-                || requestText.contains(BotLabels.ADD_NEW_ITEM.getLabel())) || exit)
+                || requestText.contains(BotLabels.ADD_NEW_ITEM.getLabel()))
+                || exit)
             return;
-        logger.info("Adding item by BotHelper");
-        BotHelper.sendMessageToTelegram(chatId, BotMessages.TYPE_NEW_TASK.getMessage(), telegramClient);
+
+        TaskCreationContext ctx = getTaskContext();
+
+        ctx.stage = TaskCreationStage.ASK_NAME;
+        BotHelper.sendMessageToTelegram(
+                chatId,
+                "Enter task name:",
+                telegramClient);
+        exit = true;
+    }
+
+    public void fnAddItemResponse() {
+        ResponseEntity<User> response = userService.getUserById(userId);
+        User user = response.getBody();
+
+        Sprint activeSprint = sprintService.findActiveSprintByUserId(userId);
+        TaskCreationContext ctx = getTaskContext();
+
+        if (ctx.stage == TaskCreationStage.NONE || exit)
+            return;
+
+        switch (ctx.stage) {
+
+            case ASK_NAME:
+                ctx.taskName = requestText;
+                ctx.stage = TaskCreationStage.ASK_DESCRIPTION;
+                BotHelper.sendMessageToTelegram(
+                        chatId,
+                        "Enter description:",
+                        telegramClient);
+                break;
+            case ASK_DESCRIPTION:
+                ctx.description = requestText;
+                ctx.stage = TaskCreationStage.ASK_STORY_POINTS;
+                BotHelper.sendMessageToTelegram(
+                        chatId,
+                        "Enter story points:",
+                        telegramClient);
+                break;
+            case ASK_STORY_POINTS:
+                ctx.storyPoints = Integer.parseInt(requestText);
+                ctx.stage = TaskCreationStage.ASK_EXPECTED_HOURS;
+                BotHelper.sendMessageToTelegram(
+                        chatId,
+                        "Enter expected hours:",
+                        telegramClient);
+                break;
+            case ASK_EXPECTED_HOURS:
+                ctx.expectedHours = Double.parseDouble(requestText);
+                ctx.stage = TaskCreationStage.ASK_PRIORITY;
+
+                BotHelper.sendMessageToTelegram(
+                        chatId,
+                        "Enter priority (LOWEST, LOW, MEDIUM, HIGH, CRITICAL):",
+                        telegramClient);
+                break;
+            case ASK_PRIORITY:
+                ToDoItem newItem = new ToDoItem();
+
+                newItem.setTaskName(ctx.taskName);
+                newItem.setDescription(ctx.description);
+                newItem.setStoryPoints(ctx.storyPoints);
+                newItem.setExpectedHours(ctx.expectedHours);
+
+                newItem.setPriority(TaskPriority.valueOf(requestText.toUpperCase()));
+
+                newItem.setStatus(TaskStatus.NOT_STARTED);
+                newItem.setCreatedAt(OffsetDateTime.now());
+
+                newItem.setUser(user);
+                newItem.setSprint(activeSprint);
+
+                todoService.addToDoItem(newItem);
+
+                clearTaskContext();
+                BotHelper.sendMessageToTelegram(
+                        chatId,
+                        BotMessages.TASK_ADDED.getMessage(),
+                        telegramClient);
+                break;
+
+            case NONE:
+                return;
+            default:
+                return;
+        }
+
         exit = true;
     }
 
     public void fnElse() {
         if (exit)
             return;
-        ToDoItem newItem = new ToDoItem();
 
-        ResponseEntity<User> response = userService.getUserById(userId);
-        User user = response.getBody();
-
-        Sprint activeSprint = sprintService.findActiveSprintByUserId(userId);
-
-        newItem.setUser(user);
-        newItem.setSprint(activeSprint);
-
-        newItem.setTaskName(requestText);
-        newItem.setDescription(requestText);
-        newItem.setCreatedAt(OffsetDateTime.now());
-        newItem.setStatus(TaskStatus.NOT_STARTED);
-        todoService.addToDoItem(newItem);
-
-        BotHelper.sendMessageToTelegram(chatId, BotMessages.TASK_ADDED.getMessage(), telegramClient, null);
+        BotHelper.sendMessageToTelegram(
+                chatId,
+                "Command not recognized.",
+                telegramClient);
     }
 
     public void fnLLM() {
@@ -418,21 +500,7 @@ public class BotActions {
                         return;
                     }
                     ctx.taskId = taskId;
-                    ctx.stage = WorkHoursRegistrationStage.ASK_USER_ID;
-                    BotHelper.sendMessageToTelegram(chatId, BotMessages.REGISTER_WORK_HOURS_USER_ID.getMessage(),
-                            telegramClient);
-                    break;
-                }
-                case ASK_USER_ID: {
-                    int userId = Integer.parseInt(requestText.trim());
-                    var userResponse = userService.getUserById(userId);
-                    if (!userResponse.getStatusCode().is2xxSuccessful() || userResponse.getBody() == null) {
-                        BotHelper.sendMessageToTelegram(chatId, "User ID not found. Please enter a valid user ID.",
-                                telegramClient);
-                        exit = true;
-                        return;
-                    }
-                    ctx.user = userResponse.getBody();
+                    ctx.user = userService.getUserById(userId).getBody();
                     ctx.stage = WorkHoursRegistrationStage.ASK_WORKED_DAY;
                     BotHelper.sendMessageToTelegram(chatId, BotMessages.REGISTER_WORK_HOURS_WORKED_DAY.getMessage(),
                             telegramClient);

@@ -18,11 +18,11 @@ public enum BotMessages {
 	NO_ACTIVE_SPRINT("No active sprint tasks found."),
 
 	REGISTER_WORK_HOURS_TASK_ID(
-			"Please enter the task ID you wish to save hours to, or /start to go to the main screen."),
+			"Please enter the TASK ID you wish to save hours to, or /start to go to the main screen."),
 	REGISTER_WORK_HOURS_USER_ID(
-			"Please enter the user ID you wish to save hours to, or /start to go to the main screen."),
+			"Please enter the USER ID you wish to save hours to, or /start to go to the main screen."),
 	REGISTER_WORK_HOURS_WORKED_DAY(
-			"Please enter the day you wish to save hours for, or /start to go to the main screen."),
+			"Please enter the day you wish to save hours for (202X-DD-MM), or /start to go to the main screen."),
 	REGISTER_WORK_HOURS_WORKED_HOURS(
 			"Please enter the number of hours worked and press send, or /start to go to the main screen."),
 	WORK_HOURS_REGISTERED(

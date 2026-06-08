@@ -10,7 +10,7 @@ function CreateTask() {
   const [levPr, setPriority] = useState("");
   const [status, setStatus] = useState("");
   const [start, setStartDate] = useState("");
-  const [username, setUsername] = useState("");
+  const [user, setUser] = useState("");
   const [sprint,setSprint] = useState("");
   const [isPending, setIsPending] = useState(false);
   
@@ -23,9 +23,9 @@ function CreateTask() {
       storyPoints: Number(storyP),
       expectedHours: Number(expHrs),
       priority: String(levPr),
-      status: Number(status),
+      status: String(status),
       startDate: `${start}T00:00:00Z`,
-      user: String(username),
+      username: String(user),
       sprint: Number(sprint)
     };
 
@@ -58,7 +58,7 @@ function CreateTask() {
             setPriority("");
             setStatus("");
             setStartDate("");
-            setUsername("");
+            setUser("");
             setSprint("");
 
         } catch (error) {
@@ -76,7 +76,7 @@ function CreateTask() {
       setPriority("");
       setStatus("");
       setStartDate("");
-      setUsername("");
+      setUser("");
       setSprint("");
     };
 
@@ -122,7 +122,7 @@ function CreateTask() {
                 />
 
                 <p className="labelP">Priority:</p>
-                <select value={levPr} onChange={(e) => setPriority(e.target.value)} className="optStyle">
+                <select value={levPr} required onChange={(e) => setPriority(e.target.value) } className="optStyle">
                   <option value="LOWEST">LOWEST</option>
                   <option value="LOW">LOW</option>
                   <option value="MEDIUM">MEDIUM</option>
@@ -131,7 +131,7 @@ function CreateTask() {
                 </select>
 
                 <p className="labelP">Status:</p>
-                <select value={status} onChange={(e) => setStatus(e.target.value)} className="optStyle">
+                <select value={status} required onChange={(e) => setStatus(e.target.value)} className="optStyle">
                   <option value="NOT_STARTED">NOT_STARTED</option>
                   <option value="IN_PROGRESS">IN_PROGRESS</option>
                   <option value="DONE">DONE</option>
@@ -150,9 +150,9 @@ function CreateTask() {
                 <p className="labelP">User assigned:</p>
                 <input
                     type="text"
-                    value={username}
+                    value={user}
                     placeholder="Username"
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) => setUser(e.target.value)}
                     required
                 />
 

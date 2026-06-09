@@ -34,7 +34,7 @@ function CreateTask() {
         try {
             setIsPending(true);
             const response = await fetch(
-                "http://localhost:8080/todolist",
+                "http://localhost:8080/todolist/todolist",
                 {
                     method: "POST",
                     headers: {
@@ -122,7 +122,7 @@ function CreateTask() {
                 />
 
                 <p className="labelP">Priority:</p>
-                <select value={levPr} required onChange={(e) => setPriority(e.target.value) } className="optStyle">
+                <select value={levPr} className="optStyle" onChange={(e) => setPriority(e.target.value)} required >
                   <option value="LOWEST">LOWEST</option>
                   <option value="LOW">LOW</option>
                   <option value="MEDIUM">MEDIUM</option>

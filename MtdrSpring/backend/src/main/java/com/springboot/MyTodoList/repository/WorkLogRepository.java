@@ -54,11 +54,13 @@ public interface WorkLogRepository extends JpaRepository<WorkLog, Integer> {
                 t.SPRINT_ID,
                 u.ID AS userId,
                 u.USERNAME,
-                COUNT(CASE WHEN t.STATUS = 'DONE' THEN 1 END) AS completedTasks
+                COUNT(CASE WHEN t.STATUS = 'DONE' THEN 1 END) AS completedTasks,
+                s.SPRINT_NAME
             FROM TODOITEM t
             JOIN USERS u ON t.USER_ID = u.ID
+            JOIN SPRINT s ON t.SPRINT_ID = s.SPRINT_ID
             WHERE u.TEAM_ID = :teamId
-            GROUP BY t.SPRINT_ID, u.ID, u.USERNAME
+            GROUP BY t.SPRINT_ID, s.SPRINT_NAME, u.ID, u.USERNAME
             ORDER BY t.SPRINT_ID, u.ID
             """, nativeQuery = true)
     List<Object[]> getCompletedTasksPerUserPerSprint(int teamId);

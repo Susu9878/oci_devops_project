@@ -101,6 +101,7 @@ function Analytics() {
 
   const firstData = taskGraphKpis.map((item) => ({
     sprint: item.sprintId,
+    name: item.sprintName,
     dev: item.username,
     tasks: item.completedTasks,
   }));
@@ -217,7 +218,7 @@ function Analytics() {
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart data={groupedFirst}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="sprint" />
+                  <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
                   <Legend />

@@ -99,6 +99,7 @@ public class KPIService {
             dto.setSprintId(((Number) row[0]).intValue());
             dto.setUsername((String) row[2]);
             dto.setCompletedTasks(((Number) row[3]).longValue());
+            dto.setSprintName((String) row[4]);
 
             return dto;
         }).toList();

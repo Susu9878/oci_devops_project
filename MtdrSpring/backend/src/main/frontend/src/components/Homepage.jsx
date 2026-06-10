@@ -3,46 +3,12 @@ import NewItem from "../NewItem";
 import API_LIST from "../API";
 import { ListFilter, ChevronRight, ChevronDown, Plus } from "lucide-react";
 import { Button, TableBody, CircularProgress } from "@mui/material";
-import CreateTask from "./CreateTask";
 import Filter from "./Filter";
 import "./styledComponents/homepage.css";
 
 /*
 Change initialTasks for items to pull for the infor in API
 tasks -> items
-
-*/
-
-/*
-const initialTasks = [
-  {
-    id: 1,
-    name: "Design Homepage Mockup",
-    description: "Create wireframes and high-fidelity mockups for the new homepage redesign. Include mobile and desktop versions.",
-    dateAdded: "2026-04-20",
-    dateDue: "2026-04-30",
-    tags: ["design", "ui"],
-    importance: "high",
-  },
-  {
-    id: 2,
-    name: "Implement User Authentication",
-    description: "Set up OAuth 2.0 authentication flow with Google and GitHub providers.",
-    dateAdded: "2026-04-22",
-    dateDue: "2026-05-05",
-    tags: ["backend", "security"],
-    importance: "high",
-  },
-  {
-    id: 3,
-    name: "Write API Documentation",
-    description: "Document all REST API endpoints.",
-    dateAdded: "2026-04-18",
-    dateDue: "2026-04-28",
-    tags: ["documentation"],
-    importance: "medium",
-  }
-];
 */
 
 function Homepage() {
@@ -69,15 +35,6 @@ function Homepage() {
     tags: [],
     importance: "all",
   });
-
-  const handleCreateTask = (items) => {
-    const newItem = {
-      ...items,
-      id: Math.max(...items.map((t) => t.id), 0) + 1,
-    };
-    setItems([newItem, ...items]);
-    setShowCreateModal(false);
-  };
 
   const toggleTaskExpansion = (itemsId) => {
     setExpandedTaskId(expandedTaskId === itemsId ? null : itemsId);
@@ -211,13 +168,6 @@ function Homepage() {
           ))}
         </div>
       </div>
-
-      {showCreateModal && (
-        <CreateTask
-          onClose={() => setShowCreateModal(false)}
-          onCreate={handleCreateTask}
-        />
-      )}
     </div>
   );
 }

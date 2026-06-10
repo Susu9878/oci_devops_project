@@ -49,7 +49,7 @@ function ChartContainer({ title, children }) {
 function Analytics() {
   const [sprintId, setSprintId] = useState(1);
   const [teamId, setTeamId] = useState(1);
-
+  const [isLoading, setLoading] = useState(false);
   const [userKpis, setUserKpis] = useState([]);
   const [taskGraphKpis, setTaskGraphKpis] = useState([]);
   const [hourGraphKpis, setHourGraphKpis] = useState([]);
@@ -57,6 +57,17 @@ function Analytics() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+
+
+  useEffect(()=>{
+    const fetchKpis = async () => {
+      setLoading(true);
+      try{
+      }
+    }
+  })
+
+  /*
   const fetchKpis = async () => {
     setLoading(true);
     setError("");
@@ -138,6 +149,7 @@ function Analytics() {
       return acc;
     }, {}),
   );
+  */
 
   return (
     <div className="analytics">

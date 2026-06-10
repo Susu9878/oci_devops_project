@@ -1,6 +1,9 @@
 package com.springboot.MyTodoList.service;
 
+import com.springboot.MyTodoList.DTO.WorkLogDTO;
+import com.springboot.MyTodoList.model.ToDoItem;
 import com.springboot.MyTodoList.model.WorkLog;
+import com.springboot.MyTodoList.repository.ToDoItemRepository;
 import com.springboot.MyTodoList.repository.WorkLogRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +35,7 @@ public class WorkLogService {
 
           // Fk
           workLog.setTaskId(task);
-          workLog.setUserId(task.getUserId());
+          workLog.setUserId(task.getUser());
 
           workLogRepository.save(workLog);
     }

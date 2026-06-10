@@ -72,6 +72,11 @@ spec:
                   name: frontendadmin
                   key: password
                   optional: true
+            - name: anthropic_api_key
+              valueFrom:
+                secretKeyRef:
+                  name: anthropic-secret
+                  key: anthropic_api_key
           volumeMounts:
             - name: creds
               mountPath: /mtdrworkshop/creds

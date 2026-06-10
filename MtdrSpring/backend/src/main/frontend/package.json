@@ -9,6 +9,7 @@
     "@mui/material": "^5.18.0",
     "@mui/system": "^5.18.0",
     "@mui/x-charts": "^6.19.8",
+    "axios": "^1.17.0",
     "lucide-react": "^1.11.0",
     "moment": "^2.29.3",
     "prettier": "^3.8.3",

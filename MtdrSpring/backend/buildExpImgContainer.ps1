@@ -1,10 +1,10 @@
 docker stop agilecontainer
 docker rm -f agilecontainer
-docker rmi agileimage
+docker rmi agileimage:0.1
 
 mvn clean verify
 
-docker build -f DockerfileDev --platform linux/amd64 -t agileimage:0.1 .
+docker build --no-cache -f DockerfileDev --platform linux/amd64 -t agileimage:0.1 .
 
 docker run `
   --name agilecontainer `

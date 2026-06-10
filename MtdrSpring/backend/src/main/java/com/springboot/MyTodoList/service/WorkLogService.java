@@ -35,7 +35,7 @@ public class WorkLogService {
 
         // Fk
         workLog.setTaskId(task);
-        workLog.setUserId(task.getUser());
+        workLog.setUserId(task.getUser()); // changed getUserId to getUser
 
         workLogRepository.save(workLog);
     }

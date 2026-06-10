@@ -234,7 +234,7 @@ function Analytics() {
           </div>
 
           <div className="hourGrid">
-            <ChartContainer title="Hours Worked by Developer">
+            <ChartContainer title="Hours Worked per Developer">
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart data={groupedSecond}>
                   <CartesianGrid strokeDasharray="3 3" />

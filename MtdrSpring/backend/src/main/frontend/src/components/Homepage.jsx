@@ -122,13 +122,6 @@ function Homepage() {
             )}
           </div>
 
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="create-button"
-          >
-            <span className="create-button-text">CREATE TASK</span>
-            <Plus />
-          </button>
         </div>
 
         <div className="tasks-list">

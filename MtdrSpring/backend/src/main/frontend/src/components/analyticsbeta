@@ -49,26 +49,28 @@ function ChartContainer({ title, children }) {
 function Analytics() {
   const [sprintId, setSprintId] = useState(1);
   const [teamId, setTeamId] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState();
-  const [kpi, setKpi] = useState([]);
+
   const [userKpis, setUserKpis] = useState([]);
   const [taskGraphKpis, setTaskGraphKpis] = useState([]);
   const [hourGraphKpis, setHourGraphKpis] = useState([]);
 
-  useEffect(() => {
-    const fetchKpis = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch( `${API_LIST}/kpis/team?sprintId=${sprintId}&teamId=${teamId}`);
-        if (!response.ok) {
-          throw new Error("Failed kpi fecth");
-        }
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-        const data = await response.json();
+  const fetchKpis = async () => {
+    setLoading(true);
+    setError("");
 
-        setKpi(data);
-        setError(null);
+    try {
+      // USER KPIs
+      const userResponse = await fetch(
+        `${API_LIST}/kpis/team?sprintId=${sprintId}&teamId=${teamId}`,
+      );
+
+      if (!userResponse.ok) throw new Error("Failed to fetch user KPIs");
+
+      const userData = await userResponse.json();
+      setUserKpis(userData);
 
       // GRAPH 1
       const taskGraphResponse = await fetch(
@@ -87,18 +89,16 @@ function Analytics() {
       if (!hourGraphResponse.ok) throw new Error("Failed to fetch graph KPIs");
       const hourGraphData = await hourGraphResponse.json();
       setHourGraphKpis(hourGraphData);
-
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchKpis();
-  }, [teamId]);
+    } catch (err) {
+      console.error(err);
+      setError("Error fetching KPIs");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   //FIRST GRAPH
+
   const firstData = taskGraphKpis.map((item) => ({
     sprint: item.sprintId,
     dev: item.username,
@@ -145,61 +145,65 @@ function Analytics() {
         <h1 className="sprint-title">Analytics</h1>
         <span className="project-manager">
           {" Team Id "}
-        </span>
           <input
             type="number"
             value={teamId}
-            onChange={(e) => setTeamId(Number(e.target.value))}
+            onChange={(e) => setTeamId(e.target.value)}
             className="inputStyle"
-            placeholder="Team ID"
-            min="1"
           />
+        </span>
+        <button onClick={fetchKpis} className="kpiButton">
+          Load KPIs
+        </button>
       </div>
 
+      {/* LOADING / ERROR */}
+      {loading && <p>Loading...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
       <div className="stats-section">
         <div className="stats-grid">
-          {kpi && (
+          {userKpis && (
             <StatsCard
               colorClass="orange"
               icon={<ClipboardCheck className="stats-card-icon" />}
-              value={kpi.totalTasksCompleted}
+              value={userKpis.totalTasksCompleted}
               label="Tasks completed"
             />
           )}
 
-          {kpi.totalTasksCompleted && (
+          {userKpis && (
             <StatsCard
               colorClass="mustard"
               icon={<ListTodo className="stats-card-icon" />}
-              value={kpi.totalTasksCompleted.totalTasksAssigned}
+              value={userKpis.totalTasksAssigned}
               label="Total tasks assigned"
             />
           )}
 
-          {kpi && (
+          {userKpis && (
             <StatsCard
               colorClass="yellow"
               icon={<ListTodo className="stats-card-icon" />}
-              value={(kpi.avgTasksPerUser ?? 0).toFixed(2)}
+              value={(userKpis.avgTasksPerUser ?? 0).toFixed(2)}
               label="Tasks assigned avg /dev"
             />
           )}
 
-          {kpi && (
+          {userKpis && (
             <StatsCard
               colorClass="blue"
               icon={<ClockFading className="stats-card-icon" />}
-              value={(kpi.avgHoursPerUser ?? 0).toFixed(2)}
+              value={(userKpis.avgHoursPerUser ?? 0).toFixed(2)}
               label="Hours avg /dev"
             />
           )}
 
-          {kpi && (
+          {userKpis && (
             <StatsCard
               colorClass="light-blue"
               icon={<ClockCheck className="stats-card-icon" />}
-              value={(kpi.totalHoursWorked ?? 0).toFixed(2)}
+              value={(userKpis.totalHoursWorked ?? 0).toFixed(2)}
               label="Total hours worked"
             />
           )}
@@ -248,9 +252,9 @@ function Analytics() {
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
-            </div>
           </div>
         </div>
+      </div>
     </div>
   );
 }

@@ -2,18 +2,6 @@ import { useState } from "react";
 import "./styledComponents/createTask.css";
 
 function CreateTask() {
-  /*
-  const [name, setName] = useState("");
-  const [desc, setDesc] = useState("");
-  const [storyP, setstoryP] = useState("");
-  const [expHrs, setExpHrs] = useState("");
-  const [levPr, setPriority] = useState("");
-  const [status, setStatus] = useState("");
-  const [start, setStartDate] = useState("");
-  const [user, setUser] = useState("");
-  const [sprint,setSprint] = useState("");
-  */
-
   const initialData = {
     task: "",
     desc: "",

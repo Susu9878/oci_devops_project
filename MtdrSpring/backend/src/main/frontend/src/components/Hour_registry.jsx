@@ -2,18 +2,56 @@ import { useState } from "react";
 import "./styledComponents/hourRegistry.css";
 
 function Hour_Registry() {
-    const [hours, setHours] = useState("");
-    const [workDay, setWorkDay] = useState("");
-    const [taskId, setTaskId] = useState("");
+    const initialHours = {
+        hours:"",
+        workDay:"",
+        taskId:""
+    };
+
+    const [hourLog, setHourLog] = useState(initialHours);
+    const [errors, setErrors] = useState({});
     const [isPending, setIsPending] = useState(false);
+
+    const validateHours = () => {
+        let hourErrors = {};
+
+        if(!hourLog.hours || hourLog.hours <= 0){
+            hourErrors.hours = "Hours are required";
+        }
+        if(!hourLog.workDay){
+            hourErrors.workDay = "Work date is required";
+        }
+        if(!hourLog.taskId || hourLog.taskId <= 0){
+            hourErrors.taskId = "TaskId is required";
+        }
+
+        setErrors(hourErrors);
+        return Object.keys(hourErrors).length === 0;
+    }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setHourLog({
+      ...hourLog,
+      [name]: value,
+    });
+  };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const isValid = validateHours();
+
+        if (!isValid) {
+        console.log("Data Validation Failed");
+        return;
+        }
+
         const registry = {
-            workedHours: Number(hours),
-            workedDay: `${workDay}T00:00:00Z`,
-            taskId: Number(taskId)
+            workedHours: Number(hourLog.hours),
+            workedDay: `${hourLog.workDay}T00:00:00Z`,
+            taskId: Number(hourLog.taskId)
         };
 
         console.log("Sending:", registry);
@@ -39,9 +77,9 @@ function Hour_Registry() {
             console.log("Hours registered successfully");
 
             // Clear form after successful registration
-            setHours("");
-            setWorkDay("");
-            setTaskId("");
+            setHourLog("");
+            setErrors({});
+
         } catch (error) {
             console.error("Error registering hours:", error);
         } finally {
@@ -57,26 +95,26 @@ function Hour_Registry() {
                 <p className="labelP">Hours worked:</p>
                 <input
                     type="number"
-                    value={hours}
-                    onChange={(e) => setHours(e.target.value)}
-                    required
+                    value={hourLog.hours}
+                    onChange={handleChange}
                 />
+                {errors.task && <div className="errorMsg">{errors.hours}</div>}
 
                 <p className="labelP">Work day:</p>
                 <input
                     type="date"
-                    value={workDay}
-                    onChange={(e) => setWorkDay(e.target.value)}
-                    required
+                    value={hourLog.workDay}
+                    onChange={handleChange}
                 />
+                {errors.task && <div className="errorMsg">{errors.workDay}</div>}
 
                 <p className="labelP">Task ID:</p>
                 <input
                     type="number"
-                    value={taskId}
-                    onChange={(e) => setTaskId(e.target.value)}
-                    required
+                    value={hourLog.taskId}
+                    onChange={handleChange}
                 />
+                {errors.task && <div className="errorMsg">{errors.taskId}</div>}
 
                 {!isPending && (
                     <button className="hourBtn">

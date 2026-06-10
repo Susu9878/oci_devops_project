@@ -31,9 +31,14 @@ form{
 
 input{
     width: 100%;
-    margin-bottom: 1rem;
+    margin-bottom: 0.2rem;
     border-radius: 4px;
     padding: 10px;
     background-color: #fff6e6;
     border: 2px solid #a39480;
+}
+
+.errorMsg {
+  color: red;
+  margin-bottom: 1rem;
 }

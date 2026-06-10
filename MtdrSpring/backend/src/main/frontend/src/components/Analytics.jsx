@@ -217,7 +217,7 @@ function Analytics() {
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart data={groupedFirst}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="sprint" />
+                  <XAxis dataKey="sprintId|" />
                   <YAxis />
                   <Tooltip />
                   <Legend />
@@ -238,7 +238,7 @@ function Analytics() {
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart data={groupedSecond}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="sprint" />
+                  <XAxis dataKey="sprintId" />
                   <YAxis />
                   <Tooltip />
                   <Legend />

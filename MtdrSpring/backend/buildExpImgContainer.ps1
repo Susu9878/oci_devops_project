@@ -1,6 +1,6 @@
 docker stop agilecontainer
 docker rm -f agilecontainer
-docker rmi agileimage
+docker rmi agileimage:0.1
 
 mvn clean verify
 

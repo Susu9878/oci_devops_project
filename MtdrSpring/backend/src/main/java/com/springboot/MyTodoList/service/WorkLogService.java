@@ -21,23 +21,23 @@ public class WorkLogService {
     @Autowired
     private WorkLogRepository workLogRepository;
     @Autowired
-      private ToDoItemRepository toDoItemRepository;
+    private ToDoItemRepository toDoItemRepository;
 
-      public void logHours(WorkLogDTO request) {
-          ToDoItem task = toDoItemRepository.findById(request.getTaskId())
-                  .orElseThrow(() -> new RuntimeException("Task not found"));
+    public void logHours(WorkLogDTO request) {
+        ToDoItem task = toDoItemRepository.findById(request.getTaskId())
+                .orElseThrow(() -> new RuntimeException("Task not found"));
 
-          WorkLog workLog = new WorkLog();
+        WorkLog workLog = new WorkLog();
 
-          workLog.setWorkedHours(request.getWorkedHours());
-          workLog.setWorkedDay(request.getWorkedDay());
-          workLog.setCreatedAt(OffsetDateTime.now());
+        workLog.setWorkedHours(request.getWorkedHours());
+        workLog.setWorkedDay(request.getWorkedDay());
+        workLog.setCreatedAt(OffsetDateTime.now());
 
-          // Fk
-          workLog.setTaskId(task);
-          workLog.setUserId(task.getUser());
+        // Fk
+        workLog.setTaskId(task);
+        workLog.setUserId(task.getUser()); // changed getUserId to getUser
 
-          workLogRepository.save(workLog);
+        workLogRepository.save(workLog);
     }
 
     public List<WorkLog> findAll() {

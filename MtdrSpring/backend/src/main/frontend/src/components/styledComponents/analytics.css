@@ -21,18 +21,12 @@
     margin-bottom: 24px;
   }
 
-  .sprint-title {
-    font-size: 36px;
-    font-weight: 600;
-    color: black;
-    font-variation-settings: 'wdth' 100;
-  }
-
   .inputStyle{
     margin-left: 0.5rem;
     border-radius: 5px;
     border-style: dotted;
     border-color: #c5b39c;
+    background-color: #ecdac1;
   }
 
   .kpiButton{
@@ -42,10 +36,11 @@
     width: 80px;
     height: 30px;
     color: #ffffff;
+    font-size: max(16px, min(2vw, 8px));
   }
 
   .project-manager {
-    font-size: 20px;
+    font-size: max(20px, min(2vw, 24px));
     color: black;
     font-variation-settings: 'wdth' 100;
     padding-right: 30px;
@@ -136,7 +131,7 @@
     position: relative;
     flex-shrink: 0;
     color: #1e1e1e;
-    font-size: 20px;
+    font-size: max(20px, min(2vw, 24px));
     text-align: center;
     letter-spacing: -0.48px;
     white-space: nowrap;
@@ -149,7 +144,7 @@
     position: relative;
     flex-shrink: 0;
     color: #1e1e1e;
-    font-size: 20px;
+    font-size: max(20px, min(1vw, 24px));
     text-align: center;
     white-space: nowrap;
   }
@@ -203,7 +198,7 @@
   }
 
   .chart-title {
-    font-size: 25px;
+    font-size: max(24px, min(2vw, 28px));
     font-weight: 600;
     margin-bottom: 16px;
     color: #201e1c;

@@ -6,10 +6,6 @@ import { Button, TableBody, CircularProgress } from "@mui/material";
 import Filter from "./Filter";
 import "./styledComponents/homepage.css";
 
-/*
-Change initialTasks for items to pull for the infor in API
-tasks -> items
-*/
 
 function Homepage() {
   // const [tasks, setTasks] = useState(initialTasks);
@@ -91,7 +87,7 @@ function Homepage() {
 
   return (
     <div className="home-container">
-      <div className="home-content">
+      <div className="container-temp">
         <div className="header-buttons">
           <input
             type="number"
@@ -99,6 +95,7 @@ function Homepage() {
             onChange={(e) => setSprintId(Number(e.target.value))}
             placeholder="Sprint ID"
             min="1"
+            className="inputStyleH"
           />
 
           <div className="filter-button-wrapper">

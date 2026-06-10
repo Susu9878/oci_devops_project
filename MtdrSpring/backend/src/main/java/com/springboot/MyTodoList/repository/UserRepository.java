@@ -1,9 +1,9 @@
 package com.springboot.MyTodoList.repository;
 
-
 import com.springboot.MyTodoList.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,16 +15,21 @@ import jakarta.transaction.Transactional;
 @Repository
 @Transactional
 @EnableTransactionManagement
-public interface UserRepository extends JpaRepository<User,Integer> {
-/*
-this includes 
-save()
-findById()
-findAll()
-delete()
-pagination, sorting, etc.
-*/
-    //originall. was in todoitemrepository
+public interface UserRepository extends JpaRepository<User, Integer> {
+
+    /*
+    this includes
+    save()
+    findById()
+    findAll()
+    delete()
+    pagination, sorting, etc.
+    */
+
+    // Authentication
+    Optional<User> findByUsername(String username);
+
+    // KPI dashboard
     @Query(value = """
         SELECT 
             u.ID,
@@ -38,46 +43,46 @@ pagination, sorting, etc.
                 FROM TODOUSER.WORK_LOG w
                 JOIN TODOUSER.TODOITEM t2 ON w.TASK_ID = t2.ID
                 WHERE w.USER_ID = u.ID
-                AND t2.SPRINT_ID = :sprintId   
+                AND t2.SPRINT_ID = :sprintId
             ), 0) AS hoursWorked
         FROM TODOUSER.USERS u
-        LEFT JOIN TODOUSER.TODOITEM t 
-            ON t.USER_ID = u.ID 
+        LEFT JOIN TODOUSER.TODOITEM t
+            ON t.USER_ID = u.ID
             AND t.SPRINT_ID = :sprintId
         WHERE u.TEAM_ID = :teamId
         GROUP BY u.ID, u.USERNAME
     """, nativeQuery = true)
     List<Object[]> getUserKpisPerSprint(int sprintId, int teamId);
 
-    //graph 1 week 5 presentation
+    // Graph 1
     @Query(value = """
-    SELECT 
-        t.SPRINT_ID,
-        u.USERNAME,
-        SUM(CASE WHEN t.STATUS = 'DONE' THEN 1 ELSE 0 END) AS completedTasks
-    FROM USERS u
-    LEFT JOIN TODOITEM t 
-        ON t.USER_ID = u.ID
-    WHERE u.TEAM_ID = :teamId
-    GROUP BY t.SPRINT_ID, u.USERNAME
-    ORDER BY t.SPRINT_ID, u.USERNAME
+        SELECT 
+            t.SPRINT_ID,
+            u.USERNAME,
+            SUM(CASE WHEN t.STATUS = 'DONE' THEN 1 ELSE 0 END) AS completedTasks
+        FROM USERS u
+        LEFT JOIN TODOITEM t
+            ON t.USER_ID = u.ID
+        WHERE u.TEAM_ID = :teamId
+        GROUP BY t.SPRINT_ID, u.USERNAME
+        ORDER BY t.SPRINT_ID, u.USERNAME
     """, nativeQuery = true)
     List<Object[]> getCompletedTasksPerUserPerSprint(int teamId);
 
-    //graph 2 week 5 presentation
+    // Graph 2
     @Query(value = """
-    SELECT 
-        t.SPRINT_ID,
-        u.USERNAME,
-        NVL(SUM(w.WORKED_HOURS), 0) AS totalHours
-    FROM USERS u
-    LEFT JOIN TODOITEM t 
-        ON t.USER_ID = u.ID
-    LEFT JOIN WORK_LOG w 
-        ON w.TASK_ID = t.ID AND w.USER_ID = u.ID
-    WHERE u.TEAM_ID = :teamId
-    GROUP BY t.SPRINT_ID, u.USERNAME
-    ORDER BY t.SPRINT_ID, u.USERNAME
+        SELECT 
+            t.SPRINT_ID,
+            u.USERNAME,
+            NVL(SUM(w.WORKED_HOURS), 0) AS totalHours
+        FROM USERS u
+        LEFT JOIN TODOITEM t
+            ON t.USER_ID = u.ID
+        LEFT JOIN WORK_LOG w
+            ON w.TASK_ID = t.ID AND w.USER_ID = u.ID
+        WHERE u.TEAM_ID = :teamId
+        GROUP BY t.SPRINT_ID, u.USERNAME
+        ORDER BY t.SPRINT_ID, u.USERNAME
     """, nativeQuery = true)
     List<Object[]> getHoursPerUserPerSprint(int teamId);
 }

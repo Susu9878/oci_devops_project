@@ -51,9 +51,9 @@ public class ToDoItem {
     private TaskStatus status = TaskStatus.NOT_STARTED;
     @Column(name = "CREATED_AT") // NOT NULL
     private OffsetDateTime createdAt;
-    @Column(name = "START_DATE")
+    @Column(name = "START_DATE") //null
     private OffsetDateTime startDate;
-    @Column(name = "COMPLETION_DATE")
+    @Column(name = "COMPLETION_DATE") //null
     private OffsetDateTime completionDate;
     // FK
     @ManyToOne
@@ -171,7 +171,6 @@ public class ToDoItem {
     public User getUser() {
         return user;
     }
-
     public void setUser(User user) {
         this.user = user;
     }

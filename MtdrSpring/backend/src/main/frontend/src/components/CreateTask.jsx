@@ -39,11 +39,8 @@ function CreateTask() {
     if (!dataLog.status) {
       dataErrors.status = "Status is required";
     }
-    if (!dataLog.start) {
-      dataErrors.start = "Start date is required";
-    }
-    if (!dataLog.user.trim() || dataLog.user.length < 3) {
-      dataErrors.user = "Username is required";
+    if (!dataLog.user || dataLog.user <= 0) {
+      dataErrors.user = "UserId is required";
     }
     if (!dataLog.sprint || dataLog.sprint <= 0) {
       dataErrors.sprint = "Sprint is required";
@@ -81,9 +78,8 @@ function CreateTask() {
       expectedHours: Number(dataLog.expHrs),
       priority: String(dataLog.levPr),
       status: String(dataLog.status),
-      startDate: `${dataLog.start}T00:00:00Z`,
-      username: String(dataLog.user),
-      sprint: Number(dataLog.sprint),
+      userId: Number(dataLog.user),
+      sprintId: Number(dataLog.sprint),
     };
 
     console.log("Sending:", taskLog);
@@ -197,23 +193,12 @@ function CreateTask() {
         </select>
         {errors.status && <div className="errorMsg">{errors.status}</div>}
 
-        <p className="labelP">Start date:</p>
+        <p className="labelP">UserId assigned:</p>
         <input
-          type="date"
-          name="start"
-          value={dataLog.start}
-          placeholder="Beginning date"
-          onChange={handleChange}
-          
-        />
-        {errors.start && <div className="errorMsg">{errors.start}</div>}
-
-        <p className="labelP">User assigned:</p>
-        <input
-          type="text"
+          type="number"
           name="user"
           value={dataLog.user}
-          placeholder="Username"
+          placeholder="UserId"
           onChange={handleChange}
         />
         {errors.user && <div className="errorMsg">{errors.user}</div>}

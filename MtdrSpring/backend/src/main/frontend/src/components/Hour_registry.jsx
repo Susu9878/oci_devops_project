@@ -98,7 +98,7 @@ function Hour_Registry() {
                     value={hourLog.hours}
                     onChange={handleChange}
                 />
-                {errors.task && <div className="errorMsg">{errors.hours}</div>}
+                {errors.hours && <div className="errorMsg">{errors.hours}</div>}
 
                 <p className="labelP">Work day:</p>
                 <input
@@ -106,7 +106,7 @@ function Hour_Registry() {
                     value={hourLog.workDay}
                     onChange={handleChange}
                 />
-                {errors.task && <div className="errorMsg">{errors.workDay}</div>}
+                {errors.workDay && <div className="errorMsg">{errors.workDay}</div>}
 
                 <p className="labelP">Task ID:</p>
                 <input
@@ -114,7 +114,7 @@ function Hour_Registry() {
                     value={hourLog.taskId}
                     onChange={handleChange}
                 />
-                {errors.task && <div className="errorMsg">{errors.taskId}</div>}
+                {errors.taskId && <div className="errorMsg">{errors.taskId}</div>}
 
                 {!isPending && (
                     <button className="hourBtn">

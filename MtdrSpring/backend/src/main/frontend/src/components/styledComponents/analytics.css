@@ -224,5 +224,13 @@
   .bar-color-4 .recharts-rectangle {
     fill: #ef9b00;
   }
+
+  :root {
+  --bar-color-0: #8884d8;
+  --bar-color-1: #08d;
+  --bar-color-2: #00c49f;
+  --bar-color-3: #ff4d6d;
+  --bar-color-4: #ef9b00;
+}
 }
 

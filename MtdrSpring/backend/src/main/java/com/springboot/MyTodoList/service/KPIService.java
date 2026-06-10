@@ -113,8 +113,9 @@ public class KPIService {
             HoursPerSprintDTO dto = new HoursPerSprintDTO();
 
             dto.setSprintId(row[0] != null ? ((Number) row[0]).intValue() : 0);
-            dto.setUsername((String) row[2]);
-            dto.setTotalHours(row[3] != null ? ((Number) row[3]).doubleValue() : 0);
+            dto.setSprintName(row[1] != null ? (String) row[1] : null);
+            dto.setUsername(row[3] != null ? (String) row[3] : null);
+            dto.setTotalHours(row[4] != null ? ((Number) row[4]).doubleValue() : 0);
 
             return dto;
         }).toList();

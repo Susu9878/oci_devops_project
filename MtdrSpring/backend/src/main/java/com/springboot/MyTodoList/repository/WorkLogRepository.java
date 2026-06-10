@@ -69,17 +69,24 @@ public interface WorkLogRepository extends JpaRepository<WorkLog, Integer> {
     @Query(value = """
             SELECT
                 s.SPRINT_ID,
+                s.SPRINT_NAME,
                 u.ID AS userId,
                 u.USERNAME,
                 NVL(h.totalHours, 0) AS totalHours
             FROM USERS u
 
             CROSS JOIN (
-                SELECT DISTINCT t.SPRINT_ID
+                SELECT DISTINCT
+                    sp.SPRINT_ID,
+                    sp.SPRINT_NAME
                 FROM TODOITEM t
-                JOIN USERS u2 ON u2.ID = t.USER_ID
+                JOIN USERS u2
+                    ON u2.ID = t.USER_ID
+                JOIN SPRINT sp
+                    ON sp.SPRINT_ID = t.SPRINT_ID
                 WHERE u2.TEAM_ID = :teamId
             ) s
+
             LEFT JOIN (
                 SELECT
                     t.SPRINT_ID,
@@ -92,9 +99,11 @@ public interface WorkLogRepository extends JpaRepository<WorkLog, Integer> {
             ) h
                 ON h.SPRINT_ID = s.SPRINT_ID
                 AND h.USER_ID = u.ID
+
             WHERE u.TEAM_ID = :teamId
+
             ORDER BY s.SPRINT_ID, u.ID
-            """, nativeQuery = true)
+                        """, nativeQuery = true)
     List<Object[]> getHoursPerUserPerSprint(int teamId);
 
     // log hours query

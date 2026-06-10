@@ -65,19 +65,8 @@ public class ToDoItem {
     // @JsonIgnore
     private Sprint sprint;
 
-    // TODO delete later
-    @Column(name = "done")
-    private Boolean done = false;
-
     public ToDoItem() {
 
-    }
-
-    // TODO delete later
-    @Transient
-    @JsonProperty("done")
-    public boolean isDone() {
-        return done != null && done;
     }
 
     public ToDoItem(Integer taskId, String taskName, String description,
@@ -192,9 +181,6 @@ public class ToDoItem {
 
     public void setSprint(Sprint sprint) {
         this.sprint = sprint;
-    }
-    public void setDone(Boolean done) {
-        this.done = done;
     }
 
     @Override

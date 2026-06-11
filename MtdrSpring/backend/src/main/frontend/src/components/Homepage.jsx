@@ -6,8 +6,8 @@ import { Button, TableBody, CircularProgress } from "@mui/material";
 import { Outlet, Link, useLocation, Route, Routes } from "react-router-dom";
 import Filter from "./Filter";
 import Modify from "./Modify";
+import { useNavigate } from "react-router-dom";
 import "./styledComponents/homepage.css";
-
 
 function Homepage() {
   // const [tasks, setTasks] = useState(initialTasks);
@@ -28,6 +28,15 @@ function Homepage() {
   // In case of an error during the API call:
   const [error, setError] = useState();
   const [selectedTask, setSelectedTask] = useState(null);
+
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [navigate, token]);
 
   const [filters, setFilters] = useState({
     dateSort: "none",
@@ -64,14 +73,33 @@ function Homepage() {
   };
 
   useEffect(() => {
+    console.log("fetch effect running");
+    console.log("token:", token);
+    console.log("sprintId:", sprintId);
+
+    if (!token) {
+      console.log("no token");
+      return;
+    }
+
     const fetchTasks = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${API_LIST}/sprint?sprintId=${sprintId}`);
+        const response = await fetch(
+          `${API_LIST}/sprint?sprintId=${sprintId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
+        //console.log("status:", response.status);
         if (!response.ok) {
           throw new Error("Failed task fecth");
         }
 
+        //console.log("data:", data);
         const data = await response.json();
 
         setItems(data);
@@ -84,7 +112,7 @@ function Homepage() {
     };
 
     fetchTasks();
-  }, [sprintId]);
+  }, [sprintId, token]);
 
   const filteredTasks = getFilteredTasks();
 
@@ -134,6 +162,9 @@ function Homepage() {
     console.error(err);
   }
 };
+  if (!token) {
+    return <p>Redirecting...</p>;
+  }
 
   return (
     <div className="home-container">
@@ -168,7 +199,6 @@ function Homepage() {
               />
             )}
           </div>
-
         </div>
 
         <div className="tasks-list">

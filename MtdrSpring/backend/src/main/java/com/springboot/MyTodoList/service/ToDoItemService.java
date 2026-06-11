@@ -31,10 +31,21 @@ public class ToDoItemService {
         return todoItems;
     }
 
-    public List<ToDoItem> findBySprint(int sprintId) {
+    public List<ToDoItem> findBySprint(int sprintId, String email) {
+        System.out.println("JWT email = " + email);
         return toDoItemRepository.findAll()
                 .stream()
+                .peek(item -> {
+                    System.out.println(
+                            "Task: " + item.getTaskName()
+                                    + " User: "
+                                    + (item.getUser() != null
+                                            ? item.getUser().getEmail()
+                                            : "NULL"));
+                })
                 .filter(item -> item.getSprint().getSprintId() == sprintId)
+                .filter(item -> item.getUser() != null)
+                .filter(item -> item.getUser().getEmail().equals(email))
                 .toList();
     }
 
@@ -58,7 +69,6 @@ public class ToDoItemService {
 
     // Filtering gets (?)
 
-
     public List<ToDoItem> findByStatus(ToDoItem.TaskStatus status) {
         return toDoItemRepository.findByStatus(status);
     }
@@ -71,15 +81,16 @@ public class ToDoItemService {
         return toDoItemRepository.findActiveTasksByUserAndSprint(userId, sprintId);
     }
 
-    //MUTATIONS
-
+    // MUTATIONS
 
     public ToDoItem addToDoItem(ToDoItemRequestDTO dto) {
         ToDoItem item = dto.toEntity();
 
         item.setCreatedAt(OffsetDateTime.now());
-        if (item.getStatus() == null)   item.setStatus(ToDoItem.TaskStatus.NOT_STARTED);
-        if (item.getPriority() == null) item.setPriority(ToDoItem.TaskPriority.MEDIUM);
+        if (item.getStatus() == null)
+            item.setStatus(ToDoItem.TaskStatus.NOT_STARTED);
+        if (item.getPriority() == null)
+            item.setPriority(ToDoItem.TaskPriority.MEDIUM);
 
         if (dto.getUserId() != null) {
             User user = userRepository.findById(dto.getUserId())
@@ -95,16 +106,15 @@ public class ToDoItemService {
         return toDoItemRepository.save(item);
     }
 
-    public ToDoItem addToDoItem(ToDoItem toDoItem){
+    public ToDoItem addToDoItem(ToDoItem toDoItem) {
         return toDoItemRepository.save(toDoItem);
     }
-
 
     public boolean deleteToDoItem(int id) {
         try {
             toDoItemRepository.deleteById(id);
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
@@ -130,19 +140,25 @@ public class ToDoItemService {
             return toDoItemRepository.save(toDoItem);
         } else {
             return null;
-        } 
+        }
     }
 
     public ToDoItem updateToDoItem(int id, ToDoItemRequestDTO dto) {
         ToDoItem item = toDoItemRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found: " + id));
 
-        if (dto.getTaskName() != null)      item.setTaskName(dto.getTaskName());
-        if (dto.getDescription() != null)   item.setDescription(dto.getDescription());
-        if (dto.getStoryPoints() != null)   item.setStoryPoints(dto.getStoryPoints());
-        if (dto.getExpectedHours() != null) item.setExpectedHours(dto.getExpectedHours());
-        if (dto.getPriority() != null)      item.setPriority(ToDoItem.TaskPriority.valueOf(dto.getPriority()));
-        if (dto.getStatus() != null)        item.setStatus(ToDoItem.TaskStatus.valueOf(dto.getStatus()));
+        if (dto.getTaskName() != null)
+            item.setTaskName(dto.getTaskName());
+        if (dto.getDescription() != null)
+            item.setDescription(dto.getDescription());
+        if (dto.getStoryPoints() != null)
+            item.setStoryPoints(dto.getStoryPoints());
+        if (dto.getExpectedHours() != null)
+            item.setExpectedHours(dto.getExpectedHours());
+        if (dto.getPriority() != null)
+            item.setPriority(ToDoItem.TaskPriority.valueOf(dto.getPriority()));
+        if (dto.getStatus() != null)
+            item.setStatus(ToDoItem.TaskStatus.valueOf(dto.getStatus()));
 
         if (dto.getUserId() != null) {
             User user = userRepository.findById(dto.getUserId())
@@ -157,7 +173,6 @@ public class ToDoItemService {
 
         return toDoItemRepository.save(item);
     }
-    
 
     public List<ToDoItem> findTasksByUserAndActiveSprint(int userId) {
         return findAll().stream()

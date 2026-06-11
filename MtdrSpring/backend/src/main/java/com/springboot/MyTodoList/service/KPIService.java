@@ -9,6 +9,7 @@ import com.springboot.MyTodoList.DTO.HoursPerSprintDTO;
 import com.springboot.MyTodoList.DTO.TasksPerSprintDTO;
 import com.springboot.MyTodoList.DTO.TeamSprintKpiDTO;
 import com.springboot.MyTodoList.DTO.UserKpiDTO;
+import com.springboot.MyTodoList.DTO.UserSprintDTO;
 import com.springboot.MyTodoList.repository.UserRepository;
 import com.springboot.MyTodoList.repository.WorkLogRepository;
 
@@ -62,6 +63,36 @@ public class KPIService {
         }).toList();
     }
 
+    public UserSprintDTO getUserKpiAllSprints(int userId, int teamId) {
+
+        Object[] row = userRepository
+                .getUserKpisAllSprints(userId, teamId)
+                .get(0);
+
+        UserSprintDTO dto = new UserSprintDTO();
+
+        dto.setUserId(((Number) row[0]).intValue());
+        dto.setUsername((String) row[1]);
+
+        dto.setTotalTasksAssigned(((Number) row[2]).longValue());
+        dto.setTotalTasksCompleted(((Number) row[3]).longValue());
+        dto.setTotalHoursWorked(((Number) row[4]).doubleValue());
+
+        long sprintCount = ((Number) row[5]).longValue();
+
+        dto.setAvgTasksPerSprint(
+                sprintCount == 0
+                        ? 0.0
+                        : dto.getTotalTasksAssigned().doubleValue() / sprintCount);
+
+        dto.setAvgHoursPerSprint(
+                sprintCount == 0
+                        ? 0.0
+                        : dto.getTotalHoursWorked() / sprintCount);
+
+        return dto;
+    }
+
     // team kpis for all sprints
     public TeamSprintKpiDTO getTeamKpisForTeamOnly(int teamId) {
         List<Object[]> results = workLogRepository.getTeamKpisAllSprints(teamId);
@@ -97,6 +128,7 @@ public class KPIService {
 
             // row[1] = userId
             dto.setSprintId(((Number) row[0]).intValue());
+            dto.setUserId(((Number) row[1]).intValue());
             dto.setUsername((String) row[2]);
             dto.setCompletedTasks(((Number) row[3]).longValue());
             dto.setSprintName((String) row[4]);
@@ -114,6 +146,7 @@ public class KPIService {
 
             dto.setSprintId(row[0] != null ? ((Number) row[0]).intValue() : 0);
             dto.setSprintName(row[1] != null ? (String) row[1] : null);
+            dto.setUserId(row[2] != null ? ((Number) row[2]).intValue() : 0);
             dto.setUsername(row[3] != null ? (String) row[3] : null);
             dto.setTotalHours(row[4] != null ? ((Number) row[4]).doubleValue() : 0);
 

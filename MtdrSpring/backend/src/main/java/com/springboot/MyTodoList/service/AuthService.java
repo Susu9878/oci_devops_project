@@ -47,7 +47,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        return jwtUtil.generateToken(user.getUsername());
+        return jwtUtil.generateToken(user.getEmail());
     }
 
     public String login(LoginRequestDTO request) {
@@ -66,7 +66,7 @@ public class AuthService {
             throw new RuntimeException("Invalid username or password");
         }
 
-        return jwtUtil.generateToken(user.getUsername());
+        return jwtUtil.generateToken(user.getEmail());
     }
 
 }

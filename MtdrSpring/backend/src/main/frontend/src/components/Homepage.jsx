@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import NewItem from "../NewItem";
 import API_LIST from "../API";
-import { ListFilter, ChevronRight, ChevronDown, Plus } from "lucide-react";
+import { ListFilter, ChevronRight, ChevronDown, Pencil } from "lucide-react";
 import { Button, TableBody, CircularProgress } from "@mui/material";
 import { Outlet, Link, useLocation, Route, Routes } from "react-router-dom";
 import Filter from "./Filter";
@@ -200,18 +200,25 @@ function Homepage() {
 
               {expandedTaskId === items.taskId && (
                 <div className="task-expanded">
-                  <p>Assigned to:{items.userId} </p>
-                  <p>Task description:</p>
-                  <p>{items.description}</p>
-                  <p></p>
-                  <span>Priority: {items.priority.toUpperCase()}</span>
-                  <span>Status :{items.status.toUpperCase()}</span>
+                  <p className="taskExP-title">Assigned to:</p>
+                  <p className="taskExP-val">{items.username}</p>
+                  <p className="taskExP-title">Task description:</p>
+                  <p className="taskExP-val">{items.description}</p>
+                  <div className="markers">
+                    <span className="taskExP-title">Priority: </span>
+                    <p className="taskExP-markers">{items.priority.toUpperCase()}</p>
+                  </div>
+                  <div className="markers">
+                    <span className="taskExP-title">Status:</span>
+                    <p className="taskExP-markers">{items.status.toUpperCase()}</p>
+                  </div>                  
                   <button
+                    className="editBtn"
                     onClick={() => {
                       setSelectedTask(items);
                       setShowCreateModal(true);
                     }}
-                  > Modify Task
+                  > <Pencil className="iconH"/>
                   </button>
 
                   {showCreateModal && selectedTask && (

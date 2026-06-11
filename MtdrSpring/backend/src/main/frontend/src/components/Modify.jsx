@@ -18,18 +18,19 @@ function Modify({ task, onClose, onUpdate }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modify-overlay" onClick={onClose}>
       <div
-        className="modal-content"
+        className="modify-content"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="modal-title">Modify Task</h2>
+        <h2 className="modify-title">Modify Task</h2>
 
         <form onSubmit={handleSubmit} className="modal-form">
 
-          <div className="form-group">
-            <label className="form-label">Task Name</label>
+          <div className="modifyForm">
+            <label className="modifyLabel">Task Name</label>
             <input
+              className="modifyInput"
               type="text"
               value={formData.taskName}
               onChange={(e) =>
@@ -39,11 +40,10 @@ function Modify({ task, onClose, onUpdate }) {
                 })
               }
             />
-          </div>
 
-          <div className="form-group">
-            <label>Description</label>
+            <label className="modifyLabel">Description</label>
             <textarea
+              className="txtArea"
               value={formData.description}
               onChange={(e) =>
                 setFormData({
@@ -52,11 +52,10 @@ function Modify({ task, onClose, onUpdate }) {
                 })
               }
             />
-          </div>
 
-          <div className="form-group">
-            <label>Priority</label>
+            <label className="modifyLabel">Priority</label>
             <select
+              className="optSel"
               value={formData.priority}
               onChange={(e) =>
                 setFormData({
@@ -71,11 +70,10 @@ function Modify({ task, onClose, onUpdate }) {
               <option value="HIGH">HIGH</option>
               <option value="CRITICAL">CRITICAL</option>
             </select>
-          </div>
 
-          <div className="form-group">
-            <label>Status</label>
+            <label className="modifyLabel">Status</label>
             <select
+              className="optSel"
               value={formData.status}
               onChange={(e) =>
                 setFormData({
@@ -91,10 +89,10 @@ function Modify({ task, onClose, onUpdate }) {
             </select>
           </div>
 
-          <div className="form-buttons">
+          <div className="mBtn">
             <button
               type="submit"
-              className="form-submit-button"
+              className="sBtn"
             >
               Save Changes
             </button>
@@ -102,12 +100,11 @@ function Modify({ task, onClose, onUpdate }) {
             <button
               type="button"
               onClick={onClose}
-              className="form-cancel-button"
+              className="cBtn"
             >
               Cancel
             </button>
           </div>
-
         </form>
       </div>
     </div>

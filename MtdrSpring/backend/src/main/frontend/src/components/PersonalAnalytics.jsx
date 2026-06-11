@@ -47,13 +47,11 @@ function ChartContainer({ title, children }) {
 }
 
 function PersonalAnalytics() {
-  const [sprintId, setSprintId] = useState(1);
   const [teamId, setTeamId] = useState(1);
   const [userId, setUserId] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
-  const [kpi, setKpi] = useState([]);
-  const [userKpis, setUserKpis] = useState([]);
+  const [kpi, setKpi] = useState({});
   const [taskGraphKpis, setTaskGraphKpis] = useState([]);
   const [hourGraphKpis, setHourGraphKpis] = useState([]);
 
@@ -61,7 +59,9 @@ function PersonalAnalytics() {
     const fetchKpis = async () => {
       setLoading(true);
       try {
-        const response = await fetch( `${API_LIST}/kpis/team?sprintId=${sprintId}&teamId=${teamId}`);
+        const response = await fetch(
+          `${API_LIST}/kpis/user?userId=${userId}&teamId=${teamId}`,
+        );
         if (!response.ok) {
           throw new Error("Failed kpi fetch");
         }
@@ -71,24 +71,25 @@ function PersonalAnalytics() {
         setKpi(data);
         setError(null);
 
-      // GRAPH 1
-      const taskGraphResponse = await fetch(
-        `${API_LIST}/kpis/tasks-per-sprint?teamId=${teamId}`,
-      );
+        // GRAPH 1
+        const taskGraphResponse = await fetch(
+          `${API_LIST}/kpis/tasks-per-sprint?teamId=${teamId}`,
+        );
 
-      if (!taskGraphResponse.ok) throw new Error("Failed to fetch graph KPIs");
-      const taskData = await taskGraphResponse.json();
-      setTaskGraphKpis(taskData);
+        if (!taskGraphResponse.ok)
+          throw new Error("Failed to fetch graph KPIs");
+        const taskData = await taskGraphResponse.json();
+        setTaskGraphKpis(taskData);
 
-      // GRAPH 2
-      const hourGraphResponse = await fetch(
-        `${API_LIST}/kpis/hours-per-sprint?teamId=${teamId}`,
-      );
+        // GRAPH 2
+        const hourGraphResponse = await fetch(
+          `${API_LIST}/kpis/hours-per-sprint?teamId=${teamId}`,
+        );
 
-      if (!hourGraphResponse.ok) throw new Error("Failed to fetch graph KPIs");
-      const hourGraphData = await hourGraphResponse.json();
-      setHourGraphKpis(hourGraphData);
-
+        if (!hourGraphResponse.ok)
+          throw new Error("Failed to fetch graph KPIs");
+        const hourGraphData = await hourGraphResponse.json();
+        setHourGraphKpis(hourGraphData);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -97,170 +98,85 @@ function PersonalAnalytics() {
     };
 
     fetchKpis();
-  }, [teamId]);
+  }, [teamId, userId]);
 
   //FIRST GRAPH
-  const firstData = taskGraphKpis.map((item) => ({
-    sprint: item.sprintId,
-    name: item.sprintName,
-    dev: item.username,
-    tasks: item.completedTasks,
-  }));
-
-  const groupedFirst = Object.values(
-    firstData.reduce((acc, { sprint, name, dev, tasks }) => {
-      if (!acc[sprint]) {
-        acc[sprint] = { sprint, name };
-      }
-
-      acc[sprint][dev] = (acc[sprint][dev] || 0) + tasks;
-
-      return acc;
-    }, {}),
-  );
-
-  const devs = [...new Set(taskGraphKpis.map((item) => item.username))];
-  console.log(devs);
-  console.log(groupedFirst);
-
+  const taskChartData = taskGraphKpis
+    .filter((item) => item.userId === userId)
+    .map((item) => ({
+      sprint: item.sprintName,
+      tasks: item.completedTasks,
+    }));
+  const selectedUserName = kpi.username || "User";
   //SECOND GRAPH
-  const secondData = hourGraphKpis.map((item) => ({
-    sprint: item.sprintId,
-    name: item.sprintName,
-    dev: item.username,
-    hours: item.totalHours,
-  }));
-  const groupedSecond = Object.values(
-    secondData.reduce((acc, { sprint, name, dev, hours }) => {
-      if (!acc[sprint]) {
-        acc[sprint] = { sprint, name };
-      }
-
-      acc[sprint][dev] = (acc[sprint][dev] || 0) + hours;
-
-      return acc;
-    }, {}),
-  );
-
-  //userId filter
-  useEffect(() => {
-    const fetchKpis = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch( `${API_LIST}/kpis/team?sprintId=${sprintId}&teamId=${teamId}`);
-        if (!response.ok) {
-          throw new Error("Failed userId fetch");
-        }
-
-        const data = await response.json();
-
-        setKpi(data);
-        setError(null);
-
-      // GRAPH 1
-      const taskGraphResponse = await fetch(
-        `${API_LIST}/kpis/tasks-per-sprint?teamId=${teamId}`,
-      );
-
-      if (!taskGraphResponse.ok) throw new Error("Failed to fetch graph KPIs");
-      const taskData = await taskGraphResponse.json();
-      setTaskGraphKpis(taskData);
-
-      // GRAPH 2
-      const hourGraphResponse = await fetch(
-        `${API_LIST}/kpis/hours-per-sprint?teamId=${teamId}`,
-      );
-
-      if (!hourGraphResponse.ok) throw new Error("Failed to fetch graph KPIs");
-      const hourGraphData = await hourGraphResponse.json();
-      setHourGraphKpis(hourGraphData);
-
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchKpis();
-  }, [userId]);
+  const hourChartData = hourGraphKpis
+    .filter((item) => item.userId === userId)
+    .map((item) => ({
+      sprint: item.sprintName,
+      hours: item.totalHours,
+    }));
 
   return (
     <div className="analytics">
       <div className="page-header">
         <h1>Analytics</h1>
-        <span className="project-manager">
-          {" Team Id "}
-        </span>
-          <input
-            type="number"
-            value={teamId}
-            onChange={(e) => setTeamId(Number(e.target.value))}
-            className="inputStyle"
-            placeholder="Team ID"
-            min="1"
-          />
+        <span className="project-manager">{" Team Id "}</span>
+        <input
+          type="number"
+          value={teamId}
+          onChange={(e) => setTeamId(Number(e.target.value))}
+          className="inputStyle"
+          placeholder="Team ID"
+          min="1"
+        />
 
-        <span className="project-manager">
-          {" User Id "}
-        </span>
-          <input
-            type="number"
-            value={userId}
-            onChange={(e) => setUserId(Number(e.target.value))}
-            className="inputStyle"
-            placeholder="User ID"
-            min="1"
-          />
+        <span className="project-manager">{" User Id "}</span>
+        <input
+          type="number"
+          value={userId}
+          onChange={(e) => setUserId(Number(e.target.value))}
+          className="inputStyle"
+          placeholder="User ID"
+          min="1"
+        />
       </div>
-
 
       <div className="stats-section">
         <div className="stats-grid">
-          {kpi && (
-            <StatsCard
-              colorClass="orange"
-              icon={<ClipboardCheck className="stats-card-icon" />}
-              value={kpi.totalTasksCompleted}
-              label="Tasks completed"
-            />
-          )}
+          <StatsCard
+            colorClass="orange"
+            icon={<ClipboardCheck className="stats-card-icon" />}
+            value={kpi.totalTasksCompleted ?? 0}
+            label="Tasks Completed"
+          />
 
-          {kpi.totalTasksCompleted && (
-            <StatsCard
-              colorClass="mustard"
-              icon={<ListTodo className="stats-card-icon" />}
-              value={kpi.totalTasksCompleted.totalTasksAssigned}
-              label="Total tasks assigned"
-            />
-          )}
+          <StatsCard
+            colorClass="mustard"
+            icon={<ListTodo className="stats-card-icon" />}
+            value={kpi.totalTasksAssigned ?? 0}
+            label="Tasks Assigned"
+          />
 
-          {kpi && (
-            <StatsCard
-              colorClass="yellow"
-              icon={<ListTodo className="stats-card-icon" />}
-              value={(kpi.avgTasksPerUser ?? 0).toFixed(2)}
-              label="Tasks assigned avg /dev"
-            />
-          )}
+          <StatsCard
+            colorClass="yellow"
+            icon={<ListTodo className="stats-card-icon" />}
+            value={(kpi.avgTasksPerSprint ?? 0).toFixed(2)}
+            label="Avg Tasks / Sprint"
+          />
 
-          {kpi && (
-            <StatsCard
-              colorClass="blue"
-              icon={<ClockFading className="stats-card-icon" />}
-              value={(kpi.avgHoursPerUser ?? 0).toFixed(2)}
-              label="Hours avg /dev"
-            />
-          )}
+          <StatsCard
+            colorClass="blue"
+            icon={<ClockFading className="stats-card-icon" />}
+            value={(kpi.avgHoursPerSprint ?? 0).toFixed(2)}
+            label="Avg Hours / Sprint"
+          />
 
-          {kpi && (
-            <StatsCard
-              colorClass="light-blue"
-              icon={<ClockCheck className="stats-card-icon" />}
-              value={(kpi.totalHoursWorked ?? 0).toFixed(2)}
-              label="Total hours worked"
-            />
-          )}
+          <StatsCard
+            colorClass="light-blue"
+            icon={<ClockCheck className="stats-card-icon" />}
+            value={(kpi.totalHoursWorked ?? 0).toFixed(2)}
+            label="Total Hours Worked"
+          />
         </div>
       </div>
 
@@ -269,20 +185,13 @@ function PersonalAnalytics() {
           <div className="sprintGrid">
             <ChartContainer title="Daily Task Completion">
               <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={groupedFirst}>
+                <BarChart data={taskChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
+                  <XAxis dataKey="sprint" />
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  {devs.map((dev, index) => (
-                    <Bar
-                      key={dev}
-                      dataKey={dev}
-                      fill={`var(--bar-color-${index})`}
-                      className={`bar-color-${index}`}
-                    />
-                  ))}
+                  <Bar dataKey="tasks" fill="#8884d8" name={selectedUserName} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -291,26 +200,19 @@ function PersonalAnalytics() {
           <div className="hourGrid">
             <ChartContainer title="Hours Worked by Developer">
               <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={groupedSecond}>
+                <BarChart data={hourChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
+                  <XAxis dataKey="sprint" />
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  {devs.map((dev, index) => (
-                    <Bar
-                      key={dev}
-                      dataKey={dev}
-                      fill={`var(--bar-color-${index})`}
-                      className={`bar-color-${index}`}
-                    />
-                  ))}
+                  <Bar dataKey="hours" fill="#82ca9d" name={selectedUserName} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
-            </div>
           </div>
         </div>
+      </div>
     </div>
   );
 }

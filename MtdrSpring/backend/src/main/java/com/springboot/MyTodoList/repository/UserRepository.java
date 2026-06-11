@@ -16,7 +16,6 @@ import jakarta.transaction.Transactional;
 @Transactional
 @EnableTransactionManagement
 public interface UserRepository extends JpaRepository<User, Integer> {
-
     /*
      * this includes
      * save()
@@ -29,7 +28,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     // Authentication
     Optional<User> findByUsername(String username);
 
-    // KPI dashboard
+    // Auth
+    Optional<User> findByEmail(String email);
+
+    boolean existsByEmail(String email);
+
+    // originall. was in todoitemrepository
     @Query(value = """
                 SELECT
                     u.ID,
@@ -102,7 +106,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             """, nativeQuery = true)
     List<Object[]> getCompletedTasksPerUserPerSprint(int teamId);
 
-    // Graph 2
+    // graph 2 week 5 presentation
     @Query(value = """
                 SELECT
                     t.SPRINT_ID,

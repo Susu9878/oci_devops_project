@@ -50,20 +50,20 @@ public class AIChatController {
         public List<RoadmapStep> roadmap;
 
         public ChatResponse(String reply, boolean userNotFound, List<RoadmapStep> roadmap) {
-            this.reply        = reply;
+            this.reply = reply;
             this.userNotFound = userNotFound;
-            this.roadmap      = roadmap;
+            this.roadmap = roadmap;
         }
     }
 
     public static class RoadmapStep {
-        public int    order;
+        public int order;
         public String task;
         public String reason;
 
         public RoadmapStep(int order, String task, String reason) {
-            this.order  = order;
-            this.task   = task;
+            this.order = order;
+            this.task = task;
             this.reason = reason;
         }
     }
@@ -77,7 +77,8 @@ public class AIChatController {
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
             body.put("found", false);
-            body.put("message", "User \"" + username + "\" was not found in the system. Please check your username and try again.");
+            body.put("message",
+                    "User \"" + username + "\" was not found in the system. Please check your username and try again.");
             return ResponseEntity.ok(body);
         }
 
@@ -96,12 +97,11 @@ public class AIChatController {
         if (userOpt.isEmpty()) {
             return ResponseEntity.ok(new ChatResponse(
                     "User \"" + req.username + "\" is not in the database. Please restart and enter a valid username.",
-                    true, null
-            ));
+                    true, null));
         }
 
-        User user    = userOpt.get();
-        int teamId   = user.getTeam().getTeamId();
+        User user = userOpt.get();
+        int teamId = user.getTeam().getTeamId();
         int sprintId = getLatestSprintId();
 
         // 2. Fetch KPI data
@@ -115,8 +115,7 @@ public class AIChatController {
         if (userKpiOpt.isEmpty()) {
             return ResponseEntity.ok(new ChatResponse(
                     "I couldn't find any sprint data for " + req.username + " in the current sprint.",
-                    false, null
-            ));
+                    false, null));
         }
 
         // 3. Fetch actual tasks for this user in this sprint
@@ -124,7 +123,7 @@ public class AIChatController {
                 .findActiveTasksByUserAndSprint(user.getUserId(), sprintId);
 
         // 4. Build prompt and call Claude
-        String prompt      = buildPrompt(req, userKpiOpt.get(), activeTasks);
+        String prompt = buildPrompt(req, userKpiOpt.get(), activeTasks);
         String claudeReply = callClaude(prompt);
 
         // 5. Parse roadmap if option A
@@ -172,9 +171,8 @@ public class AIChatController {
                     t.getTaskName(),
                     t.getPriority(),
                     t.getExpectedHours() != null ? t.getExpectedHours() : "?",
-                    t.getStoryPoints()   != null ? t.getStoryPoints()   : "?",
-                    t.getDescription()   != null ? t.getDescription()   : "none"
-            ));
+                    t.getStoryPoints() != null ? t.getStoryPoints() : "?",
+                    t.getDescription() != null ? t.getDescription() : "none"));
         }
 
         if ("A".equalsIgnoreCase(req.option)) {
@@ -218,8 +216,7 @@ public class AIChatController {
                     new HttpEntity<>(body, headers), Map.class);
 
             @SuppressWarnings("unchecked")
-            List<Map<String, Object>> content =
-                    (List<Map<String, Object>>) response.getBody().get("content");
+            List<Map<String, Object>> content = (List<Map<String, Object>>) response.getBody().get("content");
 
             return content.stream()
                     .filter(c -> "text".equals(c.get("type")))
@@ -235,8 +232,9 @@ public class AIChatController {
         List<RoadmapStep> steps = new ArrayList<>();
         for (String line : text.split("\n")) {
             line = line.trim();
-            if (!line.matches("^\\d+\\..*")) continue;
-            String body    = line.replaceFirst("^\\d+\\.\\s*", "");
+            if (!line.matches("^\\d+\\..*"))
+                continue;
+            String body = line.replaceFirst("^\\d+\\.\\s*", "");
             String[] parts = body.split(" [—-] ", 2);
             steps.add(new RoadmapStep(steps.size() + 1, parts[0].trim(),
                     parts.length > 1 ? parts[1].trim() : ""));

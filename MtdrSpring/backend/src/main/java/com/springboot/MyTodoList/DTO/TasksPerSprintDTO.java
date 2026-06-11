@@ -5,6 +5,7 @@ public class TasksPerSprintDTO {
     private Integer sprintId;
     private String sprintName;
     private String username;
+    private Integer userId;
     private Long completedTasks;
 
     public Integer getSprintId() {
@@ -37,5 +38,13 @@ public class TasksPerSprintDTO {
 
     public void setSprintName(String sprintName) {
         this.sprintName = sprintName;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getUserId() {
+        return userId;
     }
 }

@@ -31,7 +31,13 @@ function Layout() {
       <div className="sidebar">
         <div className="side-container">
           <Link to="/" className="linkStyle"><p>Home</p></Link>
-          <Link to="/analytics" className="linkStyle"><p>Analytics</p></Link>
+          <li className="dropdown">
+            <p>Analytics</p>
+            <div className="dropdown-content">
+              <Link to="/analytics" className="linkStyle"><p>Team Analytics</p></Link>
+              <Link to="/personal-analytics" className="linkStyle"><p>Personal Analytics</p></Link>
+            </div>
+          </li>
           <Link to="/feature" className="linkStyle"><p>Feature</p></Link>
           <li className="dropdown">
             <p>

@@ -8,6 +8,7 @@ import CreateTask from "./CreateTask";
 import Login from "./Login";
 import BaseLayout from "./BaseLayout";
 import SignUp from "./SignUp";
+import PersonalAnalytics from "./PersonalAnalytics";
 
 export const router = createBrowserRouter([
   {
@@ -16,6 +17,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Homepage /> },
       { path: "analytics", element: <Analytics /> },
+      { path: "personal-analytics", element: <PersonalAnalytics /> },
       { path: "feature", element: <AI_Feature /> },
       { path: "hours", element: <Hour_Registry /> },
       { path: "task", element: <CreateTask /> },

@@ -2,6 +2,7 @@ package com.springboot.MyTodoList.model;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 
 /*
    representation of the USER table that exists already
@@ -19,25 +20,27 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "USERS")
 public class User {
-    //everything is nullable by default TODO change later all to not nullable
+    // everything is nullable by default TODO change later all to not nullable
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private int userId;
-    @Column(name = "USERNAME")
+    @Column(name = "USERNAME", nullable = false)
+    @Size(min = 2, max = 50)
     private String username;
-    @Column(name = "PHONE_NUMBER")
-    private String phoneNumber;    
-    @Column(name = "EMAIL")
+    @Column(name = "PHONE_NUMBER", nullable = false)
+    private String phoneNumber;
+    @Column(name = "EMAIL", nullable = false, unique = true)
     private String email;
-    @Column(name = "PASSWORD") // En la base de datos no tenemos password todavía
+    @Column(name = "PASSWORD", nullable = false) // En la base de datos no tenemos password todavía
+    @Size(min = 8)
     private String password;
-    @Column(name = "IS_MANAGER") //nullable
-    private Boolean isManager;
+    @Column(name = "IS_MANAGER", nullable = false)
+    private Boolean isManager = false;
 
-    //foreign key
+    // foreign key
     @ManyToOne
-    @JoinColumn(name = "TEAM_ID") //nullable
+    @JoinColumn(name = "TEAM_ID") // nullable
     private Team team;
 
     public User() {
@@ -94,11 +97,11 @@ public class User {
         this.isManager = isManager;
     }
 
-    public String getUserPassword(){
+    public String getPassword() {
         return password;
     }
 
-    public void setUserPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 

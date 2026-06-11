@@ -95,6 +95,10 @@ public class ToDoItemService {
         return toDoItemRepository.save(item);
     }
 
+    public ToDoItem addToDoItem(ToDoItem toDoItem){
+        return toDoItemRepository.save(toDoItem);
+    }
+
 
     public boolean deleteToDoItem(int id) {
         try {
@@ -103,6 +107,30 @@ public class ToDoItemService {
         }catch(Exception e){
             return false;
         }
+    }
+
+    public ToDoItem updateToDoItem(int id, ToDoItem td) {
+        Optional<ToDoItem> toDoItemData = toDoItemRepository.findById(id);
+        if (toDoItemData.isPresent()) {
+            ToDoItem toDoItem = toDoItemData.get();
+            // Main task info
+            toDoItem.setTaskName(td.getTaskName());
+            toDoItem.setDescription(td.getDescription());
+            toDoItem.setStatus(td.getStatus());
+            toDoItem.setStartDate(td.getStartDate());
+            toDoItem.setCompletionDate(td.getCompletionDate());
+            // Extra
+            toDoItem.setStoryPoints(td.getStoryPoints());
+            toDoItem.setExpectedHours(td.getExpectedHours());
+            toDoItem.setPriority(td.getPriority());
+            // FK
+            toDoItem.setSprint(td.getSprint());
+            toDoItem.setUser(td.getUser());
+
+            return toDoItemRepository.save(toDoItem);
+        } else {
+            return null;
+        } 
     }
 
     public ToDoItem updateToDoItem(int id, ToDoItemRequestDTO dto) {
@@ -131,4 +159,12 @@ public class ToDoItemService {
     }
     
 
+    public List<ToDoItem> findTasksByUserAndActiveSprint(int userId) {
+        return findAll().stream()
+                .filter(task -> task.getUser() != null)
+                .filter(task -> task.getSprint() != null)
+                .filter(task -> task.getUser().getUserId() == userId)
+                .filter(task -> task.getSprint().getStatus() == Sprint.SprintStatus.ACTIVE)
+                .toList();
+    }
 }

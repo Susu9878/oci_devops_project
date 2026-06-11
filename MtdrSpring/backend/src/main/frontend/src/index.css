@@ -11,11 +11,29 @@ CONTAINERS - #E4D9CB
 NAVBAR - #201E1C
 STYLEBAR - #3479C7
 
-SPRINT KPI - #FFC353
-TASK KPI - #F07431
-
 SIDEBAR - #E4D9CB
 SIDEBAR CLICKED - #C5B39C
+*/
+
+/* FONTS
+FONT FAMILY - Open Sans
+FONT WEIGHT - 300
+
+FONT BASE SIZE VARIATIONS:
+(buttons)
+font-size: max(16px, min(2vw, 8px));
+---
+(16px)
+font-size: max(16px, min(2vw, 18px));
+---
+(20px)
+font-size: max(20px, min(2vw, 24px));
+---
+(28px)
+font-size: max(28px, min(2vw, 32px));
+---
+(36px)
+font-size: max(36px, min(2vw, 42px));
 */
 
 @font-face {
@@ -34,10 +52,36 @@ SIDEBAR CLICKED - #C5B39C
   padding: 0;
   box-sizing: border-box;
   font-family: "Open Sans";
+  color: #201e1c ;
 }
 
 body {
   background-color: #fffbf4;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1 {
+  font-size: max(36px, min(2vw, 42px));
+}
+
+h2 {
+  font-size: max(28px, min(2vw, 32px));
+}
+
+p{
+  font-size: max(16px, min(2vw, 18px));
+}
+
+.container-temp{
+  background: #e4d9cb;
+  color: #201e1c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: max(12px, min(2vw, 18px)); /*calc(1vw + 1vmin);*/
+  margin: 105px 0.5em 1em 0.5em;
+  padding: 1rem;
+  position: relative;
+  border-radius: 0.5rem;
 }

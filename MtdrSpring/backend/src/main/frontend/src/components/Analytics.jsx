@@ -101,14 +101,15 @@ function Analytics() {
 
   const firstData = taskGraphKpis.map((item) => ({
     sprint: item.sprintId,
+    name: item.sprintName,
     dev: item.username,
     tasks: item.completedTasks,
   }));
 
   const groupedFirst = Object.values(
-    firstData.reduce((acc, { sprint, dev, tasks }) => {
+    firstData.reduce((acc, { sprint, name, dev, tasks }) => {
       if (!acc[sprint]) {
-        acc[sprint] = { sprint };
+        acc[sprint] = { sprint, name };
       }
 
       acc[sprint][dev] = (acc[sprint][dev] || 0) + tasks;
@@ -124,13 +125,14 @@ function Analytics() {
   //SECOND GRAPH
   const secondData = hourGraphKpis.map((item) => ({
     sprint: item.sprintId,
+    name: item.sprintName,
     dev: item.username,
     hours: item.totalHours,
   }));
   const groupedSecond = Object.values(
-    secondData.reduce((acc, { sprint, dev, hours }) => {
+    secondData.reduce((acc, { sprint, name, dev, hours }) => {
       if (!acc[sprint]) {
-        acc[sprint] = { sprint };
+        acc[sprint] = { sprint, name };
       }
 
       acc[sprint][dev] = (acc[sprint][dev] || 0) + hours;
@@ -142,7 +144,7 @@ function Analytics() {
   return (
     <div className="analytics">
       <div className="page-header">
-        <h1 className="sprint-title">Analytics</h1>
+        <h1>Analytics</h1>
         <span className="project-manager">
           {" Team Id "}
           <input
@@ -213,11 +215,11 @@ function Analytics() {
       <div className="charts-section">
         <div className="charts-grid">
           <div className="sprintGrid">
-            <ChartContainer title="Daily Task Completion">
+            <ChartContainer title="Task Assignation">
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart data={groupedFirst}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="sprint" />
+                  <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
                   <Legend />
@@ -225,6 +227,7 @@ function Analytics() {
                     <Bar
                       key={dev}
                       dataKey={dev}
+                      fill={`var(--bar-color-${index})`}
                       className={`bar-color-${index}`}
                     />
                   ))}
@@ -238,7 +241,7 @@ function Analytics() {
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart data={groupedSecond}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="sprint" />
+                  <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
                   <Legend />

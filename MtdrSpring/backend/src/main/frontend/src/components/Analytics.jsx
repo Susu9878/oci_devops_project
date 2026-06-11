@@ -211,7 +211,7 @@ function Analytics() {
       <div className="charts-section">
         <div className="charts-grid">
           <div className="sprintGrid">
-            <ChartContainer title="Daily Task Completion">
+            <ChartContainer title="Task Assignation">
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart data={groupedFirst}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -223,6 +223,7 @@ function Analytics() {
                     <Bar
                       key={dev}
                       dataKey={dev}
+                      fill={`var(--bar-color-${index})`}
                       className={`bar-color-${index}`}
                     />
                   ))}

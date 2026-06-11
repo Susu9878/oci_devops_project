@@ -7,11 +7,16 @@ import com.springboot.MyTodoList.repository.SprintRepository;
 import com.springboot.MyTodoList.model.Sprint;
 import com.springboot.MyTodoList.model.User;
 import com.springboot.MyTodoList.repository.UserRepository;
+import com.springboot.MyTodoList.security.JwtUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.http.*;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,6 +37,9 @@ public class AIChatController {
 
     @Autowired
     private SprintRepository sprintRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     private static final String CLAUDE_API_URL = "https://api.anthropic.com/v1/messages";
     private static final String CLAUDE_MODEL = "claude-sonnet-4-6";
@@ -85,6 +93,43 @@ public class AIChatController {
         body.put("found", true);
         body.put("message", "Hello " + username + "! What would you like to do?");
         return ResponseEntity.ok(body);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, Object>> me(
+            @RequestHeader("Authorization") String authHeader) {
+
+        Map<String, Object> body = new HashMap<>();
+
+        try {
+
+            String token = authHeader.replace("Bearer ", "");
+
+            String email = jwtUtil.extractUsername(token);
+
+            Optional<User> userOpt =
+                    userRepository.findByEmail(email);
+
+            if (userOpt.isEmpty()) {
+                body.put("authenticated", false);
+                return ResponseEntity.ok(body);
+            }
+
+            User user = userOpt.get();
+
+            body.put("authenticated", true);
+            body.put("username", user.getUsername());
+            body.put("isManager", user.getIsManager());
+            body.put("email", user.getEmail());
+
+            return ResponseEntity.ok(body);
+
+        } catch (Exception e) {
+
+            body.put("authenticated", false);
+
+            return ResponseEntity.ok(body);
+        }
     }
 
     // ── POST /ai/chat ──────────────────────────────────────────────────────

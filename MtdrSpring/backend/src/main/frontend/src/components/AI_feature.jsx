@@ -310,7 +310,7 @@ function RoadmapCard({ steps }) {
 }
 
 /* ─── Option chips ──────────────────────────────────────────────────────────── */
-function OptionChips({ onSelect }) {
+function OptionChips({ onSelect, isManager }) {
     const [hovered, setHovered] = useState(null);
     return (
         <div style={S.optionChips}>
@@ -326,16 +326,20 @@ function OptionChips({ onSelect }) {
                 onClick={() => onSelect("A")}
             >
                 <span style={{ ...S.chipBadge, background: hovered === "A" ? "#e2c27d" : "#1a1a2e", color: hovered === "A" ? "#1a1a2e" : "#e2c27d" }}>A</span>
-                See my suggested roadmap
+                Generate Roadmap
             </button>
             <button
-                style={{ ...S.chip, ...S.chipDisabled }}
-                disabled
+                style={{
+                    ...S.chip,
+                    ...(!isManager ? S.chipDisabled : {})
+                }}
+                disabled={!isManager}
+                onClick={() => onSelect("B")}
             >
                 <span style={S.chipBadge}>B</span>
-                User report
+                Sprint Summary
                 <span style={{ marginLeft: 6, fontSize: 11, color: "#9a9890", fontStyle: "italic" }}>
-          coming soon
+          Manager Only
         </span>
             </button>
         </div>
@@ -361,7 +365,10 @@ function Message({ msg, username }) {
             </div>
             {msg.chips && (
                 <div style={{ marginLeft: 38 }}>
-                    <OptionChips onSelect={msg.chips} />
+                    <OptionChips
+                        onSelect={msg.chips}
+                        isManager={msg.isManager}
+                    />
                 </div>
             )}
             {msg.roadmap && (
@@ -375,17 +382,68 @@ function Message({ msg, username }) {
 
 /* ─── Main component ────────────────────────────────────────────────────────── */
 export default function AI_feature() {
-    const [phase, setPhase] = useState("name"); // "name" | "chat"
+    const [user, setUser] = useState(null); // "name" | "chat"
     const [username, setUsername] = useState("");
-    const [nameInput, setNameInput] = useState("");
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState("");
     const [loading, setLoading] = useState(false);
     const bottomRef = useRef(null);
 
     useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages, loading]);
+
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+
+            addMsg(
+                "bot",
+                "Sorry. S.T.A.M.P requires authentication. Please log in first."
+            );
+
+            return;
+        }
+
+        fetch("/ai/me", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(r => r.json())
+            .then(data => {
+
+                if (!data.authenticated) {
+
+                    addMsg(
+                        "bot",
+                        "Your session expired. Please log in again."
+                    );
+
+                    return;
+                }
+
+                setUser(data);
+                setUsername(data.username);
+
+                addMsg(
+                    "bot",
+                    `Hello ${data.username}!\n\nI am S.T.A.M.P.\n\nWhat can I help you with today?`,
+                    {
+                        chips: handleOption,
+                        isManager: data.isManager
+                    }
+                );
+
+            })
+            .catch(() => {
+
+                addMsg(
+                    "bot",
+                    "Unable to connect to AI services."
+                );
+
+            });
+
+    }, []);
 
     /* ── helpers ── */
     function addMsg(role, text, extras = {}) {
@@ -394,27 +452,6 @@ export default function AI_feature() {
 
     /* ── start chat ── */
     /* ── start chat ── */
-    async function startChat() {
-        const name = nameInput.trim();
-        if (!name) return;
-        setUsername(name);
-        setPhase("chat");
-        setLoading(true);
-
-        try {
-            const res = await fetch(`/ai/greet?username=${encodeURIComponent(name)}`);
-            const data = await res.json();
-            setLoading(false);
-            addMsg("bot", data.message, {
-                chips: (opt) => handleOption(opt, name),  // ← pass name here
-            });
-        } catch {
-            setLoading(false);
-            addMsg("bot", `Hello ${name}! What would you like to do?`, {
-                chips: (opt) => handleOption(opt, name)   // ← and here
-            });
-        }
-    }
 
     /* ── option A / B ── */
     async function handleOption(opt, usernameOverride) {
@@ -426,7 +463,10 @@ export default function AI_feature() {
         try {
             const res = await fetch("/ai/chat", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
                 body: JSON.stringify({ username: resolvedUsername, option: "A" }),  // ← use resolvedUsername
             });
             const data = await res.json();
@@ -452,7 +492,10 @@ export default function AI_feature() {
         try {
             const res = await fetch("/ai/chat", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
                 body: JSON.stringify({ username, freeText: text }),
             });
             const data = await res.json();
@@ -504,56 +547,28 @@ export default function AI_feature() {
                     {loading && <TypingDots />}
                     <div ref={bottomRef} />
                 </div>
+                <div style={S.inputArea}>
+                    <input
+                        className="taskbot-input"
+                        style={S.textInput}
+                        placeholder="Ask me about your tasks..."
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && sendFreeText()}
+                        disabled={loading}
+                    />
 
-                {/* Name entry */}
-                {phase === "name" && (
-                    <div style={S.nameRow}>
-                        <span style={S.nameLabel}>name:</span>
-                        <input
-                            className="taskbot-input"
-                            style={S.textInput}
-                            placeholder="Enter your name…"
-                            value={nameInput}
-                            onChange={(e) => setNameInput(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && startChat()}
-                            autoFocus
-                        />
-                        <button
-                            className="taskbot-send"
-                            style={S.sendBtn}
-                            onClick={startChat}
-                        >
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="#e2c27d">
-                                <path d="M5 3l14 9-14 9V3z" />
-                            </svg>
-                        </button>
-                    </div>
-                )}
-
-                {/* Chat input */}
-                {phase === "chat" && (
-                    <div style={S.inputArea}>
-                        <input
-                            className="taskbot-input"
-                            style={S.textInput}
-                            placeholder="Ask me about your tasks…"
-                            value={inputText}
-                            onChange={(e) => setInputText(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && sendFreeText()}
-                            disabled={loading}
-                        />
-                        <button
-                            className="taskbot-send"
-                            style={{ ...S.sendBtn, opacity: loading ? 0.45 : 1 }}
-                            onClick={sendFreeText}
-                            disabled={loading}
-                        >
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="#e2c27d">
-                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-                            </svg>
-                        </button>
-                    </div>
-                )}
+                    <button
+                        className="taskbot-send"
+                        style={{ ...S.sendBtn, opacity: loading ? 0.45 : 1 }}
+                        onClick={sendFreeText}
+                        disabled={loading}
+                    >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#e2c27d">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </>
     );

@@ -12,6 +12,7 @@ function Modify({ task, onClose, onUpdate }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Submitting:", formData);
 
     onUpdate(formData);
   };
@@ -93,7 +94,6 @@ function Modify({ task, onClose, onUpdate }) {
           <div className="form-buttons">
             <button
               type="submit"
-              onSubmit={handleSubmit}
               className="form-submit-button"
             >
               Save Changes

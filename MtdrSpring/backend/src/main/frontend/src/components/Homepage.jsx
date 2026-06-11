@@ -88,34 +88,42 @@ function Homepage() {
 
   const filteredTasks = getFilteredTasks();
 
-const handleModifyTask = async (updatedTask) => {
+  
+  const handleModifyTask = async (updatedTask) => {
+    console.log("Received update:", updatedTask);
+    console.log(
+      `${API_LIST}/todolist/${updatedTask.taskId}`
+    );
+
   try {
-    const response = await fetch(`${API_LIST}/todolist/sprint?sprintId=${sprintId}`,
+    const response = await fetch(
+      `${API_LIST}/${updatedTask.taskId}`,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          taskName: updatedTask.taskName,
-          description: updatedTask.description,
-          priority: updatedTask.priority,
-          status: updatedTask.status,
-        }),
+        body: JSON.stringify(updatedTask),
       }
     );
 
+    console.log("Status:", response.status);
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.log("Backend error:", errorText);
       throw new Error("Failed to update task");
     }
 
     const savedTask = await response.json();
 
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.taskId === savedTask.taskId
+    console.log("Saved task:", savedTask);
+
+    setItems((prev) =>
+      prev.map((task) =>
+        task.taskId === savedTask.taskId
           ? savedTask
-          : item
+          : task
       )
     );
 
@@ -123,7 +131,7 @@ const handleModifyTask = async (updatedTask) => {
     setSelectedTask(null);
 
   } catch (err) {
-    console.error("Update error:", err);
+    console.error(err);
   }
 };
 

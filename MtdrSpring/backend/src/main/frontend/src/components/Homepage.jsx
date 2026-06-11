@@ -3,7 +3,9 @@ import NewItem from "../NewItem";
 import API_LIST from "../API";
 import { ListFilter, ChevronRight, ChevronDown, Plus } from "lucide-react";
 import { Button, TableBody, CircularProgress } from "@mui/material";
+import { Outlet, Link, useLocation, Route, Routes } from "react-router-dom";
 import Filter from "./Filter";
+import Modify from "./Modify";
 import "./styledComponents/homepage.css";
 
 
@@ -25,6 +27,7 @@ function Homepage() {
   const [items, setItems] = useState([]);
   // In case of an error during the API call:
   const [error, setError] = useState();
+  const [selectedTask, setSelectedTask] = useState(null);
 
   const [filters, setFilters] = useState({
     dateSort: "none",
@@ -84,6 +87,45 @@ function Homepage() {
   }, [sprintId]);
 
   const filteredTasks = getFilteredTasks();
+
+const handleModifyTask = async (updatedTask) => {
+  try {
+    const response = await fetch(`${API_LIST}/todolist/sprint?sprintId=${sprintId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          taskName: updatedTask.taskName,
+          description: updatedTask.description,
+          priority: updatedTask.priority,
+          status: updatedTask.status,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to update task");
+    }
+
+    const savedTask = await response.json();
+
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.taskId === savedTask.taskId
+          ? savedTask
+          : item
+      )
+    );
+
+    setShowCreateModal(false);
+    setSelectedTask(null);
+
+  } catch (err) {
+    console.error("Update error:", err);
+  }
+};
 
   return (
     <div className="home-container">
@@ -150,8 +192,29 @@ function Homepage() {
 
               {expandedTaskId === items.taskId && (
                 <div className="task-expanded">
+                  <p>Assigned to:{items.userId} </p>
+                  <p>Task description:</p>
                   <p>{items.description}</p>
-                  <span>{items.priority.toUpperCase()}</span>
+                  <p></p>
+                  <span>Priority: {items.priority.toUpperCase()}</span>
+                  <span>Status :{items.status.toUpperCase()}</span>
+                  <button
+                    onClick={() => {
+                      setSelectedTask(items);
+                      setShowCreateModal(true);
+                    }}
+                  > Modify Task
+                  </button>
+
+                  {showCreateModal && selectedTask && (
+                    <Modify
+                    task={selectedTask}
+                    onClose={() => {
+                      setShowCreateModal(false);
+                      setSelectedTask(null);
+                    }}
+                    onUpdate={handleModifyTask}
+                    />)}
                 </div>
               )}
             </div>

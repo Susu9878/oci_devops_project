@@ -279,6 +279,7 @@ function PersonalAnalytics() {
                     <Bar
                       key={dev}
                       dataKey={dev}
+                      fill={`var(--bar-color-${index})`}
                       className={`bar-color-${index}`}
                     />
                   ))}
@@ -300,6 +301,7 @@ function PersonalAnalytics() {
                     <Bar
                       key={dev}
                       dataKey={dev}
+                      fill={`var(--bar-color-${index})`}
                       className={`bar-color-${index}`}
                     />
                   ))}

@@ -170,10 +170,16 @@ public class BotActions {
                 ReplyKeyboardMarkup
                         .builder()
                         .keyboardRow(
-                                new KeyboardRow(BotLabels.LIST_ACTIVE_TASKS.getLabel(),
+                                new KeyboardRow(
+                                        BotLabels.LIST_ACTIVE_TASKS.getLabel(),
                                         BotLabels.ADD_NEW_ITEM.getLabel()))
-                        .keyboardRow(new KeyboardRow(BotLabels.SHOW_MAIN_SCREEN.getLabel(),
-                                BotLabels.HIDE_MAIN_SCREEN.getLabel()))
+                        .keyboardRow(
+                                new KeyboardRow(
+                                        BotLabels.REGISTER_WORK_HOURS.getLabel()))
+                        .keyboardRow(
+                                new KeyboardRow(
+                                        BotLabels.SHOW_MAIN_SCREEN.getLabel(),
+                                        BotLabels.HIDE_MAIN_SCREEN.getLabel()))
                         .build());
         exit = true;
     }

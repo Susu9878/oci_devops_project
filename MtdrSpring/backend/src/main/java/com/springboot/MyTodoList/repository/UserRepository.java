@@ -58,35 +58,68 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             """, nativeQuery = true)
     List<Object[]> getUserKpisPerSprint(int sprintId, int teamId);
 
-    // graph 1 week 5 presentation
     @Query(value = """
             SELECT
-                t.SPRINT_ID,
+                u.ID,
                 u.USERNAME,
-                SUM(CASE WHEN t.STATUS = 'DONE' THEN 1 ELSE 0 END) AS completedTasks
+
+                COUNT(DISTINCT t.ID) AS totalTasksAssigned,
+
+                NVL(SUM(
+                    CASE WHEN t.STATUS = 'DONE'
+                    THEN 1
+                    ELSE 0
+                    END
+                ), 0) AS totalTasksCompleted,
+
+                NVL((
+                    SELECT SUM(w.WORKED_HOURS)
+                    FROM WORK_LOG w
+                    WHERE w.USER_ID = u.ID
+                ), 0) AS totalHoursWorked,
+
+                COUNT(DISTINCT t.SPRINT_ID) AS sprintCount
+
             FROM USERS u
             LEFT JOIN TODOITEM t
                 ON t.USER_ID = u.ID
-            WHERE u.TEAM_ID = :teamId
-            GROUP BY t.SPRINT_ID, u.USERNAME
-            ORDER BY t.SPRINT_ID, u.USERNAME
+
+            WHERE u.ID = :userId
+              AND u.TEAM_ID = :teamId
+
+            GROUP BY u.ID, u.USERNAME
+                        """, nativeQuery = true)
+    List<Object[]> getUserKpisAllSprints(int userId, int teamId);
+
+    // Graph 1
+    @Query(value = """
+                SELECT
+                    t.SPRINT_ID,
+                    u.USERNAME,
+                    SUM(CASE WHEN t.STATUS = 'DONE' THEN 1 ELSE 0 END) AS completedTasks
+                FROM USERS u
+                LEFT JOIN TODOITEM t
+                    ON t.USER_ID = u.ID
+                WHERE u.TEAM_ID = :teamId
+                GROUP BY t.SPRINT_ID, u.USERNAME
+                ORDER BY t.SPRINT_ID, u.USERNAME
             """, nativeQuery = true)
     List<Object[]> getCompletedTasksPerUserPerSprint(int teamId);
 
     // graph 2 week 5 presentation
     @Query(value = """
-            SELECT
-                t.SPRINT_ID,
-                u.USERNAME,
-                NVL(SUM(w.WORKED_HOURS), 0) AS totalHours
-            FROM USERS u
-            LEFT JOIN TODOITEM t
-                ON t.USER_ID = u.ID
-            LEFT JOIN WORK_LOG w
-                ON w.TASK_ID = t.ID AND w.USER_ID = u.ID
-            WHERE u.TEAM_ID = :teamId
-            GROUP BY t.SPRINT_ID, u.USERNAME
-            ORDER BY t.SPRINT_ID, u.USERNAME
+                SELECT
+                    t.SPRINT_ID,
+                    u.USERNAME,
+                    NVL(SUM(w.WORKED_HOURS), 0) AS totalHours
+                FROM USERS u
+                LEFT JOIN TODOITEM t
+                    ON t.USER_ID = u.ID
+                LEFT JOIN WORK_LOG w
+                    ON w.TASK_ID = t.ID AND w.USER_ID = u.ID
+                WHERE u.TEAM_ID = :teamId
+                GROUP BY t.SPRINT_ID, u.USERNAME
+                ORDER BY t.SPRINT_ID, u.USERNAME
             """, nativeQuery = true)
     List<Object[]> getHoursPerUserPerSprint(int teamId);
 }

@@ -32,15 +32,6 @@ function Homepage() {
     importance: "all",
   });
 
-  const handleCreateTask = (items) => {
-    const newItem = {
-      ...items,
-      id: Math.max(...items.map((t) => t.id), 0) + 1,
-    };
-    setItems([newItem, ...items]);
-    setShowCreateModal(false);
-  };
-
   const toggleTaskExpansion = (itemsId) => {
     setExpandedTaskId(expandedTaskId === itemsId ? null : itemsId);
   };
@@ -167,7 +158,6 @@ function Homepage() {
           ))}
         </div>
       </div>
-
     </div>
   );
 }

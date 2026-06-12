@@ -455,32 +455,60 @@ export default function AI_feature() {
 
     /* ── option A / B ── */
     async function handleOption(opt, usernameOverride) {
-        if (opt !== "A") return;
-        const resolvedUsername = usernameOverride || username;  // ← use override
-        addMsg("user", "A — Show my roadmap");
+
+        const resolvedUsername = usernameOverride || username;
+
+        addMsg(
+            "user",
+            opt === "A"
+                ? "A — Show my roadmap"
+                : "B — Sprint Summary"
+        );
+
         setLoading(true);
 
         try {
+
             const res = await fetch("/ai/chat", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem("token")}`
                 },
-                body: JSON.stringify({ username: resolvedUsername, option: "A" }),  // ← use resolvedUsername
+                body: JSON.stringify({
+                    username: resolvedUsername,
+                    option: opt
+                }),
             });
+
             const data = await res.json();
+
             setLoading(false);
-            if (data.roadmap?.length > 0) {
-                addMsg("bot", "Here's your recommended roadmap:", {
-                    roadmap: data.roadmap
-                });
+
+            if (opt === "A" && data.roadmap?.length > 0) {
+
+                addMsg(
+                    "bot",
+                    "Here's your recommended roadmap:",
+                    {
+                        roadmap: data.roadmap
+                    }
+                );
+
             } else {
+
                 addMsg("bot", data.reply);
+
             }
+
         } catch {
+
             setLoading(false);
-            addMsg("bot", "Couldn't reach the server. Please try again.");
+
+            addMsg(
+                "bot",
+                "Couldn't reach the server. Please try again."
+            );
         }
     }
 

@@ -186,6 +186,31 @@ public class AIChatController {
                                     user.getUserId(),
                                     sprintId);
         }
+        if ("B".equalsIgnoreCase(req.option)) {
+
+            if (!user.getIsManager()) {
+
+                return ResponseEntity.ok(
+                        new ChatResponse(
+                                "Only managers can access sprint summaries.",
+                                false,
+                                null));
+            }
+
+            String prompt =
+                    buildManagerPrompt(
+                            sprintId,
+                            teamId);
+
+            String reply =
+                    callClaude(prompt);
+
+            return ResponseEntity.ok(
+                    new ChatResponse(
+                            reply,
+                            false,
+                            null));
+        }
 
         Set<ToDoItem> similarTasks = new HashSet<>();
 
@@ -317,6 +342,78 @@ public class AIChatController {
                 + "\nHours logged so far: " + kpi.getHoursWorked() + "\n\n"
                 + "User says: \"" + req.freeText + "\"\n\n"
                 + "Reply helpfully in 2-3 sentences referencing their actual tasks by name.";
+    }
+
+    private String buildManagerPrompt(
+            int sprintId,
+            int teamId) {
+
+        List<Object[]> teamKpis =
+                workLogRepository.getTeamKpisPerSprint(
+                        sprintId,
+                        teamId);
+
+        List<Object[]> userKpis =
+                userRepository.getUserKpisPerSprint(
+                        sprintId,
+                        teamId);
+
+        StringBuilder sb = new StringBuilder();
+
+        Object[] team = teamKpis.get(0);
+
+        sb.append("""
+Current Sprint Data
+
+Total Tasks: %s
+Completed Tasks: %s
+Team Members: %s
+Total Hours Logged: %s
+
+""".formatted(
+                team[0],
+                team[1],
+                team[2],
+                team[3]
+        ));
+
+        sb.append("User Breakdown:\n\n");
+
+        for (Object[] row : userKpis) {
+
+            sb.append("""
+User: %s
+Completed: %s
+In Progress: %s
+Not Started: %s
+Not Done: %s
+Hours Worked: %s
+
+""".formatted(
+                    row[1],
+                    row[2],
+                    row[3],
+                    row[4],
+                    row[5],
+                    row[6]
+            ));
+        }
+
+        sb.append("""
+You are an engineering manager assistant.
+
+Provide:
+
+1. Sprint health summary
+2. Risks
+3. Strong contributors
+4. Team members needing support
+5. Recommended actions
+
+Keep under 300 words.
+""");
+
+        return sb.toString();
     }
 
     private String callClaude(String userPrompt) {

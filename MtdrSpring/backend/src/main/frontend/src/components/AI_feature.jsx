@@ -428,7 +428,7 @@ export default function AI_feature() {
                     "bot",
                     `Hello ${data.username}!\n\nI am S.T.A.M.P.\n\nWhat can I help you with today?`,
                     {
-                        chips: handleOption,
+                        chips: (opt) => handleOption(opt, data.username),
                         isManager: data.isManager
                     }
                 );
@@ -471,10 +471,13 @@ export default function AI_feature() {
             });
             const data = await res.json();
             setLoading(false);
-            addMsg("bot", data.reply || "Here's your roadmap:", { roadmap: data.roadmap });
-            setTimeout(() => {
-                addMsg("bot", "Anything else?", { chips: (opt) => handleOption(opt, resolvedUsername) });  // ← pass it along
-            }, 500);
+            if (data.roadmap?.length > 0) {
+                addMsg("bot", "Here's your recommended roadmap:", {
+                    roadmap: data.roadmap
+                });
+            } else {
+                addMsg("bot", data.reply);
+            }
         } catch {
             setLoading(false);
             addMsg("bot", "Couldn't reach the server. Please try again.");

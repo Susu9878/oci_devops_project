@@ -7,6 +7,7 @@ import com.springboot.MyTodoList.repository.SprintRepository;
 import com.springboot.MyTodoList.model.Sprint;
 import com.springboot.MyTodoList.model.User;
 import com.springboot.MyTodoList.repository.UserRepository;
+import com.springboot.MyTodoList.repository.WorkLogRepository;
 import com.springboot.MyTodoList.security.JwtUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,9 @@ public class AIChatController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private WorkLogRepository workLogRepository;
 
     private static final String CLAUDE_API_URL = "https://api.anthropic.com/v1/messages";
     private static final String CLAUDE_MODEL = "claude-sonnet-4-6";
@@ -164,11 +168,32 @@ public class AIChatController {
         }
 
         // 3. Fetch actual tasks for this user in this sprint
-        List<ToDoItem> activeTasks = toDoItemRepository
-                .findActiveTasksByUserAndSprint(user.getUserId(), sprintId);
+        List<ToDoItem> activeTasks =
+                toDoItemRepository
+                        .findActiveTasksByUserAndSprint(
+                                user.getUserId(),
+                                sprintId);
+
+        List<ToDoItem> completedTasks =
+                toDoItemRepository.findByStatus(
+                                ToDoItem.TaskStatus.DONE)
+                        .stream()
+                        .limit(10)
+                        .toList();
+
+        String historicalContext =
+                buildHistoricalContext(
+                        completedTasks);
+
 
         // 4. Build prompt and call Claude
-        String prompt = buildPrompt(req, userKpiOpt.get(), activeTasks);
+        String prompt =
+                buildPrompt(
+                        req,
+                        userKpiOpt.get(),
+                        activeTasks,
+                        historicalContext);
+
         String claudeReply = callClaude(prompt);
 
         // 5. Parse roadmap if option A
@@ -206,14 +231,27 @@ public class AIChatController {
         return dto;
     }
 
-    private String buildPrompt(ChatRequest req, UserKpiDTO kpi, List<ToDoItem> tasks) {
+    private String buildPrompt(
+            ChatRequest req,
+            UserKpiDTO kpi,
+            List<ToDoItem> tasks,
+            String historicalContext) {
 
         StringBuilder taskList = new StringBuilder();
         for (ToDoItem t : tasks) {
             taskList.append(String.format(
-                    "- [%s] \"%s\" | Priority: %s | Expected hours: %s | Story points: %s | Description: %s\n",
-                    t.getStatus(),
+                    """
+                    Task Name: %s
+                    Status: %s
+                    Priority: %s
+                    Expected Hours: %s
+                    Story Points: %s
+                    Description: %s
+                
+                    """,
+
                     t.getTaskName(),
+                    t.getStatus(),
                     t.getPriority(),
                     t.getExpectedHours() != null ? t.getExpectedHours() : "?",
                     t.getStoryPoints() != null ? t.getStoryPoints() : "?",
@@ -222,11 +260,28 @@ public class AIChatController {
 
         if ("A".equalsIgnoreCase(req.option)) {
             return "You are a helpful project assistant for a software development team.\n\n"
-                    + "User \"" + req.username + "\" has these open tasks this sprint:\n"
+                    + "User \"" + req.username + "\" has these unfinished tasks this sprint:\n"
                     + taskList
                     + "\nHours logged so far this sprint: " + kpi.getHoursWorked() + "\n\n"
-                    + "Suggest a prioritized roadmap of what they should tackle first and why. "
-                    + "Base your reasoning on priority level, complexity (story points and expected hours), and current status. "
+                    + "\n\n"
+                    + historicalContext
+                    + "\n\n"
+                    + "Use the historical completed tasks and their actual hours as evidence when determining the roadmap.\n\n"
+
+                    + "Task statuses:\n"
+                    + "- IN_PROGRESS: work has already started.\n"
+                    + "- NOT_DONE: work was attempted previously but remains unfinished.\n"
+                    + "- NOT_STARTED: work has not yet begun.\n\n"
+
+                    + "When generating the roadmap:\n"
+                    + "1. Consider task priority.\n"
+                    + "2. Consider task dependencies.\n"
+                    + "3. Consider historical effort from similar completed tasks.\n"
+                    + "4. If an IN_PROGRESS task blocks other work, recommend finishing it first.\n"
+                    + "5. If a NOT_DONE task is close to completion, consider finishing it before starting new work.\n"
+                    + "6. Estimate effort when possible using the historical task data.\n\n"
+
+                    + "Base your reasoning on priority, story points, expected hours, actual historical hours, and task status. "
                     + "Give one practical tip per task. "
                     + "Reply ONLY as a numbered list. Each item: \"N. [task name] — [one sentence reason + tip]\". "
                     + "No preamble, no headers, no markdown.";
@@ -280,10 +335,56 @@ public class AIChatController {
             if (!line.matches("^\\d+\\..*"))
                 continue;
             String body = line.replaceFirst("^\\d+\\.\\s*", "");
-            String[] parts = body.split(" [—-] ", 2);
+            String[] parts = body.split(" — ", 2);
             steps.add(new RoadmapStep(steps.size() + 1, parts[0].trim(),
                     parts.length > 1 ? parts[1].trim() : ""));
         }
         return steps;
+    }
+
+    //HIOSTORY FOR AI STUFFS
+    private String buildHistoricalContext(
+            List<ToDoItem> completedTasks) {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Historical Completed Tasks:\n\n");
+
+        for (ToDoItem task : completedTasks) {
+
+            Double actualHours =
+                    workLogRepository.getTotalHoursForTask(
+                            task.getTaskId());
+
+            sb.append("Task ID: ")
+                    .append(task.getTaskId())
+                    .append("\n");
+
+            sb.append("Task: ")
+                    .append(task.getTaskName())
+                    .append("\n");
+
+            sb.append("Description: ")
+                    .append(task.getDescription())
+                    .append("\n");
+
+            sb.append("Priority: ")
+                    .append(task.getPriority())
+                    .append("\n");
+
+            sb.append("Story Points: ")
+                    .append(task.getStoryPoints())
+                    .append("\n");
+
+            sb.append("Expected Hours: ")
+                    .append(task.getExpectedHours())
+                    .append("\n");
+
+            sb.append("Actual Hours: ")
+                    .append(actualHours)
+                    .append("\n\n");
+        }
+
+        return sb.toString();
     }
 }

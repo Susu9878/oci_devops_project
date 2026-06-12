@@ -26,13 +26,41 @@ public interface ToDoItemRepository extends JpaRepository<ToDoItem,Integer> {
     */
 
     @Query("""
-        SELECT t
-        FROM ToDoItem t
-        WHERE t.user.userId = :userId
-        AND t.sprint.sprintId = :sprintId
-        AND t.status != com.springboot.MyTodoList.model.ToDoItem.TaskStatus.DONE
-    """)
-    List<ToDoItem> findActiveTasksByUserAndSprint(int userId, int sprintId);
+    SELECT t
+    FROM ToDoItem t
+    WHERE t.user.userId = :userId
+    AND t.sprint.sprintId = :sprintId
+    AND t.status != com.springboot.MyTodoList.model.ToDoItem.TaskStatus.DONE
+""")
+    List<ToDoItem> findActiveTasksByUserAndSprint(
+            int userId,
+            int sprintId);
+
+    @Query("""
+    SELECT t
+    FROM ToDoItem t
+    WHERE t.user.userId = :userId
+    AND t.sprint.sprintId = :sprintId
+    AND t.status = com.springboot.MyTodoList.model.ToDoItem.TaskStatus.NOT_STARTED
+""")
+    List<ToDoItem> findNotStartedTasksByUserAndSprint(
+            int userId,
+            int sprintId);
+
+    @Query("""
+    SELECT t
+    FROM ToDoItem t
+    WHERE t.user.userId = :userId
+    AND t.sprint.sprintId = :sprintId
+    AND (
+        t.status = com.springboot.MyTodoList.model.ToDoItem.TaskStatus.NOT_STARTED
+        OR
+        t.status = com.springboot.MyTodoList.model.ToDoItem.TaskStatus.NOT_DONE
+    )
+""")
+    List<ToDoItem> findRoadmapTasksByUserAndSprint(
+            int userId,
+            int sprintId);
 
     List<ToDoItem> findByStatus(ToDoItem.TaskStatus status);
 

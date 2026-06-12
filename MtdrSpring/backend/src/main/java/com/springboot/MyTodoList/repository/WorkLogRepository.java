@@ -107,4 +107,12 @@ public interface WorkLogRepository extends JpaRepository<WorkLog, Integer> {
     List<Object[]> getHoursPerUserPerSprint(int teamId);
 
     // log hours query
+
+    //TotoalHours for tasks
+    @Query("""
+        SELECT COALESCE(SUM(w.workedHours),0)
+        FROM WorkLog w
+        WHERE w.task.taskId = :taskId
+    """)
+    Double getTotalHoursForTask(Integer taskId);
 }

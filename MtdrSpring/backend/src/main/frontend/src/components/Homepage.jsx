@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import NewItem from "../NewItem";
 import API_LIST from "../API";
-import { ListFilter, ChevronRight, ChevronDown, Plus } from "lucide-react";
+import { ListFilter, ChevronRight, ChevronDown, Pencil } from "lucide-react";
 import { Button, TableBody, CircularProgress } from "@mui/material";
+import { Outlet, Link, useLocation, Route, Routes } from "react-router-dom";
 import Filter from "./Filter";
+import Modify from "./Modify";
 import { useNavigate } from "react-router-dom";
 import "./styledComponents/homepage.css";
 
@@ -25,6 +27,7 @@ function Homepage() {
   const [items, setItems] = useState([]);
   // In case of an error during the API call:
   const [error, setError] = useState();
+  const [selectedTask, setSelectedTask] = useState(null);
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -113,6 +116,52 @@ function Homepage() {
 
   const filteredTasks = getFilteredTasks();
 
+  
+  const handleModifyTask = async (updatedTask) => {
+    console.log("Received update:", updatedTask);
+    console.log(
+      `${API_LIST}/todolist/${updatedTask.taskId}`
+    );
+
+  try {
+    const response = await fetch(
+      `${API_LIST}/${updatedTask.taskId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedTask),
+      }
+    );
+
+    console.log("Status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log("Backend error:", errorText);
+      throw new Error("Failed to update task");
+    }
+
+    const savedTask = await response.json();
+
+    console.log("Saved task:", savedTask);
+
+    setItems((prev) =>
+      prev.map((task) =>
+        task.taskId === savedTask.taskId
+          ? savedTask
+          : task
+      )
+    );
+
+    setShowCreateModal(false);
+    setSelectedTask(null);
+
+  } catch (err) {
+    console.error(err);
+  }
+};
   if (!token) {
     return <p>Redirecting...</p>;
   }
@@ -181,8 +230,34 @@ function Homepage() {
 
               {expandedTaskId === items.taskId && (
                 <div className="task-expanded">
-                  <p>{items.description}</p>
-                  <span>{items.priority.toUpperCase()}</span>
+                  <p className="taskExP-title">Task description:</p>
+                  <p className="taskExP-val">{items.description}</p>
+                  <div className="markers">
+                    <span className="taskExP-title">Priority: </span>
+                    <p className="taskExP-markers">{items.priority.toUpperCase()}</p>
+                  </div>
+                  <div className="markers">
+                    <span className="taskExP-title">Status:</span>
+                    <p className="taskExP-markers">{items.status.toUpperCase()}</p>
+                  </div>                  
+                  <button
+                    className="editBtn"
+                    onClick={() => {
+                      setSelectedTask(items);
+                      setShowCreateModal(true);
+                    }}
+                  > <Pencil className="iconH"/>
+                  </button>
+
+                  {showCreateModal && selectedTask && (
+                    <Modify
+                    task={selectedTask}
+                    onClose={() => {
+                      setShowCreateModal(false);
+                      setSelectedTask(null);
+                    }}
+                    onUpdate={handleModifyTask}
+                    />)}
                 </div>
               )}
             </div>

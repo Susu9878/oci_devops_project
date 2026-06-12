@@ -1,0 +1,93 @@
+.modify-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modify-content {
+  background: #e4d9cb;
+  border-radius: 5px;
+  padding: 40px;
+  width: 80vh;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modifyForm{
+    width: auto;
+}
+
+.modify-title{
+    font-size: max(20px, min(2vw, 24px));
+}
+
+.modifyLabel{
+    font-size: max(16px, min(2vw, 18px));
+
+}
+
+.modifyInput{
+    width: 100%;
+    margin-bottom: 0.2rem;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #fff6e6;
+    border: 2px solid #a39480;
+}
+
+.txtArea{
+    width:100%;
+    background-color: #fff6e6;
+    border: 2px solid #a39480;
+    margin-bottom: 0.2rem; 
+}
+
+.optSel{
+    margin-bottom: 0.2rem;  
+    border: 2px solid #a39480;
+    background-color: #fff6e6;
+    text-decoration: none;
+    padding: 6px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.mBtn{
+    display: flex;
+}
+
+.sBtn{
+    background-color: #3479c7;
+    color: #fef9f2;
+    text-decoration: none;
+    font-size: max(16px, min(2vw, 8px));
+    padding: 14px;
+    border-radius: 5px;
+    transition: 0.3s ease-in-out;
+    border: 2px solid #0c407c;
+    width: 100%;
+    margin: 8px 5px;
+    cursor: pointer;
+}
+
+.cBtn{
+    background-color: #ffbd44;
+    color: #201e1c;
+    text-decoration: none;
+    font-size: max(16px, min(2vw, 8px));
+    padding: 14px;
+    border-radius: 5px;
+    transition: 0.3s ease-in-out;
+    border: 2px solid #e98400;
+    width: 100%;
+    margin: 8px 5px;
+    cursor: pointer;
+}

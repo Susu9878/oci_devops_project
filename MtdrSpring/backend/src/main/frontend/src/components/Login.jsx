@@ -42,28 +42,37 @@ function Login() {
   };
 
   return (
-    <div className="login">
-      <h1>Login</h1>
+    <div className="colorBg">
+      <div className="login">
+        <h1 className="h1L">Login</h1>
 
-      <form className="box" onSubmit={handleLogin}>
-        <label>Email:</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <form className="box" onSubmit={handleLogin}>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+          />
 
-        <label>Password:</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <label>Password:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+          />
 
-        <button type="submit">Login</button>
-      </form>
-
-      <Link to="/signUp">Don't have an account? Sign Up</Link>
+          <button type="submit" className="loginBtb">
+            Login
+          </button>
+        </form>
+        <div className="linkContainer">
+          <Link to="/signUp" className="signLink">
+            Don't have an account? Sign Up
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

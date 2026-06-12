@@ -60,7 +60,9 @@ function Analytics() {
     const fetchKpis = async () => {
       setLoading(true);
       try {
-        const response = await fetch( `${API_LIST}/kpis/team?sprintId=${sprintId}&teamId=${teamId}`);
+        const response = await fetch(
+          `${API_LIST}/kpis/team?sprintId=${sprintId}&teamId=${teamId}`,
+        );
         if (!response.ok) {
           throw new Error("Failed kpi fecth");
         }
@@ -70,24 +72,25 @@ function Analytics() {
         setKpi(data);
         setError(null);
 
-      // GRAPH 1
-      const taskGraphResponse = await fetch(
-        `${API_LIST}/kpis/tasks-per-sprint?teamId=${teamId}`,
-      );
+        // GRAPH 1
+        const taskGraphResponse = await fetch(
+          `${API_LIST}/kpis/tasks-per-sprint?teamId=${teamId}`,
+        );
 
-      if (!taskGraphResponse.ok) throw new Error("Failed to fetch graph KPIs");
-      const taskData = await taskGraphResponse.json();
-      setTaskGraphKpis(taskData);
+        if (!taskGraphResponse.ok)
+          throw new Error("Failed to fetch graph KPIs");
+        const taskData = await taskGraphResponse.json();
+        setTaskGraphKpis(taskData);
 
-      // GRAPH 2
-      const hourGraphResponse = await fetch(
-        `${API_LIST}/kpis/hours-per-sprint?teamId=${teamId}`,
-      );
+        // GRAPH 2
+        const hourGraphResponse = await fetch(
+          `${API_LIST}/kpis/hours-per-sprint?teamId=${teamId}`,
+        );
 
-      if (!hourGraphResponse.ok) throw new Error("Failed to fetch graph KPIs");
-      const hourGraphData = await hourGraphResponse.json();
-      setHourGraphKpis(hourGraphData);
-
+        if (!hourGraphResponse.ok)
+          throw new Error("Failed to fetch graph KPIs");
+        const hourGraphData = await hourGraphResponse.json();
+        setHourGraphKpis(hourGraphData);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -145,19 +148,16 @@ function Analytics() {
     <div className="analytics">
       <div className="page-header">
         <h1>Analytics</h1>
-        <span className="project-manager">
-          {" Team Id "}
-        </span>
-          <input
-            type="number"
-            value={teamId}
-            onChange={(e) => setTeamId(Number(e.target.value))}
-            className="inputStyle"
-            placeholder="Team ID"
-            min="1"
-          />
+        <span className="project-manager">{" Team Id "}</span>
+        <input
+          type="number"
+          value={teamId}
+          onChange={(e) => setTeamId(Number(e.target.value))}
+          className="inputStyle"
+          placeholder="Team ID"
+          min="1"
+        />
       </div>
-
 
       <div className="stats-section">
         <div className="stats-grid">
@@ -174,7 +174,7 @@ function Analytics() {
             <StatsCard
               colorClass="mustard"
               icon={<ListTodo className="stats-card-icon" />}
-              value={kpi.totalTasksCompleted.totalTasksAssigned}
+              value={kpi.totalTasksAssigned}
               label="Total tasks assigned"
             />
           )}
@@ -252,9 +252,9 @@ function Analytics() {
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
-            </div>
           </div>
         </div>
+      </div>
     </div>
   );
 }

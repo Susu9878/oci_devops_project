@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./styledComponents/createTask.css";
+import API_LIST from "../API";
 
 function CreateTask() {
   const initialData = {
@@ -86,7 +87,7 @@ function CreateTask() {
 
     try {
       setIsPending(true);
-      const response = await fetch("http://localhost:8080/todolist", {
+      const response = await fetch(`${API_LIST}/todolist`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./styledComponents/hourRegistry.css";
+import API_LIST from "../API";
 
 function Hour_Registry() {
     const initialHours = {
@@ -60,7 +61,7 @@ function Hour_Registry() {
             setIsPending(true);
 
             const response = await fetch(
-                "http://localhost:8080/todolist/worklogs",
+                `${API_LIST}/todolist/worklogs`,
                 {
                     method: "POST",
                     headers: {

@@ -78,7 +78,7 @@ function Hour_Registry() {
             console.log("Hours registered successfully");
 
             // Clear form after successful registration
-            setHourLog("");
+            setHourLog(initialHours);
             setErrors({});
 
         } catch (error) {
@@ -96,6 +96,7 @@ function Hour_Registry() {
                 <p className="labelP">Hours worked:</p>
                 <input
                     type="number"
+                    name="hours"
                     value={hourLog.hours}
                     onChange={handleChange}
                 />
@@ -104,6 +105,7 @@ function Hour_Registry() {
                 <p className="labelP">Work day:</p>
                 <input
                     type="date"
+                    name="hours"
                     value={hourLog.workDay}
                     onChange={handleChange}
                 />
@@ -112,6 +114,7 @@ function Hour_Registry() {
                 <p className="labelP">Task ID:</p>
                 <input
                     type="number"
+                    name="hours"
                     value={hourLog.taskId}
                     onChange={handleChange}
                 />

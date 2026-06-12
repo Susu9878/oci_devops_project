@@ -24,7 +24,7 @@ steps:
   - type: Command
     name: "Docker Login"
     command:  cd MtdrSpring;
-              oci os object get --bucket-name "reacttodo-ysmiy" --name deployment_config.tgz --file deployment_config.tgz;
+              oci os object get --bucket-name "reacttodo-evley" --name deployment_config.tgz --file deployment_config.tgz;
               tar -xzvf deployment_config.tgz;
               source env.sh;
               cat at.cfg | docker login -u "$(cat $OCI_PRIMARY_SOURCE_DIR/MtdrSpring/state/NAMESPACE)/$(cat $OCI_PRIMARY_SOURCE_DIR/MtdrSpring/state/USERNAME)" --password-stdin $(cat $OCI_PRIMARY_SOURCE_DIR/MtdrSpring/state/HOME_REGION).ocir.io

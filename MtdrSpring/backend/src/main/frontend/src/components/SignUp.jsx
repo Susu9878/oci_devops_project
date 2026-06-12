@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./styledComponents/signUp.css";
-import { House } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import API_LIST from "../API";
 
@@ -55,44 +55,50 @@ function SignUp() {
   };
 
   return (
-    <div className="feature">
-      <h1>Sign Up</h1>
+    <div className="colorBg">
+      <div className="login">
+        <Link to="/">
+          <ChevronLeft className="backBack" />
+        </Link>
+        <h1 className="h1L">Sign Up</h1>
+        <form onSubmit={handleSignUp}>
+          <label>Username</label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username"
+          />
 
-      <form onSubmit={handleSignUp}>
-        <label>Username</label>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+          <label>Phone Number</label>
+          <input
+            type="text"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder="Phone number"
+          />
 
-        <label>Phone Number</label>
-        <input
-          type="text"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-        />
+          <label>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email address"
+          />
 
-        <label>Email</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          <label>Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+          />
 
-        <label>Password</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button type="submit">Create Account</button>
-      </form>
-
-      <Link to="/">
-        <House />
-      </Link>
+          <button type="submit" className="signBtb">
+            Create Account
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

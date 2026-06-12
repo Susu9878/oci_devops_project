@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./styledComponents/hourRegistry.css";
+import API_LIST from "../API";
 
 function Hour_Registry() {
     const initialHours = {
@@ -104,7 +105,7 @@ function Hour_Registry() {
                 <p className="labelP">Work day:</p>
                 <input
                     type="date"
-                    name="hours"
+                    name="workDay"
                     value={hourLog.workDay}
                     onChange={handleChange}
                 />
@@ -113,7 +114,7 @@ function Hour_Registry() {
                 <p className="labelP">Task ID:</p>
                 <input
                     type="number"
-                    name="hours"
+                    name="taskId"
                     value={hourLog.taskId}
                     onChange={handleChange}
                 />

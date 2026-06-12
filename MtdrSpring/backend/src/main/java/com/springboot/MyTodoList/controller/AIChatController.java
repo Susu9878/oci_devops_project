@@ -168,22 +168,43 @@ public class AIChatController {
         }
 
         // 3. Fetch actual tasks for this user in this sprint
-        List<ToDoItem> activeTasks =
-                toDoItemRepository
-                        .findActiveTasksByUserAndSprint(
-                                user.getUserId(),
-                                sprintId);
+        List<ToDoItem> activeTasks;
 
-        List<ToDoItem> completedTasks =
-                toDoItemRepository.findByStatus(
-                                ToDoItem.TaskStatus.DONE)
-                        .stream()
-                        .limit(10)
-                        .toList();
+        if ("A".equalsIgnoreCase(req.option)) {
+
+            activeTasks =
+                    toDoItemRepository
+                            .findRoadmapTasksByUserAndSprint(
+                                    user.getUserId(),
+                                    sprintId);
+
+        } else {
+
+            activeTasks =
+                    toDoItemRepository
+                            .findActiveTasksByUserAndSprint(
+                                    user.getUserId(),
+                                    sprintId);
+        }
+
+        Set<ToDoItem> similarTasks = new HashSet<>();
+
+        for (ToDoItem activeTask : activeTasks) {
+
+            Integer storyPoints =
+                    activeTask.getStoryPoints() == null
+                            ? 0
+                            : activeTask.getStoryPoints();
+
+            similarTasks.addAll(
+                    toDoItemRepository.findSimilarCompletedTasks(
+                            activeTask.getPriority(),
+                            storyPoints));
+        }
 
         String historicalContext =
                 buildHistoricalContext(
-                        completedTasks);
+                        new ArrayList<>(similarTasks));
 
 
         // 4. Build prompt and call Claude
@@ -267,6 +288,9 @@ public class AIChatController {
                     + historicalContext
                     + "\n\n"
                     + "Use the historical completed tasks and their actual hours as evidence when determining the roadmap.\n\n"
+                    + "These are the ONLY tasks that may appear in the roadmap. "
+                    + "Do not invent additional tasks. "
+                    + "Only rank tasks from the provided list.\n\n"
 
                     + "Task statuses:\n"
                     + "- IN_PROGRESS: work has already started.\n"
@@ -356,33 +380,22 @@ public class AIChatController {
                     workLogRepository.getTotalHoursForTask(
                             task.getTaskId());
 
-            sb.append("Task ID: ")
-                    .append(task.getTaskId())
-                    .append("\n");
+            sb.append("""
+Historical Task
+--------------
+Name: %s
+Priority: %s
+Story Points: %s
+Expected Hours: %s
+Actual Hours: %s
 
-            sb.append("Task: ")
-                    .append(task.getTaskName())
-                    .append("\n");
-
-            sb.append("Description: ")
-                    .append(task.getDescription())
-                    .append("\n");
-
-            sb.append("Priority: ")
-                    .append(task.getPriority())
-                    .append("\n");
-
-            sb.append("Story Points: ")
-                    .append(task.getStoryPoints())
-                    .append("\n");
-
-            sb.append("Expected Hours: ")
-                    .append(task.getExpectedHours())
-                    .append("\n");
-
-            sb.append("Actual Hours: ")
-                    .append(actualHours)
-                    .append("\n\n");
+""".formatted(
+                    task.getTaskName(),
+                    task.getPriority(),
+                    task.getStoryPoints(),
+                    task.getExpectedHours(),
+                    actualHours
+            ));
         }
 
         return sb.toString();

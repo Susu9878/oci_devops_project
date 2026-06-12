@@ -48,19 +48,27 @@ public interface ToDoItemRepository extends JpaRepository<ToDoItem,Integer> {
             int sprintId);
 
     @Query("""
-    SELECT t
-    FROM ToDoItem t
-    WHERE t.user.userId = :userId
-    AND t.sprint.sprintId = :sprintId
-    AND (
-        t.status = com.springboot.MyTodoList.model.ToDoItem.TaskStatus.NOT_STARTED
-        OR
-        t.status = com.springboot.MyTodoList.model.ToDoItem.TaskStatus.NOT_DONE
-    )
+SELECT t
+FROM ToDoItem t
+WHERE t.user.userId = :userId
+AND t.sprint.sprintId = :sprintId
+AND t.status != com.springboot.MyTodoList.model.ToDoItem.TaskStatus.DONE
 """)
     List<ToDoItem> findRoadmapTasksByUserAndSprint(
             int userId,
             int sprintId);
+
+    @Query("""
+SELECT t
+FROM ToDoItem t
+WHERE t.status = com.springboot.MyTodoList.model.ToDoItem.TaskStatus.DONE
+AND t.priority = :priority
+AND t.storyPoints IS NOT NULL
+AND ABS(t.storyPoints - :storyPoints) <= 2
+""")
+    List<ToDoItem> findSimilarCompletedTasks(
+            ToDoItem.TaskPriority priority,
+            Integer storyPoints);
 
     List<ToDoItem> findByStatus(ToDoItem.TaskStatus status);
 

@@ -8,25 +8,24 @@ import { Menu } from 'lucide-react';
 
 function Layout() {
   const location = useLocation();
+
   return (
     <>
-        <nav>
       <div className="header">
         <div className="header-container">
-
           <img src={userIcon} className="icon" alt="user" />
           <h3 className="user-role">
             USER
             <strong>position</strong>
           </h3>
+          {/* 
           <Link to="/login"><button className="loginButton">Login</button></Link>
+          */}
           <div>
-
           </div>
         </div>
       </div>
-      <div className="styledBar" />
-    </nav>
+    <div className="styledBar" />
     <div className="layout-container">
       <div className="sidebar">
         <div className="side-container">

@@ -46,6 +46,7 @@ PUSH_STATUS=$?
 if [ $PUSH_STATUS -eq 0 ]; then
     echo "Subiendo imagen con tag: latest"
     docker push $IMAGE_LATEST
+    state_set IMAGE_VERSION $IMAGE_VERSION   # ADD THIS
 
     # 6. Limpieza de imágenes locales para no saturar el disco
     echo "Limpiando imágenes locales..."

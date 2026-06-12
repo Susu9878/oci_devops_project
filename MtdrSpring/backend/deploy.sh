@@ -2,6 +2,15 @@
 SCRIPT_DIR=$(pwd)
 
 #Validation
+
+if [ -z "$IMAGE_VERSION" ]; then
+    export IMAGE_VERSION=$(state_get IMAGE_VERSION)
+fi
+if [ -z "$IMAGE_VERSION" ]; then
+    echo "Error: IMAGE_VERSION not set!"
+    exit 1
+fi
+
 if [ -z "$DOCKER_REGISTRY" ]; then
     export DOCKER_REGISTRY=$(state_get DOCKER_REGISTRY)
     echo "DOCKER_REGISTRY set."

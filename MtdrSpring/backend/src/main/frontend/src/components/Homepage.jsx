@@ -230,8 +230,6 @@ function Homepage() {
 
               {expandedTaskId === items.taskId && (
                 <div className="task-expanded">
-                  <p className="taskExP-title">Assigned to:</p>
-                  <p className="taskExP-val">{items.username}</p>
                   <p className="taskExP-title">Task description:</p>
                   <p className="taskExP-val">{items.description}</p>
                   <div className="markers">

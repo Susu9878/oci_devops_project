@@ -37,9 +37,12 @@ steps:
 
   - type: Command
     name: "Build"
-    command:  cd MtdrSpring;
-      source env.sh;
-      (cd backend;source build.sh)
+    command: |
+      cd MtdrSpring
+      source env.sh
+      cd backend
+      source build.sh
+      echo "IMAGE_VERSION=$IMAGE_VERSION"
                 
   - type: Command
     name: "Install K8s"

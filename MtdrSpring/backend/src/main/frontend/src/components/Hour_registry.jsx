@@ -105,7 +105,7 @@ function Hour_Registry() {
                 <p className="labelP">Work day:</p>
                 <input
                     type="date"
-                    name="hours"
+                    name="day"
                     value={hourLog.workDay}
                     onChange={handleChange}
                 />
@@ -114,7 +114,7 @@ function Hour_Registry() {
                 <p className="labelP">Task ID:</p>
                 <input
                     type="number"
-                    name="hours"
+                    name="task"
                     value={hourLog.taskId}
                     onChange={handleChange}
                 />

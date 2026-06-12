@@ -61,7 +61,7 @@ function Hour_Registry() {
             setIsPending(true);
 
             const response = await fetch(
-                `${API_LIST}/todolist/worklogs`,
+                `${API_LIST}/worklogs`,
                 {
                     method: "POST",
                     headers: {

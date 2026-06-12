@@ -87,7 +87,7 @@ function CreateTask() {
 
     try {
       setIsPending(true);
-      const response = await fetch(`${API_LIST}/todolist`, {
+      const response = await fetch(`${API_LIST}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -24,10 +24,8 @@ const users = [
 ];
 
 test.describe('Login flow (auth)', () => {
-  let context;
-  test.beforeAll(async ({ browser }) => {
-    context = await browser.newContext();
-    await context.addInitScript(() => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
       const fixed = 1669852800000;
       class DateOverride extends Date {
         constructor(...args) {
@@ -38,26 +36,16 @@ test.describe('Login flow (auth)', () => {
       }
       window.Date = DateOverride;
     });
-  });
-
-  test.afterAll(async () => {
-    await context.close();
-  });
-
-  test.beforeEach(async ({}, testInfo) => {
-  });
-
-  test.afterEach(async ({}, testInfo) => {
+    page.on('dialog', async dialog => { try { await dialog.accept(); } catch (e) {} });
   });
 
   for (const u of users) {
-    test(`${u.name} - login`, async ({ browser }, testInfo) => {
+    test(`${u.name} - login`, async ({ page }, testInfo) => {
       testInfo.annotations.push({ type: 'tag', description: u.name === 'valid' ? 'smoke' : 'negative' });
 
-      const page = await context.newPage();
       const login = new LoginPage(page);
 
-      await context.route('**/api/auth/login', route => {
+      await page.route('**/api/auth/login', route => {
         if (u.name === 'valid') {
           route.fulfill({
             status: 200,
@@ -74,20 +62,18 @@ test.describe('Login flow (auth)', () => {
       });
 
       await login.goto();
-
       await login.login(u.user, u.pass);
 
       if (u.name === 'valid') {
-        await expect(page).toHaveURL('http://localhost:3000/');
+        await page.waitForURL('/');
+        await expect(page).toHaveURL('/');
         await expect(page.evaluate(() => localStorage.getItem('token'))).resolves.toBe('stub-token-123');
         await expect(page).toHaveScreenshot({ name: `welcome-${u.name}.png` });
       } else {
-        await page.waitForTimeout(500);
-        await expect(page).toHaveURL('http://localhost:3000/login');
+        await page.waitForTimeout(300);
+        await expect(page).toHaveURL('/login');
         await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
       }
-
-      await page.close();
     });
   }
 
